@@ -1,3 +1,3 @@
-from . import background
-from . import enemy
-from . import player
+from .background import Background
+from .enemy import Enemy
+from .player import Player

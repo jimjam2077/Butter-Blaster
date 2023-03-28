@@ -1,10 +1,14 @@
 # import the pygame module, so you can use it
 import sys
 import pygame
-from  import Player
+import sys
+from components.player import Player
+from config import Config
+
+
+
 
 # define a main function
-
 
 def main():
 
@@ -42,7 +46,7 @@ def main():
                 # running = False
         player.update()
         # blit() draws the surface to the screen
-        screen.blit(background, (0,0)) #draw bg first
+        screen.fill(Config.WHITE)
         player.draw(screen)
         
         pygame.display.update() #updates the game state
