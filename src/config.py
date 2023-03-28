@@ -1,4 +1,4 @@
-# could make this a more secure format
+# could make this a bit more secure
 # but it will do for now!
 class Config:
     FPS = 60;

@@ -1,6 +1,7 @@
 # import the pygame module, so you can use it
 import sys
 import pygame
+from  import Player
 
 # define a main function
 
@@ -11,7 +12,7 @@ def main():
     pygame.init()
 
     # create a surface on screen that has the size of 240 x 180
-    screen = pygame.display.set_mode((400, 300))  # w, h
+    screen = pygame.display.set_mode((1280, 720))  # w, h
     # load and set the logo
     pygame.display.set_caption("PLACEHOLDER")
     # Surfaces can quickly draw something on the screen
@@ -19,6 +20,8 @@ def main():
     surface = pygame.Surface((20, 20))
     surface.fill((0, 255, 0))  # tuple of RGB values
     pos = [175, 125]
+    
+    player =  Player()
 
     # define a variable to control the main loop
     running = True
@@ -37,12 +40,11 @@ def main():
                 pygame.quit()
                 sys.exit()
                 # running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    pos[0] += 20;
+        player.update()
         # blit() draws the surface to the screen
         screen.blit(background, (0,0)) #draw bg first
-        screen.blit(surface, pos)
+        player.draw(screen)
+        
         pygame.display.update() #updates the game state
 
 

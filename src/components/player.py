@@ -1,5 +1,5 @@
 import pygame as pg
-from src.config import Config
+from ..config import Config
 
 # passing Sprite makes Player Class a child of Sprite
 # can then use super().__init__() to call the Sprite's init() function
@@ -11,7 +11,7 @@ class Player(pg.sprite.Sprite):
         super().__init__()
         self.image = pg.image.load("assets/playership.png")  # add image here
         self.rect = self.image.get_rect()  # defines the borders according to image size
-        self.rect.center = ()  # defines a starting position for rect
+        self.rect.center = (10, Config.HEIGHT/2)  # defines a starting position for rect
 
     def update(self):
         pressed_keys = pg.key.get_pressed()
@@ -30,4 +30,4 @@ class Player(pg.sprite.Sprite):
         # can add other things to draw here
         screen.blit(self.image, self.rect)
 
-    def reset(self):
+#    def reset(self):
