@@ -1,7 +1,7 @@
 # could make this a bit more secure
 # but it will do for now!
 class Config:
-    FPS = 60;
+    FPS = 61;
     
     #screen
     WIDTH = 1280
