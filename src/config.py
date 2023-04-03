@@ -8,8 +8,8 @@ class Config:
     HEIGHT = 720
     
     #movement
-    ACC = 1.2
-    FRIC = -0.1
+    ACC = 1.1
+    FRIC = -0.08
     PLAYER_POS = (40, HEIGHT/2)
     
     # Predefined some colors
