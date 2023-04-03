@@ -82,7 +82,8 @@ class Player(pg.sprite.Sprite):
         self.velocity += self.acc
         self.pos += self.velocity + 0.5 * self.acc
         
-        # Make sure the position is always set within the boundaries
+        # Screen boundary detection
+        # offsets +/- onto the already-defined margin so the center point is correct later
         # sets x to the max of left (0) or the min of right (WIDTH) and current position
         # sets y to the max of top (0) or the min of bottom (HEIGHT) and current position
         l_x_offset = MARGIN_LEFT + self.rect.width / 2
