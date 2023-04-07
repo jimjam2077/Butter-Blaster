@@ -12,13 +12,12 @@ from components.enemy import Enemy
 def main():
     FrameRate = pg.time.Clock()
     pg.init() # initialize the pygame module
-    # create a surface on screen that has the size of 240 x 180
-    screen = pg.display.set_mode((1280, 720), pg.HWSURFACE | pg.DOUBLEBUF)  # w, h
-    pg.display.set_caption("PLACEHOLDER")  # load and set the logo
     
-    # Surfaces can quickly draw something on the screen
-    surface = pg.Surface((20, 20))
-    surface.fill((0, 255, 0))  # tuple of RGB values
+    
+    # create a surface on screen that has the size of 240 x 180
+    #screen = pg.display.set_mode((1280, 720), pg.HWSURFACE | pg.DOUBLEBUF)  # w, h
+    Config.load_window()
+
 
     P1 =  Player()
     enemies = pg.sprite.Group()
@@ -32,12 +31,11 @@ def main():
 
     # main loop
     running = True
-    hidden_screen = pg.Surface((Config.WIDTH, Config.HEIGHT))
     while running:
         num_to_draw = random.randint(1, len(enemies))  # choose a random number of entities to kill
         hazard_to_draw = random.sample(enemies.sprites(), 2)  # select a random subset of entities to kill
         # blit() draws the surface to the screen
-        hidden_screen.fill(Config.WHITE)
+        Config.SCREEN.fill(Config.WHITE)
         # Processing
         # Events
         # Render - need to re-render everything each iteration
@@ -54,13 +52,12 @@ def main():
         P1.update()
         # Call the kill method on each entity in the subset
         enemies.update()
-        P1.draw(hidden_screen)
+        P1.draw(Config.SCREEN)
         for haz in hazard_to_draw:
-            haz.draw(hidden_screen)
+            haz.draw(Config.SCREEN)
         
-            # Draw the hidden screen to the visible screen
-        screen.blit(hidden_screen, (0, 0))
-        pg.display.update() #updates the game state
+        #update display
+        pg.display.update() 
         FrameRate.tick(Config.FPS)
 
 
