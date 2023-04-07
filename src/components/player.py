@@ -30,7 +30,8 @@ class Player(pg.sprite.Sprite):
         self.acc = vector(0,0)
         self.rect = self.image.get_rect(center=self.pos)  # defines the borders according to image size
     
-    def __new__(cls): #make the class a singleton - never want multiple player objects
+
+    def __new__(cls): #make the class a singleton - don't want multiple player objects (for now)
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
