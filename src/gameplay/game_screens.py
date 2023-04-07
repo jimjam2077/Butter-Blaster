@@ -4,7 +4,9 @@ import pygame as pg
 from config import Config
 from components.player import Player
 from components.enemy import Enemy
+from utils.state import State
 
+game_state = State.START
 
 P1 =  Player()
 enemies = pg.sprite.Group()
@@ -14,10 +16,17 @@ all_sprites.add(P1)
 for x in range(10):
     dorito = Enemy()
     enemies.add(dorito)
+    
+def get_game_state():
+    return game_state
 
 
 def run_start_screen():
-    print("placeholder")
+    global game_state
+    events = pg.event.get()
+    for event in events:
+        if event.type == pg.KEYDOWN:
+            game_state =  State.PLAYING
 
 def run_game_screen():
         num_to_draw = random.randint(1, len(enemies))  # choose a random number of entities to kill

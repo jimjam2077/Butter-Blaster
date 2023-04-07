@@ -1,7 +1,8 @@
 # import the pygame module, so you can use it
 import pygame as pg
 from config import Config
-from gameplay.game_screens import *
+from utils.state import State
+from gameplay.game_screens import run_start_screen, run_game_screen, run_game_over, run_game_won, get_game_state
 
 
 
@@ -18,7 +19,11 @@ def main():
     # main loop
     running = True
     while running:
-        run_game_screen()
+        state = get_game_state()
+        if(state == State.START):
+            run_start_screen()
+        elif (state == State.PLAYING):
+            run_game_screen()
         #update display
         pg.display.update() 
         FrameRate.tick(Config.FPS)
