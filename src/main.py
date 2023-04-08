@@ -2,7 +2,6 @@
 import pygame as pg
 from config import Config
 from utils.state import State
-from gameplay.game_screens import run_start_screen, run_game_screen, run_game_over, run_game_won, get_game_state
 
 
 
@@ -14,6 +13,8 @@ def main():
     # create a surface on screen that has the size of 240 x 180
     #screen = pg.display.set_mode((1280, 720), pg.HWSURFACE | pg.DOUBLEBUF)  # w, h
     Config.setup_window()
+    from gameplay.game_screens import run_start_screen, run_game_screen, run_game_over, run_game_won, get_game_state
+
 
 
     # main loop

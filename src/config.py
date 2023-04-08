@@ -23,7 +23,10 @@ class Config:
     
     @staticmethod
     def setup_window(): #double buffering enabled
-        Config.SCREEN = pg.display.set_mode((Config.WIDTH, Config.HEIGHT), vsync=True | pg.HWACCEL | pg.HWSURFACE | pg.DOUBLEBUF)
+        try:
+            Config.SCREEN = pg.display.set_mode((Config.WIDTH, Config.HEIGHT), vsync=True | pg.HWACCEL | pg.HWSURFACE | pg.DOUBLEBUF)
+        except Exception as e:
+            print(f"Error setting up window: {e}")
         pg.display.set_caption("ANDY'S SNACK ATTACK")  # load and set the logo
         icon = pg.image.load("assets/icon.png")
         pg.display.set_icon(icon)

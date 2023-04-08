@@ -7,6 +7,7 @@ from components.enemy import Enemy
 from utils.state import State
 
 game_state = State.START
+screen = Config.SCREEN
 P1 =  Player()
 enemies = pg.sprite.Group()
 bullets = pg.sprite.Group()
@@ -32,13 +33,11 @@ def run_start_screen():
             game_state =  State.PLAYING
 
 def run_game_screen():
-        screen = Config.SCREEN
-        hazard_to_draw = random.sample(enemies.sprites(), 2)  # select a random subset of entities to kill
         # blit() draws the surface to the screen
-        screen.fill(Config.BLKBLU)
         # Processing
         # Events
         # Render - need to re-render everything each iteration
+        screen.fill(Config.BLKBLU)
 
         # event handling - gets all event from the event queue
         events = pg.event.get()
@@ -58,7 +57,11 @@ def run_game_screen():
                 else:
                     sprite.update()
         all_sprites.draw(screen)
-    
+        #debug
+        for sprite in all_sprites:
+            pg.draw.rect(screen, pg.Color("white"), sprite.rect, width=1)
+        #pg.display.flip()
+            
 def run_game_over():
     print("placeholder")
     

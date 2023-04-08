@@ -113,7 +113,7 @@ class Player(pg.sprite.Sprite):
     def draw(self, screen):
         # can add other things to draw here
         screen.blit(self.image, self.rect)
-        pg.draw.rect(screen, pg.Color("red"), self.rect, width=1) #draw the rect for debugging
+        
 
 #    def reset(self):
 

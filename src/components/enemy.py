@@ -36,11 +36,13 @@ class Enemy(pg.sprite.Sprite):
         for enemy in enemies:
             if enemy != self and self.rect.colliderect(enemy.rect):
                 if self.rect.centerx < enemy.rect.centerx:
-                    self.rect.right-=2
+                    enemy.rect.left+=1
+                    self.rect.right-=1
                 else:
-                    self.rect.left+=2
+                    enemy.rect.right-=1
+                    self.rect.left+=1
  
  
       def draw(self, screen):
         screen.blit(self.image, self.rect)
-        pg.draw.rect(screen, pg.Color("white"), self.rect, width=2) #draw the rect for debugging
+        
