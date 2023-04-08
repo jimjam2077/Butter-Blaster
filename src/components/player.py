@@ -1,4 +1,5 @@
 import pygame as pg
+from components.bullet import Bullet
 from config import Config
 
 vector = pg.math.Vector2
@@ -18,17 +19,20 @@ class Player(pg.sprite.Sprite):
             return
         super().__init__()
         
+        self.initialized = True
         #set up the ship image, adjust the scaling here
-        self.image = pg.image.load("assets/playership.png")
-        self.scale_image(2)
+        self.image = pg.image.load("assets/sprites/playership.png")
+        #self.scale_image(Config.PLAYER_SCALE)
         self.mask = pg.mask.from_surface(self.image) #mask for pixel-perfect collision detection
         
-        self.initialized = True
         # set up the position and movement variables
         self.pos = vector((Config.PLAYER_POS))
         self.velocity = vector(0,0)
         self.acc = vector(0,0)
         self.rect = self.image.get_rect(center=self.pos)  # defines the borders according to image size
+        
+        # bullet timing - don't want a rapid spray
+        self.last_shot_time = 0
     
 
     def __new__(cls): #make the class a singleton - don't want multiple player objects (for now)
@@ -42,8 +46,15 @@ class Player(pg.sprite.Sprite):
         y_size = self.image.get_height() * factor
         self.image = pg.transform.scale(self.image, (x_size, y_size)) # defines a starting position for rect
 
+    def shoot(self, sprite_grp):
+        now = pg.time.get_ticks()
+        if now - self.last_shot_time > Config.SHOT_DELAY:
+            bullet = Bullet(self.rect.centerx, self.rect.centery)
+            sprite_grp.add(bullet)
+            self.last_shot_time = now
+        
        
-    def update(self):
+    def update(self, sprite_grp):
         self.acc = vector(0,0)
         
         pressed_keys = pg.key.get_pressed()
@@ -55,7 +66,9 @@ class Player(pg.sprite.Sprite):
             self.acc.x = -Config.ACC
         if pressed_keys[pg.K_RIGHT] or pressed_keys[pg.K_d]:
             self.acc.x = +Config.ACC
-        # code for spacebar
+        if pressed_keys[pg.K_SPACE]:
+            self.shoot(sprite_grp)
+            
 
         #calc acceleration
         self.acc.x += self.velocity.x * Config.FRIC

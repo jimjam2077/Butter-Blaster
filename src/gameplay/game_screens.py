@@ -7,15 +7,18 @@ from components.enemy import Enemy
 from utils.state import State
 
 game_state = State.START
-
 P1 =  Player()
 enemies = pg.sprite.Group()
+bullets = pg.sprite.Group()
 all_sprites = pg.sprite.Group()
+all_sprites.add(enemies)
 all_sprites.add(P1)
+all_sprites.add(bullets)
     
 for x in range(10):
-    dorito = Enemy()
-    enemies.add(dorito)
+    e = Enemy()
+    enemies.add(e)
+    all_sprites.add(e)
     
 def get_game_state():
     return game_state
@@ -29,10 +32,10 @@ def run_start_screen():
             game_state =  State.PLAYING
 
 def run_game_screen():
-        num_to_draw = random.randint(1, len(enemies))  # choose a random number of entities to kill
+        screen = Config.SCREEN
         hazard_to_draw = random.sample(enemies.sprites(), 2)  # select a random subset of entities to kill
         # blit() draws the surface to the screen
-        Config.SCREEN.fill(Config.WHITE)
+        screen.fill(Config.BLKBLU)
         # Processing
         # Events
         # Render - need to re-render everything each iteration
@@ -46,12 +49,15 @@ def run_game_screen():
                 pg.quit()
                 sys.exit()
                 # running = False
-        P1.update()
-        # Call the kill method on each entity in the subset
-        enemies.update()
-        P1.draw(Config.SCREEN)
-        for haz in hazard_to_draw:
-            haz.draw(Config.SCREEN)
+        #update and draw the sprites!        
+        P1.update(all_sprites)
+        for sprite in all_sprites:
+            if sprite != P1:
+                if isinstance(sprite, Enemy):
+                    sprite.update(enemies)
+                else:
+                    sprite.update()
+        all_sprites.draw(screen)
     
 def run_game_over():
     print("placeholder")
