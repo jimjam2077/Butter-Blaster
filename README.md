@@ -12,11 +12,11 @@ Initially I was going to make a game engine with Java, but it's such a lot of un
 
 ## Features
 
-* Be able to control the spaceship and move Up, Down Left, Right
-* * Ideally there's some momentum here
-* * Should not be able to fly off the screen
-* Enemies continually spawn and fire at the ship
-* * enemies move off the bottom of the screen if you pass them
+* Be able to control the spaceship and move Up, Down Left, Right &#x2714;
+* * Ideally there's some momentum here &#x2714;
+* * Should not be able to fly off the screen &#x2714;
+* Enemies continually spawn and fire at the ship &#x2714;
+* * enemies move off the left  of the screen if you pass them &#x2714;
 * The background should scroll continually
 * Scorekeeping
 * * every 50 points, a boss enemy spawns
