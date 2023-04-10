@@ -14,6 +14,7 @@ class Bullet(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = x
         self.rect.centery =y
+        self._is_enemy = is_enemy #use this later to check whether bullet is damaging?
         
     def update(self):
         self.rect.move_ip(self.speed, 0)
