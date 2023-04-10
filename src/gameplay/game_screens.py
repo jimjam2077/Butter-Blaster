@@ -12,14 +12,11 @@ P1 =  Player()
 enemies = pg.sprite.Group()
 bullets = pg.sprite.Group()
 all_sprites = pg.sprite.Group()
-all_sprites.add(enemies)
 all_sprites.add(P1)
 all_sprites.add(bullets)
+all_sprites.add(enemies)
     
-for x in range(10):
-    e = Enemy()
-    enemies.add(e)
-    all_sprites.add(e)
+
     
 def get_game_state():
     return game_state
@@ -48,12 +45,23 @@ def run_game_screen():
                 pg.quit()
                 sys.exit()
                 # running = False
+                
+        # generate a new group of enemies if the enemies have been kill()ed
+        # kill() removes the sprite from all groups
+        # this way i can generate a random number of enemies to attack at a time
+        if not enemies or len(enemies)==1: # check for empty
+            print("generating enemies!")
+            for x in range(random.randint(3,10)):
+                e = Enemy()
+                enemies.add(e)
+                all_sprites.add(e)
+        
         #update and draw the sprites!        
-        P1.update(all_sprites)
+        P1.update(all_sprites, bullets)
         for sprite in all_sprites:
             if sprite != P1:
                 if isinstance(sprite, Enemy):
-                    sprite.update(enemies)
+                    sprite.update(all_sprites, enemies, bullets)
                 else:
                     sprite.update()
         all_sprites.draw(screen)

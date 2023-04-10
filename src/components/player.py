@@ -1,6 +1,7 @@
 import pygame as pg
 from components.bullet import Bullet
 from config import Config
+from utils.asset_loader import AssetLoader
 
 vector = pg.math.Vector2
 #screen margins - remember window grows down and right 0,0 is top left corner
@@ -15,13 +16,13 @@ class Player(pg.sprite.Sprite):
     _instance = None
     
     def __init__(self):
-        if hasattr(self, 'initialized'):
+        if hasattr(self, '_initialized'):
             return
         super().__init__()
         
-        self.initialized = True
+        self._initialized = True
         #set up the ship image, adjust the scaling here
-        self.image = pg.image.load("assets/sprites/playership.png")
+        self.image = AssetLoader.load_toad_ship()
         #self.scale_image(Config.PLAYER_SCALE)
         self.mask = pg.mask.from_surface(self.image) #mask for pixel-perfect collision detection
         
@@ -31,14 +32,26 @@ class Player(pg.sprite.Sprite):
         self.acc = vector(0,0)
         self.rect = self.image.get_rect(center=self.pos)  # defines the borders according to image size
         
-        # bullet timing - don't want a rapid spray
-        self.last_shot_time = 0
+        # set up the player statistics
+        self._last_shot_time = 0 #used to limit fire rate later
+        self._lives = 3
     
+    
+    #property getter for lives 
+    @property 
+    def lives(self):
+        return self._lives
+    
+    #property setter for lives
+    @lives.setter
+    def lives(self, count):
+        self._lives = count
 
     def __new__(cls): #make the class a singleton - don't want multiple player objects (for now)
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
+        
         
     # use to scale this player by some factor    
     def scale_image(self, factor):
@@ -46,15 +59,21 @@ class Player(pg.sprite.Sprite):
         y_size = self.image.get_height() * factor
         self.image = pg.transform.scale(self.image, (x_size, y_size)) # defines a starting position for rect
 
-    def shoot(self, sprite_grp):
+
+    def shoot(self, all_sprites, bullets):
         now = pg.time.get_ticks()
-        if now - self.last_shot_time > Config.SHOT_DELAY:
+        if now - self._last_shot_time > Config.SHOT_DELAY:
             bullet = Bullet(self.rect.centerx, self.rect.centery)
-            sprite_grp.add(bullet)
-            self.last_shot_time = now
+            bullets.add(bullet)
+            all_sprites.add(bullet)
+            self._last_shot_time = now
+            
+            
+    def get_lives(self):
+        return self.lives
         
        
-    def update(self, sprite_grp):
+    def update(self, all_sprites, bullets):
         self.acc = vector(0,0)
         
         pressed_keys = pg.key.get_pressed()
@@ -67,7 +86,7 @@ class Player(pg.sprite.Sprite):
         if pressed_keys[pg.K_RIGHT] or pressed_keys[pg.K_d]:
             self.acc.x = +Config.ACC
         if pressed_keys[pg.K_SPACE]:
-            self.shoot(sprite_grp)
+            self.shoot(all_sprites, bullets)
             
 
         #calc acceleration

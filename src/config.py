@@ -10,7 +10,7 @@ class Config:
     WHT = (255, 255, 255)
     BLKBLU = (0,0,102)
     SCREEN = None
-
+    
     #movement
     ACC = 1.1
     FRIC = -0.08
@@ -19,7 +19,7 @@ class Config:
     
     #combat
     SHOT_DELAY = 200
-    BULLET_SPEED = 10
+    BULLET_SPEED = 15
     
     @staticmethod
     def setup_window(): #double buffering enabled
