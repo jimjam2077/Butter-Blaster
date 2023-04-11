@@ -71,11 +71,13 @@ class Player(pg.sprite.Sprite):
             
     def get_lives(self):
         return self.lives
+    
+    def handle_colissions(self, enemy_grp, enemy_blt_grp):
+        
         
        
     def update(self, all_sprites, bullets):
         self.acc = vector(0,0)
-        
         pressed_keys = pg.key.get_pressed()
         if pressed_keys[pg.K_UP] or pressed_keys[pg.K_w]:
             self.acc.y = -Config.ACC

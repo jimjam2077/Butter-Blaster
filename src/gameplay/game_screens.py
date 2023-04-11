@@ -8,13 +8,19 @@ from utils.state import State
 
 game_state = State.START
 screen = Config.SCREEN
+# setup sprite groups
 P1 =  Player()
-enemies = pg.sprite.Group()
 bullets = pg.sprite.Group()
+enemies = pg.sprite.Group()
+enemy_bullets = pg.sprite.Group()
 all_sprites = pg.sprite.Group()
 all_sprites.add(P1)
 all_sprites.add(bullets)
 all_sprites.add(enemies)
+all_sprites.add(enemy_bullets)
+# passing sprite groups - every sprite is accessible from 
+# all_sprites. for this small game it's easier just to pass the subgroups around
+# directly.
     
 
     
