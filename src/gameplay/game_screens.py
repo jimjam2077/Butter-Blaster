@@ -55,7 +55,7 @@ def run_game_screen():
         # generate a new group of enemies if the enemies have been kill()ed
         # kill() removes the sprite from all groups
         # this way i can generate a random number of enemies to attack at a time
-        if not enemies or len(enemies)==1: # check for empty
+        if not enemies or len(enemies)<=2: # check for empty
             print("generating enemies!")
             for x in range(random.randint(3,10)):
                 e = Enemy()
@@ -63,11 +63,11 @@ def run_game_screen():
                 all_sprites.add(e)
         
         #update and draw the sprites!        
-        P1.update(all_sprites, bullets)
+        P1.update(all_sprites, bullets, enemies, enemy_bullets)
         for sprite in all_sprites:
             if sprite != P1:
                 if isinstance(sprite, Enemy):
-                    sprite.update(all_sprites, enemies, bullets)
+                    sprite.update(all_sprites, enemies, enemy_bullets)
                 else:
                     sprite.update()
         all_sprites.draw(screen)

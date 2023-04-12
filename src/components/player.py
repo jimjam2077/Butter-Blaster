@@ -15,6 +15,12 @@ MARGIN_RIGHT = Config.WIDTH - 20
 class Player(pg.sprite.Sprite):
     _instance = None
     
+        #make the class a singleton - don't want multiple player objects (for now)
+    def __new__(cls): 
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+    
     def __init__(self):
         if hasattr(self, '_initialized'):
             return
@@ -34,8 +40,8 @@ class Player(pg.sprite.Sprite):
         
         # set up the player statistics
         self._last_shot_time = 0 #used to limit fire rate later
-        self._lives = 3
-    
+        self._last_hit_time = 0 #used for invulnerability window
+        self._lives = Config.PLAYER_LIVES
     
     #property getter for lives 
     @property 
@@ -46,11 +52,6 @@ class Player(pg.sprite.Sprite):
     @lives.setter
     def lives(self, count):
         self._lives = count
-
-    def __new__(cls): #make the class a singleton - don't want multiple player objects (for now)
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
         
         
     # use to scale this player by some factor    
@@ -59,7 +60,9 @@ class Player(pg.sprite.Sprite):
         y_size = self.image.get_height() * factor
         self.image = pg.transform.scale(self.image, (x_size, y_size)) # defines a starting position for rect
 
-
+    # shoot function - needs to check whether a new bullet can be created
+    # there is a delay so that holding spacebar doesn't create a bullet each frame
+    # check if the bullet can be fired, then create it and add it to the sprite lists
     def shoot(self, all_sprites, bullets):
         now = pg.time.get_ticks()
         if now - self._last_shot_time > Config.SHOT_DELAY:
@@ -72,11 +75,18 @@ class Player(pg.sprite.Sprite):
     def get_lives(self):
         return self.lives
     
-    def handle_colissions(self, enemy_grp, enemy_blt_grp):
-        
+    def handle_collisions(self, bullets, enemy_grp, enemy_blt_grp):
+        now = pg.time.get_ticks()
+        enemy_killed = pg.sprite.groupcollide(bullets, enemy_grp, True, True)
+        if now - self._last_hit_time > Config.INVULN_WINDOW:
+            enemy_hit = pg.sprite.spritecollide(self, enemy_grp, True)
+            bullet_hit = pg.sprite.spritecollide(self, enemy_blt_grp, True)
+            if enemy_hit or bullet_hit:
+                self._last_hit_time = now
+                self.lives-=1
         
        
-    def update(self, all_sprites, bullets):
+    def update(self, all_sprites, bullets, enemy_grp, enemy_blt_grp):
         self.acc = vector(0,0)
         pressed_keys = pg.key.get_pressed()
         if pressed_keys[pg.K_UP] or pressed_keys[pg.K_w]:
@@ -130,6 +140,16 @@ class Player(pg.sprite.Sprite):
         
         # update hitbox
         self.rect.center = self.pos
+        
+        #blink_period = 500  # use this code to do a blink effect instead of a fade
+        #blink_on = (now - self._last_hit_time) % blink_period < blink_period / 2
+
+        now = pg.time.get_ticks()
+        if now - self._last_hit_time < Config.INVULN_WINDOW:
+            self.image.set_alpha(128)
+        else:
+            self.image.set_alpha(255)
+        self.handle_collisions(bullets, enemy_grp, enemy_blt_grp)
 
     def draw(self, screen):
         # can add other things to draw here

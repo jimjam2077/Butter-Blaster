@@ -18,6 +18,8 @@ class Config:
     PLAYER_SCALE = 1
     
     #combat
+    PLAYER_LIVES = 3
+    INVULN_WINDOW = 2000
     SHOT_DELAY = 200
     BULLET_SPEED = 15
     
