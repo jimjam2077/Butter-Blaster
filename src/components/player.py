@@ -29,9 +29,7 @@ class Player(pg.sprite.Sprite):
         self._initialized = True
         #set up the ship image, adjust the scaling here
         self.image = AssetLoader.load_toad_ship()
-        #self.scale_image(Config.PLAYER_SCALE)
-        self.mask = pg.mask.from_surface(self.image) #mask for pixel-perfect collision detection
-        
+        self.original_image = self.image.copy()
         # set up the position and movement variables
         self.pos = vector((Config.PLAYER_POS))
         self.velocity = vector(0,0)
@@ -74,6 +72,7 @@ class Player(pg.sprite.Sprite):
             
     def get_lives(self):
         return self.lives
+    
     
     def handle_collisions(self, bullets, enemy_grp, enemy_blt_grp):
         now = pg.time.get_ticks()
@@ -137,18 +136,34 @@ class Player(pg.sprite.Sprite):
         b_y_offset = MARGIN_BOTTOM - self.rect.height / 2
         self.pos.x = max(l_x_offset, min(r_x_offset, self.pos.x))
         self.pos.y = max(t_y_offset, min(b_y_offset, self.pos.y))
-        
         # update hitbox
         self.rect.center = self.pos
         
-        #blink_period = 500  # use this code to do a blink effect instead of a fade
-        #blink_on = (now - self._last_hit_time) % blink_period < blink_period / 2
-
+        # here is just some fluff code to make the ship blink while it's
+        # invulnerable (visual player feedback)
+        # use blink_len and blink_col to control the speed and colour
         now = pg.time.get_ticks()
+        blink_len = 500 # how long each blink lasts
+        blink_clr = (255, 100, 0) # set the blink colour
+        blink_on = (now - self._last_hit_time) % blink_len < blink_len / 2
+        # if the ship is invulnerable, make it blink
         if now - self._last_hit_time < Config.INVULN_WINDOW:
-            self.image.set_alpha(128)
-        else:
-            self.image.set_alpha(255)
+            if blink_on:
+                # create a surface with the pixels and fill with blink colour
+                fill_pixels = pg.Surface(self.original_image.get_size(), pg.SRCALPHA)
+                fill_pixels.fill((blink_clr))
+                # multiply RGB values of the surface and source
+                fill_pixels.blit(self.original_image, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+                # blend the resul with the current image - overlays colour on the original image
+                fill_pixels.blit(self.image, (0, 0), special_flags=pg.BLEND_RGBA_ADD)
+                # set the new filled pixels as the ship image
+                self.image.blit(fill_pixels, (0, 0))
+                # add a transparency effect
+                # self.image.set_colorkey((blink_clr)) 
+            else:
+                # go back to the original image
+                self.image.blit(self.original_image, (0, 0))
+        #finally, deal with any collisions
         self.handle_collisions(bullets, enemy_grp, enemy_blt_grp)
 
     def draw(self, screen):
