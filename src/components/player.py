@@ -83,9 +83,34 @@ class Player(pg.sprite.Sprite):
             if enemy_hit or bullet_hit:
                 self._last_hit_time = now
                 self.lives-=1
-        
-       
-    def update(self, all_sprites, bullets, enemy_grp, enemy_blt_grp):
+                
+    def blink_ship(self):
+        # here is just some fluff code to make the ship blink while it's
+        # invulnerable (visual player feedback)
+        # use blink_len and blink_col to control the speed and colour
+        now = pg.time.get_ticks()
+        blink_len = 500 # how long each blink lasts
+        blink_clr = (255, 200, 50) # set the blink colour
+        blink_on = (now - self._last_hit_time) % blink_len < blink_len / 2
+        # if the ship is invulnerable, make it blink
+        if now - self._last_hit_time < Config.INVULN_WINDOW:
+            if blink_on:
+                # create a surface with the pixels and fill with blink colour
+                fill_pixels = pg.Surface(self.original_image.get_size(), pg.SRCALPHA)
+                fill_pixels.fill((blink_clr))
+                # multiply RGB values of the surface and source
+                fill_pixels.blit(self.original_image, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+                # blend the resul with the current image - overlays colour on the original image
+                fill_pixels.blit(self.image, (0, 0), special_flags=pg.BLEND_RGBA_ADD)
+                # set the new filled pixels as the ship image
+                self.image.blit(fill_pixels, (0, 0))
+                # add a transparency effect
+                # self.image.set_colorkey((blink_clr)) 
+            else:
+                # go back to the original image
+                self.image.blit(self.original_image, (0, 0))
+    
+    def handle_input(self, all_sprites, bullets):
         self.acc = vector(0,0)
         pressed_keys = pg.key.get_pressed()
         if pressed_keys[pg.K_UP] or pressed_keys[pg.K_w]:
@@ -98,12 +123,13 @@ class Player(pg.sprite.Sprite):
             self.acc.x = +Config.ACC
         if pressed_keys[pg.K_SPACE]:
             self.shoot(all_sprites, bullets)
-            
-
         #calc acceleration
         self.acc.x += self.velocity.x * Config.FRIC
         self.acc.y += self.velocity.y * Config.FRIC
-
+       
+    def update(self, all_sprites, bullets, enemy_grp, enemy_blt_grp):
+        self.handle_input(all_sprites, bullets)
+        
         # limit player's movement within the screen boundaries
         if self.rect.right > MARGIN_RIGHT:
             self.velocity.x = -self.velocity.x
@@ -139,30 +165,7 @@ class Player(pg.sprite.Sprite):
         # update hitbox
         self.rect.center = self.pos
         
-        # here is just some fluff code to make the ship blink while it's
-        # invulnerable (visual player feedback)
-        # use blink_len and blink_col to control the speed and colour
-        now = pg.time.get_ticks()
-        blink_len = 500 # how long each blink lasts
-        blink_clr = (255, 100, 0) # set the blink colour
-        blink_on = (now - self._last_hit_time) % blink_len < blink_len / 2
-        # if the ship is invulnerable, make it blink
-        if now - self._last_hit_time < Config.INVULN_WINDOW:
-            if blink_on:
-                # create a surface with the pixels and fill with blink colour
-                fill_pixels = pg.Surface(self.original_image.get_size(), pg.SRCALPHA)
-                fill_pixels.fill((blink_clr))
-                # multiply RGB values of the surface and source
-                fill_pixels.blit(self.original_image, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
-                # blend the resul with the current image - overlays colour on the original image
-                fill_pixels.blit(self.image, (0, 0), special_flags=pg.BLEND_RGBA_ADD)
-                # set the new filled pixels as the ship image
-                self.image.blit(fill_pixels, (0, 0))
-                # add a transparency effect
-                # self.image.set_colorkey((blink_clr)) 
-            else:
-                # go back to the original image
-                self.image.blit(self.original_image, (0, 0))
+        self.blink_ship()
         #finally, deal with any collisions
         self.handle_collisions(bullets, enemy_grp, enemy_blt_grp)
 
