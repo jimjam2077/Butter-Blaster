@@ -23,8 +23,7 @@ class Enemy(pg.sprite.Sprite):
             bullet = Bullet(self.rect.centerx, self.rect.centery, True)
             bullets.add(bullet)
             all_sprites.add(bullet)
-            self._last_shot_time = now
-  
+            self._last_shot_time = now 
  
     def update(self, all_sprites, enemies, bullets):
                   # rotate the image based on the angle

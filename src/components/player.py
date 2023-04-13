@@ -1,6 +1,8 @@
+import random
 import pygame as pg
 from components.bullet import Bullet
 from config import Config
+from components.power import Power
 from utils.asset_loader import AssetLoader
 
 vector = pg.math.Vector2
@@ -79,10 +81,21 @@ class Player(pg.sprite.Sprite):
         return self.lives
     
     
-    def handle_collisions(self, bullets, enemy_grp, enemy_blt_grp):
+    def handle_collisions(self, all_sprites, bullets, enemy_grp, enemy_blt_grp):
         now = pg.time.get_ticks()
         #killing enemies
-        enemy_killed = pg.sprite.groupcollide(bullets, enemy_grp, True, True)
+        for bullet in bullets:
+            # Check for collision with enemies
+            for enemy in enemy_grp:
+                if bullet.rect.colliderect(enemy.rect):
+                    # Create power object at enemy location with 5% chance
+                    if random.random() < 0.03:
+                        power = Power(enemy.rect.center)
+                        all_sprites.add(power)
+                    # Kill enemy and bullet
+                    enemy.kill()
+                    bullet.kill()
+                    break  # Break out of inner loop since bullet can only hit one enemy at a time
         if now - self._last_hit_time > Config.INVULN_WINDOW:
             # enemies or enemy bullets hitting player
             #add code for hit by obstacle, boss, or boss bullet
@@ -179,7 +192,7 @@ class Player(pg.sprite.Sprite):
         self.rect.center = self.pos   
         self.blink_ship()
         #finally, deal with any collisions
-        self.handle_collisions(bullets, enemy_grp, enemy_blt_grp)
+        self.handle_collisions(all_sprites, bullets, enemy_grp, enemy_blt_grp)
         #animate the ship
         self.animation_timer += clock.get_time()
         if self.animation_timer > self.animation_speed:
