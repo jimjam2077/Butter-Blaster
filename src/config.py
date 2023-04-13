@@ -8,7 +8,7 @@ class Config:
     WIDTH = 1280
     HEIGHT = 720
     WHT = (255, 255, 255)
-    BLKBLU = (0,0,102)
+    BLK = (0,0,0)
     SCREEN = None
     
     #movement
@@ -19,7 +19,7 @@ class Config:
     
     #combat
     PLAYER_LIVES = 3
-    INVULN_WINDOW = 2000
+    INVULN_WINDOW = 3000
     SHOT_DELAY = 200
     BULLET_SPEED = 15
     

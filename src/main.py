@@ -6,7 +6,7 @@ from utils.state import State
 
 
 def main():
-    FrameRate = pg.time.Clock()
+    clock = pg.time.Clock()
     pg.init() # initialize the pygame module
     
     
@@ -24,10 +24,10 @@ def main():
         if(state == State.START):
             run_start_screen()
         elif (state == State.PLAYING):
-            run_game_screen()
+            run_game_screen(clock)
         #update display
         pg.display.update() 
-        FrameRate.tick(Config.FPS)
+        clock.tick(Config.FPS)
 
 
 # run the main function only if this module is executed as the main script

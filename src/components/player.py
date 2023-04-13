@@ -26,9 +26,13 @@ class Player(pg.sprite.Sprite):
             return
         super().__init__()
         self._initialized = True
-        #set up the ship image, adjust the scaling here
-        self.image = AssetLoader.load_toad_ship()
+        #set up the ship image, adjust the scaling and animation speed here
+        self.images = AssetLoader.load_dune_ship()
+        self.image = self.images[0]
         self.original_image = self.image.copy()
+        self.animation_speed = 20 # adjust animation speed
+        self.animation_timer = 0
+        self.animation_frame = 0
         # set up the position and movement variables
         self.pos = vector((Config.PLAYER_POS))
         self.velocity = vector(0,0)
@@ -39,10 +43,12 @@ class Player(pg.sprite.Sprite):
         self._last_hit_time = 0 #used for invulnerability window
         self._lives = Config.PLAYER_LIVES
     
+    
     #property getter for lives 
     @property 
     def lives(self):
         return self._lives
+    
     
     #property setter for lives
     @lives.setter
@@ -56,13 +62,14 @@ class Player(pg.sprite.Sprite):
         y_size = self.image.get_height() * factor
         self.image = pg.transform.scale(self.image, (x_size, y_size)) # defines a starting position for rect
 
+
     # shoot function - needs to check whether a new bullet can be created
     # there is a delay so that holding spacebar doesn't create a bullet each frame
     # check if the bullet can be fired, then create it and add it to the sprite lists
     def shoot(self, all_sprites, bullets):
         now = pg.time.get_ticks()
         if now - self._last_shot_time > Config.SHOT_DELAY:
-            bullet = Bullet(self.rect.centerx, self.rect.centery)
+            bullet = Bullet(self.rect.right, self.rect.centery)
             bullets.add(bullet)
             all_sprites.add(bullet)
             self._last_shot_time = now
@@ -74,13 +81,17 @@ class Player(pg.sprite.Sprite):
     
     def handle_collisions(self, bullets, enemy_grp, enemy_blt_grp):
         now = pg.time.get_ticks()
+        #killing enemies
         enemy_killed = pg.sprite.groupcollide(bullets, enemy_grp, True, True)
         if now - self._last_hit_time > Config.INVULN_WINDOW:
-            enemy_hit = pg.sprite.spritecollide(self, enemy_grp, True)
-            bullet_hit = pg.sprite.spritecollide(self, enemy_blt_grp, True)
-            if enemy_hit or bullet_hit:
+            # enemies or enemy bullets hitting player
+            #add code for hit by obstacle, boss, or boss bullet
+            hit_by_ship = pg.sprite.spritecollide(self, enemy_grp, True)
+            hit_by_bullet = pg.sprite.spritecollide(self, enemy_blt_grp, True)
+            if hit_by_ship or hit_by_bullet:
                 self._last_hit_time = now
                 self.lives-=1
+                
                 
     def blink_ship(self):
         # here is just some fluff code to make the ship blink while it's
@@ -88,7 +99,7 @@ class Player(pg.sprite.Sprite):
         # use blink_len and blink_col to control the speed and colour
         now = pg.time.get_ticks()
         blink_len = 500 # how long each blink lasts
-        blink_clr = (255, 200, 50) # set the blink colour
+        blink_clr = (222, 23, 56) # set blink 222,23,56 dune
         blink_on = (now - self._last_hit_time) % blink_len < blink_len / 2
         # if the ship is invulnerable, make it blink
         if now - self._last_hit_time < Config.INVULN_WINDOW:
@@ -99,14 +110,16 @@ class Player(pg.sprite.Sprite):
                 # multiply RGB values of the surface and source
                 fill_pixels.blit(self.original_image, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
                 # blend the resul with the current image - overlays colour on the original image
-                fill_pixels.blit(self.image, (0, 0), special_flags=pg.BLEND_RGBA_ADD)
+                #fill_pixels.blit(self.image, (0, 0), special_flags=pg.BLEND_RGBA_ADD)
                 # set the new filled pixels as the ship image
-                self.image.blit(fill_pixels, (0, 0))
+                self.image = self.original_image.copy()
+                self.image.blit(fill_pixels, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
                 # add a transparency effect
-                # self.image.set_colorkey((blink_clr)) 
+                self.image.set_colorkey((blink_clr)) 
             else:
                 # go back to the original image
                 self.image.blit(self.original_image, (0, 0))
+                self.image.set_colorkey(None)
     
     # deals with all of the key inputs
     # directional input, plus space to shoot.
@@ -128,9 +141,8 @@ class Player(pg.sprite.Sprite):
         self.acc.x += self.velocity.x * Config.FRIC
         self.acc.y += self.velocity.y * Config.FRIC
        
-    def update(self, all_sprites, bullets, enemy_grp, enemy_blt_grp):
+    def update(self, clock, all_sprites, bullets, enemy_grp, enemy_blt_grp):
         self.handle_input(all_sprites, bullets)
-        
         # limit player's movement within the screen boundaries
         if self.rect.right > MARGIN_RIGHT:
             self.velocity.x = -self.velocity.x
@@ -164,11 +176,19 @@ class Player(pg.sprite.Sprite):
         self.pos.x = max(l_x_offset, min(r_x_offset, self.pos.x))
         self.pos.y = max(t_y_offset, min(b_y_offset, self.pos.y))
         # update hitbox
-        self.rect.center = self.pos
-        
+        self.rect.center = self.pos   
         self.blink_ship()
         #finally, deal with any collisions
         self.handle_collisions(bullets, enemy_grp, enemy_blt_grp)
+        #animate the ship
+        self.animation_timer += clock.get_time()
+        if self.animation_timer > self.animation_speed:
+            self.animation_timer = 0
+            self.animation_frame = (self.animation_frame + 1) % len(self.images)
+            self.image = self.images[self.animation_frame]
+            # update the original image
+            self.original_image = self.image.copy() 
+        
 
     def draw(self, screen):
         # can add other things to draw here

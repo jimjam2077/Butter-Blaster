@@ -6,6 +6,9 @@ ROOT_DIR = Path(__file__).parent.parent.parent
 ASSET_DIR = ROOT_DIR / "assets"
 BULLET_DIR = ASSET_DIR / "bullets"
 SPRITE_DIR = ASSET_DIR / "sprites"
+TOAD_DIR = SPRITE_DIR / "toad"
+DUNE_DIR = SPRITE_DIR / "dune"
+BG_DIR = ASSET_DIR / "bg"
 UI_DIR = ASSET_DIR / "ui"
 
 # this could be a bunch of static variables
@@ -17,11 +20,21 @@ class AssetLoader:
     
     @staticmethod
     def load_toad_ship():
-        return pg.image.load(SPRITE_DIR / "toadship.png").convert_alpha()
+        images = []
+        for i in range(1, 7):
+            image_path = SPRITE_DIR / f"toadship{i}.png"
+            image = pg.image.load(str(image_path)).convert_alpha()
+            images.append(image)
+        return images
     
-    @staticmethod #change this
+    @staticmethod
     def load_dune_ship():
-        return pg.image.load(SPRITE_DIR / "toadship.png").convert_alpha()
+        images = []
+        for i in range(1, 9):
+            image_path = DUNE_DIR / f"duneship{i}.png"
+            image = pg.image.load(str(image_path)).convert_alpha()
+            images.append(image)
+        return images
     
     # want to randomly select an enemy sprite each time, out of the available enemy files
     # need to use joinpath() here because SPRITE_DIR / returns a WindowsPath object
@@ -29,6 +42,10 @@ class AssetLoader:
     @staticmethod
     def load_enemy_ship():
         return pg.image.load(SPRITE_DIR.joinpath("enemy" + str(random.randint(1,4)) + ".png")).convert_alpha()
+    
+    @staticmethod
+    def load_random_bg():
+        return pg.image.load(BG_DIR.joinpath("bg" + str(random.randint(1,8)) + ".png")).convert_alpha()
     
     @staticmethod
     def load_player_bullet():

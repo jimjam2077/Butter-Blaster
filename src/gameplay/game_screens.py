@@ -4,12 +4,14 @@ import pygame as pg
 from config import Config
 from components.player import Player
 from components.enemy import Enemy
+from components.background import Background
 from utils.state import State
 
 game_state = State.START
 screen = Config.SCREEN
 # setup sprite groups
 P1 =  Player()
+background = Background()
 bullets = pg.sprite.Group()
 enemies = pg.sprite.Group()
 enemy_bullets = pg.sprite.Group()
@@ -35,12 +37,12 @@ def run_start_screen():
         if event.type == pg.KEYDOWN:
             game_state =  State.PLAYING
 
-def run_game_screen():
+def run_game_screen(clock):
         # blit() draws the surface to the screen
         # Processing
         # Events
         # Render - need to re-render everything each iteration
-        screen.fill(Config.BLKBLU)
+        screen.fill(Config.BLK)
 
         # event handling - gets all event from the event queue
         events = pg.event.get()
@@ -51,7 +53,8 @@ def run_game_screen():
                 pg.quit()
                 sys.exit()
                 # running = False
-                
+        background.update()
+        background.draw(screen)
         # generate a new group of enemies if the enemies have been kill()ed
         # kill() removes the sprite from all groups
         # this way i can generate a random number of enemies to attack at a time
@@ -63,7 +66,7 @@ def run_game_screen():
                 all_sprites.add(e)
         
         #update and draw the sprites!        
-        P1.update(all_sprites, bullets, enemies, enemy_bullets)
+        P1.update(clock, all_sprites, bullets, enemies, enemy_bullets)
         for sprite in all_sprites:
             if sprite != P1:
                 if isinstance(sprite, Enemy):
@@ -72,8 +75,8 @@ def run_game_screen():
                     sprite.update()
         all_sprites.draw(screen)
         #debug
-        for sprite in all_sprites:
-            pg.draw.rect(screen, pg.Color("white"), sprite.rect, width=1)
+        #for sprite in all_sprites:
+            #pg.draw.rect(screen, pg.Color("white"), sprite.rect, width=1)
         #pg.display.flip()
             
 def run_game_over():
