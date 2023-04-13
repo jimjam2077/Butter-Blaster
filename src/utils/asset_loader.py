@@ -18,6 +18,7 @@ UI_DIR = ASSET_DIR / "ui"
 # not really a big concern because this is a tiny game
 class AssetLoader:
     
+    # loads in all of the sprites for the animated toad ship
     @staticmethod
     def load_toad_ship():
         images = []
@@ -27,6 +28,7 @@ class AssetLoader:
             images.append(image)
         return images
     
+    # loads in all of the sprites for the animated dune ship
     @staticmethod
     def load_dune_ship():
         images = []
@@ -43,6 +45,7 @@ class AssetLoader:
     def load_enemy_ship():
         return pg.image.load(SPRITE_DIR.joinpath("enemy" + str(random.randint(1,4)) + ".png")).convert_alpha()
     
+    # loads up a random background image
     @staticmethod
     def load_random_bg():
         return pg.image.load(BG_DIR.joinpath("bg" + str(random.randint(1,8)) + ".png")).convert_alpha()
@@ -55,4 +58,9 @@ class AssetLoader:
     def load_enemy_bullet():
         return pg.image.load(BULLET_DIR / "enemybullet.png").convert_alpha()
     
+    #load boss 
+    
+    #load boss projectile
+    
+    #load hazards
     
