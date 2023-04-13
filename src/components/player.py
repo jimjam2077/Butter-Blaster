@@ -25,7 +25,6 @@ class Player(pg.sprite.Sprite):
         if hasattr(self, '_initialized'):
             return
         super().__init__()
-        
         self._initialized = True
         #set up the ship image, adjust the scaling here
         self.image = AssetLoader.load_toad_ship()
@@ -35,7 +34,6 @@ class Player(pg.sprite.Sprite):
         self.velocity = vector(0,0)
         self.acc = vector(0,0)
         self.rect = self.image.get_rect(center=self.pos)  # defines the borders according to image size
-        
         # set up the player statistics
         self._last_shot_time = 0 #used to limit fire rate later
         self._last_hit_time = 0 #used for invulnerability window
@@ -110,6 +108,9 @@ class Player(pg.sprite.Sprite):
                 # go back to the original image
                 self.image.blit(self.original_image, (0, 0))
     
+    # deals with all of the key inputs
+    # directional input, plus space to shoot.
+    # calculates acceleration using velocity * friction for smooth movement
     def handle_input(self, all_sprites, bullets):
         self.acc = vector(0,0)
         pressed_keys = pg.key.get_pressed()
