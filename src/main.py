@@ -19,7 +19,12 @@ def main():
 
     # main loop
     running = True
+    last_tick = pg.time.get_ticks()
     while running:
+        # calculate delta time in seconds
+        current_tick = pg.time.get_ticks()
+        dt = (current_tick - last_tick) / 1000.0
+        last_tick = current_tick
         state = get_game_state()
         if(state == State.START):
             run_start_screen()
