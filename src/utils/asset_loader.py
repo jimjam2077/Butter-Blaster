@@ -34,6 +34,7 @@ class AssetLoader:
         return images
     
     # loads in all of the sprites for the animated dune ship
+    # modified from: https://www.pixilart.com/art/3d-spinning-pyramid-f831ac9333c4409
     @staticmethod
     def load_dune_ship():
         sprite_count = len(os.listdir(DUNE_DIR))
