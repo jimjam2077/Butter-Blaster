@@ -9,6 +9,7 @@ BG_DIR = ASSET_DIR / "bg"
 BULLET_DIR = ASSET_DIR / "bullets"
 HAZARD_DIR = ASSET_DIR / "hazards"
 POWER_DIR = ASSET_DIR / "powers"
+EXPLO_DIR = ASSET_DIR / "explosions"
 UI_DIR = ASSET_DIR / "ui"
 SPRITE_DIR = ASSET_DIR / "sprites"
 TOAD_DIR = SPRITE_DIR / "toad"
@@ -24,9 +25,9 @@ class AssetLoader:
     # loads in all of the sprites for the animated toad ship
     @staticmethod
     def load_toad_ship():
-        player_count = len(os.listdir(TOAD_DIR))
+        sprite_count = len(os.listdir(TOAD_DIR))
         images = []
-        for i in range(1, player_count):
+        for i in range(1, sprite_count):
             image_path = TOAD_DIR / f"toadship{i}.png"
             image = pg.image.load(str(image_path)).convert_alpha()
             images.append(image)
@@ -35,10 +36,20 @@ class AssetLoader:
     # loads in all of the sprites for the animated dune ship
     @staticmethod
     def load_dune_ship():
-        player_count = len(os.listdir(DUNE_DIR))
+        sprite_count = len(os.listdir(DUNE_DIR))
         images = []
-        for i in range(1, player_count):
+        for i in range(1, sprite_count):
             image_path = DUNE_DIR / f"duneship{i}.png"
+            image = pg.image.load(str(image_path)).convert_alpha()
+            images.append(image)
+        return images
+    
+    @staticmethod 
+    def load_explosion():
+        sprite_count = len(os.listdir(EXPLO_DIR))
+        images = []
+        for i in range(1, sprite_count):
+            image_path = EXPLO_DIR / f"explode{i}.png"
             image = pg.image.load(str(image_path)).convert_alpha()
             images.append(image)
         return images
@@ -49,8 +60,8 @@ class AssetLoader:
     @staticmethod
     def load_enemy_ship():
         #count up how many sprites are in the power folder
-        enemy_count = len([filename for filename in os.listdir(SPRITE_DIR) if os.path.isfile(os.path.join(SPRITE_DIR, filename))])
-        return pg.image.load(SPRITE_DIR.joinpath("enemy" + str(random.randint(1,enemy_count)) + ".png")).convert_alpha()
+        sprite_count = len([filename for filename in os.listdir(SPRITE_DIR) if os.path.isfile(os.path.join(SPRITE_DIR, filename))])
+        return pg.image.load(SPRITE_DIR.joinpath("enemy" + str(random.randint(1,sprite_count)) + ".png")).convert_alpha()
     
     # loads up a random background image
     @staticmethod
@@ -77,7 +88,6 @@ class AssetLoader:
     @staticmethod
     def load_powerup():
         #count up how many sprites are in the power folder
-        power_files = os.listdir(POWER_DIR)
-        power_count = len(power_files)
-        return pg.image.load(POWER_DIR.joinpath("power" + str(random.randint(1,power_count)) + ".png")).convert_alpha()
+        sprite_count = len(os.listdir(POWER_DIR))
+        return pg.image.load(POWER_DIR.joinpath("power" + str(random.randint(1,sprite_count)) + ".png")).convert_alpha()
     

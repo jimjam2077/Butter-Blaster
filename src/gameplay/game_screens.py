@@ -6,6 +6,7 @@ from components.player import Player
 from components.enemy import Enemy
 from components.background import Background
 from components.power import Power
+from components.explosion import Explosion
 from utils.state import State
 
 game_state = State.START
@@ -72,7 +73,7 @@ def run_game_screen(clock):
             if sprite != P1:
                 if isinstance(sprite, Enemy):
                     sprite.update(all_sprites, enemies, enemy_bullets)
-                elif isinstance(sprite, Power):
+                elif isinstance(sprite, Power) or isinstance(sprite, Explosion):
                     sprite.update(clock)
                 else:
                     sprite.update()

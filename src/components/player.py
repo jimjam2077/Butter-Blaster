@@ -3,6 +3,7 @@ import pygame as pg
 from components.bullet import Bullet
 from config import Config
 from components.power import Power
+from components.explosion import Explosion
 from utils.asset_loader import AssetLoader
 
 vector = pg.math.Vector2
@@ -88,6 +89,8 @@ class Player(pg.sprite.Sprite):
             # Check for collision with enemies
             for enemy in enemy_grp:
                 if bullet.rect.colliderect(enemy.rect):
+                    explosion = Explosion(enemy.rect.center)
+                    all_sprites.add(explosion)
                     # Create power object at enemy location with 5% chance
                     if random.random() < 0.03:
                         power = Power(enemy.rect.center)
