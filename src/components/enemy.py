@@ -20,7 +20,7 @@ class Enemy(pg.sprite.Sprite):
     def shoot(self, all_sprites, bullets):
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self._shot_delay:
-            bullet = Bullet(self.rect.centerx, self.rect.centery, True)
+            bullet = Bullet(self.rect.left, self.rect.centery, True)
             bullets.add(bullet)
             all_sprites.add(bullet)
             self._last_shot_time = now 

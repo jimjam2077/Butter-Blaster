@@ -44,6 +44,8 @@ class AssetLoader:
             images.append(image)
         return images
     
+    # sprites from https://opengameart.org/content/pixel-explosion-12-frames
+    # licensed under Creative Commons 3.0
     @staticmethod 
     def load_explosion():
         sprite_count = len(os.listdir(EXPLO_DIR))
