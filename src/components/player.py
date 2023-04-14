@@ -33,7 +33,7 @@ class Player(pg.sprite.Sprite):
         self.images = AssetLoader.load_dune_ship()
         self.image = self.images[0]
         self.original_image = self.image.copy()
-        self.animation_speed = 20 # adjust animation speed
+        self.animation_speed = 30 # adjust animation speed
         self.animation_timer = 0
         self.animation_frame = 0
         # set up the position and movement variables
@@ -115,7 +115,7 @@ class Player(pg.sprite.Sprite):
         # use blink_len and blink_col to control the speed and colour
         now = pg.time.get_ticks()
         blink_len = 500 # how long each blink lasts
-        blink_clr = (222, 23, 56) # set blink 222,23,56 dune
+        blink_clr = (255, 255, 255) # set blink 222,23,56 dune
         blink_on = (now - self._last_hit_time) % blink_len < blink_len / 2
         # if the ship is invulnerable, make it blink
         if now - self._last_hit_time < Config.INVULN_WINDOW:

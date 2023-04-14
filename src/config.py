@@ -23,6 +23,7 @@ class Config:
     SHOT_DELAY = 200
     BULLET_SPEED = 15
     
+    
     @staticmethod
     def setup_window(): #double buffering enabled
         try:
