@@ -1,8 +1,11 @@
 from enum import Enum
 
+#do i really need to do this
 class State(Enum):
     START = 0
-    PLAYING = 1
-    LOST = 2
-    WON = 3
-    PAUSED = 4
+    STORY = 1
+    CHAR = 2
+    PLAYING = 3
+    LOST = 4
+    WON = 5
+    PAUSED = 6

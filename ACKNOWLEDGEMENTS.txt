@@ -1,0 +1,15 @@
+
+
+Graphics:
+"Pixel Explosion"
+- sprites from https://opengameart.org/content/pixel-explosion-12-frames
+- licensed under Creative Commons 3.0
+
+"3D Spinning Pyramid"
+- provided free for use by KhiaAdams https://www.pixilart.com/art/3d-spinning-pyramid-f831ac9333c4409
+
+
+Fonts:
+"Space Wham"
+- provided free to use by Zephram: https://www.dafont.com/space-wham.font
+

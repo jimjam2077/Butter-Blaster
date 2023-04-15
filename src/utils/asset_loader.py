@@ -11,9 +11,11 @@ HAZARD_DIR = ASSET_DIR / "hazards"
 POWER_DIR = ASSET_DIR / "powers"
 EXPLO_DIR = ASSET_DIR / "explosions"
 UI_DIR = ASSET_DIR / "ui"
-SPRITE_DIR = ASSET_DIR / "sprites"
+SPRITE_DIR = ASSET_DIR / "entities"
 TOAD_DIR = SPRITE_DIR / "toad"
 DUNE_DIR = SPRITE_DIR / "dune"
+ENEMY_DIR = SPRITE_DIR / "enemy"
+FONT_DIR = ASSET_DIR / "fonts"
 
 # this could be a bunch of static variables
 # i.e. PLAYER_SHIP = pygame.image.load(file).convert_alpha()
@@ -22,6 +24,9 @@ DUNE_DIR = SPRITE_DIR / "dune"
 # not really a big concern because this is a tiny game
 class AssetLoader:
     
+    # TODO: refactor these ship loading methods - can just pass in the filename variable
+    # sprite_count = len(os.listdir(DIR))
+    # image_path = DIR / f"name"+"ship{i}.png"
     # loads in all of the sprites for the animated toad ship
     @staticmethod
     def load_toad_ship():
@@ -33,8 +38,7 @@ class AssetLoader:
             images.append(image)
         return images
     
-    # loads in all of the sprites for the animated dune ship
-    # modified from: https://www.pixilart.com/art/3d-spinning-pyramid-f831ac9333c4409
+    #load the sprites for the animated dune ship
     @staticmethod
     def load_dune_ship():
         sprite_count = len(os.listdir(DUNE_DIR))
@@ -45,8 +49,7 @@ class AssetLoader:
             images.append(image)
         return images
     
-    # sprites from https://opengameart.org/content/pixel-explosion-12-frames
-    # licensed under Creative Commons 3.0
+    # load the explosion sprites into an array
     @staticmethod 
     def load_explosion():
         sprite_count = len(os.listdir(EXPLO_DIR))
@@ -57,21 +60,6 @@ class AssetLoader:
             images.append(image)
         return images
     
-    # want to randomly select an enemy sprite each time, out of the available enemy files
-    # need to use joinpath() here because SPRITE_DIR / returns a WindowsPath object
-    # which can't be concatenated properly using +
-    @staticmethod
-    def load_enemy_ship():
-        #count up how many sprites are in the power folder
-        sprite_count = len([filename for filename in os.listdir(SPRITE_DIR) if os.path.isfile(os.path.join(SPRITE_DIR, filename))])
-        return pg.image.load(SPRITE_DIR.joinpath("enemy" + str(random.randint(1,sprite_count)) + ".png")).convert_alpha()
-    
-    # loads up a random background image
-    @staticmethod
-    def load_random_bg():
-        #count up how many sprites are in the power folder
-        bg_count = len(os.listdir(BG_DIR))
-        return pg.image.load(BG_DIR.joinpath("bg" + str(random.randint(1,bg_count)) + ".png")).convert_alpha()
     
     @staticmethod
     def load_player_bullet():
@@ -80,17 +68,47 @@ class AssetLoader:
     @staticmethod
     def load_enemy_bullet():
         return pg.image.load(BULLET_DIR / "enemybullet.png").convert_alpha()
+        
     
-    #load boss 
+    #TODO: refactor
+    # randomised load methods
+    # want to randomly select an enemy sprite each time, out of the available enemy files
+    # need to use joinpath() here because SPRITE_DIR / returns a WindowsPath object
+    # which can't be concatenated properly using +
+    @staticmethod
+    def load_enemy_ship():
+        #count up how many sprites are in the power folder
+        sprite_count = len(os.listdir(ENEMY_DIR))
+        return pg.image.load(ENEMY_DIR.joinpath("enemy" + str(random.randint(1,sprite_count)) + ".png")).convert_alpha()
     
-    #load boss projectile
-    
-    #load 
-    
+    # loads up a random background image
+    @staticmethod
+    def load_random_bg():
+        #count up how many sprites are in the bg folder
+        bg_count = len(os.listdir(BG_DIR))
+        return pg.image.load(BG_DIR.joinpath("bg" + str(random.randint(1,bg_count)) + ".png")).convert_alpha()
+
     # load a random power sprite
     @staticmethod
     def load_powerup():
         #count up how many sprites are in the power folder
         sprite_count = len(os.listdir(POWER_DIR))
         return pg.image.load(POWER_DIR.joinpath("power" + str(random.randint(1,sprite_count)) + ".png")).convert_alpha()
+    
+    
+    # font loading
+    # loads up the font used for the story crawl
+    @staticmethod
+    def load_story_font():
+        font = pg.font.Font(FONT_DIR / "space-wham.ttf", 54)
+        return font
+    
+    @staticmethod
+    def load_music():
+        pass
+    
+    @staticmethod
+    def load_sound():
+        pass
+    
     
