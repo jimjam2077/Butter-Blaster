@@ -26,9 +26,9 @@ def main():
         dt = (current_tick - last_tick) / 1000.0
         last_tick = current_tick
         state = get_game_state()
-        if(state == State.START):
+        if(state== State.START):
             pass
-        if(state == State.CHAR):
+        if(state == State.START):
             run_char_screen()
         elif (state == State.PLAYING):
             run_game_screen(clock)
