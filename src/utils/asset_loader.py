@@ -5,17 +5,19 @@ from pathlib import Path
 
 ROOT_DIR = Path(__file__).parent.parent.parent
 ASSET_DIR = ROOT_DIR / "assets"
+#under assets
 BG_DIR = ASSET_DIR / "bg"
 BULLET_DIR = ASSET_DIR / "bullets"
 HAZARD_DIR = ASSET_DIR / "hazards"
 POWER_DIR = ASSET_DIR / "powers"
 EXPLO_DIR = ASSET_DIR / "explosions"
+FONT_DIR = ASSET_DIR / "fonts"
 UI_DIR = ASSET_DIR / "ui"
 SPRITE_DIR = ASSET_DIR / "entities"
+#under entities
 TOAD_DIR = SPRITE_DIR / "toad"
 DUNE_DIR = SPRITE_DIR / "dune"
 ENEMY_DIR = SPRITE_DIR / "enemy"
-FONT_DIR = ASSET_DIR / "fonts"
 
 # this could be a bunch of static variables
 # i.e. PLAYER_SHIP = pygame.image.load(file).convert_alpha()
