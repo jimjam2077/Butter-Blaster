@@ -1,6 +1,8 @@
 from enum import Enum
 
-# do i really need to do this
+# This enum is used for updating and tracking the current phase the game
+# is in
+# Is this separation useful? Maybe future-proofing
 class State(Enum):
     START = 0
     STORY = 1
