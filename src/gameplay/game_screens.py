@@ -1,5 +1,7 @@
+from enum import Enum
 import sys
 import random
+import math
 import pygame as pg
 from config import Config
 from components.player import Player
@@ -10,8 +12,8 @@ from components.explosion import Explosion
 from utils.asset_loader import AssetLoader
 from utils.state import State
 
-game_state = State.START
-screen = Config.SCREEN
+game_state = State.START #updated to track which method here should be called
+screen = Config.SCREEN #the screen object
 # setup sprite groups
 P1 =  Player()
 background = Background()
@@ -23,17 +25,84 @@ all_sprites.add(P1)
 all_sprites.add(bullets)
 all_sprites.add(enemies)
 all_sprites.add(enemy_bullets)
+
 # passing sprite groups - every sprite is accessible from 
 # all_sprites. for this small game it's easier just to pass the subgroups around
 # directly.
-    
 
-    
+
+# returns the current state of the game
 def get_game_state():
     return game_state
 
-def run_start_screen():
-    pass
+def run_start_screen(dt):
+    # set up text objects
+    # used to display a start up message
+    font = AssetLoader.load_story_font(64)
+    presenting_text = font.render("BBC PRESENTS...", True, (255, 255, 255))
+    presenting_rect = presenting_text.get_rect(center=(Config.WIDTH/2, Config.HEIGHT/2))
+    # used to display "Press Space" instruction to user
+    font = AssetLoader.load_story_font(45)
+    start_text = font.render("Press space", True, (255, 255, 255))
+    start_rect = start_text.get_rect(center=(40+start_text.get_width()/2, Config.HEIGHT -40 -start_text.get_height()/2))
+    # splash screen image
+    start_img = pg.image.load("assets/title.png").convert_alpha()
+    start_img_rect = start_img.get_rect(center=(Config.WIDTH/2, Config.HEIGHT/2))
+    
+    # set up the initial screen
+    screen.fill(Config.BLK)
+    screen.blit(presenting_text, presenting_rect)
+    pg.display.update()
+    pg.time.wait(3000)
+    pg.event.clear()
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                # change the value to False, to exit the main loop
+                pg.quit()
+                sys.exit()
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                return
+        screen.blit(start_img, start_img_rect)
+        screen.blit(start_text, start_rect)      
+        pg.display.update()
+
+
+def run_story_screen():
+    text = "Episode I\n\nCROHN'S DISEASE\n\nIt is a time of great unrest in the Kratomite galaxy. The evil Pig King Andy Chan has enslaved the peaceful Kratomites to mine the precious resource Kratom, which he uses to fuel his tyrannical empire.\n\nBut one lone space ranger, armed with nothing but his trusty spaceship and his unwavering determination, has decided to take a stand against the Pig King and his minions.\n\nAs he hurtles through the galaxy at breakneck speeds, the space ranger must navigate treacherous asteroid fields, battle swarms of enemy fighters, and outwit the Pig King's deadliest traps.\n\nBut with each victory, the space ranger grows stronger, more determined, and more confident in his quest to save the Kratomites and put an end to the Pig King's reign of terror once and for all.\n\nBazinga!"
+    font = AssetLoader.load_story_font()
+    
+    lines = []
+    for para in text.split('\n\n'):
+        words = para.split()
+        line = words.pop(0)
+        for word in words:
+            if font.size(line + ' ' + word)[0] <= 1280:
+                line += ' ' + word
+            else:
+                lines.append(line)
+                line = word
+        lines.append(line)
+    
+    y = screen.get_height()
+    while True:
+        # Handle events
+        for event in pg.event.get():
+            if event.type == pg.KEYDOWN:
+                game_state = State.PLAYING
+                return
+
+        # Update text position and size
+        y -= 0.1
+        text_surfaces = [font.render(line, True, (255, 255, 255)) for line in lines]
+        text_rects = [text_surface.get_rect(centerx=screen.get_rect().centerx, centery=y+64*i) for i, text_surface in enumerate(text_surfaces)]
+
+        # Draw the background and text
+        screen.fill((0, 0, 0))
+        for text_surface, text_rect in zip(text_surfaces, text_rects):
+            screen.blit(text_surface, text_rect)
+        pg.display.update()
+
     
 def run_char_screen():
     # create font objects
@@ -89,42 +158,7 @@ def run_char_screen():
             pg.quit()
             sys.exit()
     pg.display.update()
-
-def run_story_screen():
-    text = "Episode I\n\nCROHN'S DISEASE\n\nIt is a time of great unrest in the Kratomite galaxy. The evil Pig King Andy Chan has enslaved the peaceful Kratomites to mine the precious resource Kratom, which he uses to fuel his tyrannical empire.\n\nBut one lone space ranger, armed with nothing but his trusty spaceship and his unwavering determination, has decided to take a stand against the Pig King and his minions.\n\nAs he hurtles through the galaxy at breakneck speeds, the space ranger must navigate treacherous asteroid fields, battle swarms of enemy fighters, and outwit the Pig King's deadliest traps.\n\nBut with each victory, the space ranger grows stronger, more determined, and more confident in his quest to save the Kratomites and put an end to the Pig King's reign of terror once and for all.\n\nBazinga!"
-    font = AssetLoader.load_story_font()
     
-    lines = []
-    for para in text.split('\n\n'):
-        words = para.split()
-        line = words.pop(0)
-        for word in words:
-            if font.size(line + ' ' + word)[0] <= 1280:
-                line += ' ' + word
-            else:
-                lines.append(line)
-                line = word
-        lines.append(line)
-    
-    y = screen.get_height()
-    while True:
-        # Handle events
-        for event in pg.event.get():
-            if event.type == pg.KEYDOWN:
-                game_state = State.PLAYING
-                return
-
-        # Update text position and size
-        y -= 0.1
-        text_surfaces = [font.render(line, True, (255, 255, 255)) for line in lines]
-        text_rects = [text_surface.get_rect(centerx=screen.get_rect().centerx, centery=y+64*i) for i, text_surface in enumerate(text_surfaces)]
-
-        # Draw the background and text
-        screen.fill((0, 0, 0))
-        for text_surface, text_rect in zip(text_surfaces, text_rects):
-            screen.blit(text_surface, text_rect)
-        pg.display.update()
-
 
 def run_game_screen(clock):
         # blit() draws the surface to the screen
@@ -169,9 +203,11 @@ def run_game_screen(clock):
         #for sprite in all_sprites:
             #pg.draw.rect(screen, pg.Color("white"), sprite.rect, width=1)
         #pg.display.flip()
+
             
 def run_game_over():
     print("placeholder")
+  
     
 def run_game_won():
     print("placeholder")

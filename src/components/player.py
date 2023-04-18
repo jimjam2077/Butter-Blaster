@@ -30,7 +30,7 @@ class Player(pg.sprite.Sprite):
         super().__init__()
         self._initialized = True
         #set up the ship image, adjust the scaling and animation speed here
-        self.images = AssetLoader.load_dune_ship()
+        self.images = AssetLoader.load_toad_ship()
         self.image = self.images[0]
         self.original_image = self.image.copy()
         self.animation_speed = 30 # adjust animation speed

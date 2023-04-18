@@ -101,8 +101,8 @@ class AssetLoader:
     # font loading
     # loads up the font used for the story crawl
     @staticmethod
-    def load_story_font():
-        font = pg.font.Font(FONT_DIR / "space-wham.ttf", 54)
+    def load_story_font(size):
+        font = pg.font.Font(FONT_DIR / "space-wham.ttf", size)
         return font
     
     @staticmethod

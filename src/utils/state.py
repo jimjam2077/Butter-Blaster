@@ -1,6 +1,6 @@
 from enum import Enum
 
-#do i really need to do this
+# do i really need to do this
 class State(Enum):
     START = 0
     STORY = 1
