@@ -18,6 +18,7 @@ def main():
         # calculate delta time in seconds
         current_tick = pg.time.get_ticks()
         dt = (current_tick - last_tick) / 1000.0
+        print(dt)
         state = game.get_game_state()
         if(state== State.START):
             game.run_start_screen(dt)

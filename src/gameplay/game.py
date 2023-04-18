@@ -47,6 +47,9 @@ class Game:
     # returns the current state of the game
     def get_game_state(self):
         return self._game_state
+    
+    def set_state(new_state):
+        Game._instance = new_state
 
 
     def run_start_screen(self, dt):
@@ -64,12 +67,12 @@ class Game:
         start_img = pg.image.load("assets/title.png").convert_alpha()
         start_img_rect = start_img.get_rect(center=(Config.WIDTH/2, Config.HEIGHT/2))
         
-        # set up the initial screen
-        self._screen.fill(Config.BLK)
-        self._screen.blit(presenting_text, presenting_rect)
-        pg.display.update()
-        pg.time.wait(3000)
-        pg.event.clear()
+        alpha = 0
+        fade_spd = 255 / (8 * 60)
+        fade_in = True
+        fade_out = False
+        fade_in_complete = False
+        fade_out_complete = False
         while True:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -79,10 +82,41 @@ class Game:
                 if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                     self._game_state = State.CHAR
                     return
-            self._screen.blit(start_img, start_img_rect)
-            self._screen.blit(start_text, start_rect)      
-            pg.display.update()
+            
+            self._screen.fill(Config.BLK)
+            
+            if fade_in:
+                    alpha += fade_spd * dt
+                    if alpha >= 255:
+                        alpha = 255
+                        fade_in_complete = True
+                    presenting_text.set_alpha(int(alpha))
+                    self._screen.blit(presenting_text, presenting_rect)
 
+            if fade_out:
+                alpha -= fade_spd * dt
+                if alpha <= 0:
+                    alpha = 0
+                    fade_out_complete = True
+                presenting_text.set_alpha(int(alpha))
+                self._screen.blit(presenting_text, presenting_rect)
+
+            if fade_in_complete and fade_out_complete:
+                fade_in = False
+                fade_out = False
+                fade_in_complete = False
+                fade_out_complete = False
+
+            if not fade_in and not fade_out:
+                # switch to next game state
+                self._game_state = State.CHAR
+                return
+
+            # this is broken because each frame  this method is called in main, alpha is reset to 0 and all of the ifs are skipped
+            # need to preserve the value of alpha to be able to use it
+            self._screen.blit(start_img, start_img_rect)
+            self._screen.blit(start_text, start_rect)
+            pg.display.update()
         
     def run_char_screen(self):
         # create font objects
@@ -143,7 +177,7 @@ class Game:
         pg.display.update()
         
     def run_story_screen(self):
-        text = "Episode I\n\nCROHN'S DISEASE\n\nIt is a time of great unrest in the Kratomite galaxy. The evil Pig King Andy Chan has enslaved the peaceful Kratomites to mine the precious resource Kratom, which he uses to fuel his tyrannical empire.\n\nBut one lone space ranger, armed with nothing but his trusty spaceship and his unwavering determination, has decided to take a stand against the Pig King and his minions.\n\nAs he hurtles through the galaxy at breakneck speeds, the space ranger must navigate treacherous asteroid fields, battle swarms of enemy fighters, and outwit the Pig King's deadliest traps.\n\nBut with each victory, the space ranger grows stronger, more determined, and more confident in his quest to save the Kratomites and put an end to the Pig King's reign of terror once and for all.\n\nBazinga!"
+        text = Config.STORY
         font = AssetLoader.load_story_font(50)
         skip = 0 # check for number of space presses to skip
         
@@ -216,6 +250,7 @@ class Game:
             
             #update and draw the sprites!        
             self.P1.update(clock, self.all_sprites, self.bullets, self.enemies, self.enemy_bullets)
+            #check for death, do something, update the 
             for sprite in self.all_sprites:
                 if sprite != self.P1:
                     if isinstance(sprite, Enemy):

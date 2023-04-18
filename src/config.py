@@ -3,6 +3,8 @@ import pygame as pg
 # but it will do for now!
 class Config:
     
+    STORY = "Episode I\n\nCROHN'S DISEASE\n\nIt is a time of great unrest in the Kratomite galaxy. The evil Pig King Andy Chan has enslaved the peaceful Kratomites to mine the precious resource Kratom, which he uses to fuel his tyrannical empire.\n\nBut one lone space ranger, armed with nothing but his trusty spaceship and his unwavering determination, has decided to take a stand against the Pig King and his minions.\n\nAs he hurtles through the galaxy at breakneck speeds, the space ranger must navigate treacherous asteroid fields, battle swarms of enemy fighters, and outwit the Pig King's deadliest traps.\n\nBut with each victory, the space ranger grows stronger, more determined, and more confident in his quest to save the Kratomites and put an end to the Pig King's reign of terror once and for all.\n\nBazinga!"
+    
     #screen
     FPS = 60;
     WIDTH = 1280
