@@ -137,11 +137,14 @@ class Game:
                 # change the value to False, to exit the main loop
                 pg.quit()
                 sys.exit()
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                self._game_state = State.STORY # CHANGE THIS LATER ON
+                return
         pg.display.update()
         
     def run_story_screen(self):
         text = "Episode I\n\nCROHN'S DISEASE\n\nIt is a time of great unrest in the Kratomite galaxy. The evil Pig King Andy Chan has enslaved the peaceful Kratomites to mine the precious resource Kratom, which he uses to fuel his tyrannical empire.\n\nBut one lone space ranger, armed with nothing but his trusty spaceship and his unwavering determination, has decided to take a stand against the Pig King and his minions.\n\nAs he hurtles through the galaxy at breakneck speeds, the space ranger must navigate treacherous asteroid fields, battle swarms of enemy fighters, and outwit the Pig King's deadliest traps.\n\nBut with each victory, the space ranger grows stronger, more determined, and more confident in his quest to save the Kratomites and put an end to the Pig King's reign of terror once and for all.\n\nBazinga!"
-        font = AssetLoader.load_story_font()
+        font = AssetLoader.load_story_font(50)
         skip = 0 # check for number of space presses to skip
         
         lines = []
@@ -160,9 +163,15 @@ class Game:
         while True:
             # Handle events
             for event in pg.event.get():
-                if event.type == pg.KEYDOWN:
-                    self._game_state = State.PLAYING
-                    return
+                if event.type == pg.QUIT:
+                    # change the value to False, to exit the main loop
+                    pg.quit()
+                    sys.exit()
+                if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                    skip +=1
+                    if skip == 2:
+                        self._game_state = State.PLAYING
+                        return
                 
 
             # Update text position and size

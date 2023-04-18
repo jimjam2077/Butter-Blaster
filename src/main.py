@@ -23,6 +23,8 @@ def main():
             game.run_start_screen(dt)
         elif(state == State.CHAR):
             game.run_char_screen()
+        elif(state == State.STORY):
+            game.run_story_screen()
         elif (state == State.PLAYING):
             game.run_game_screen(clock)
         #update display
