@@ -106,7 +106,11 @@ class AssetLoader:
         return font
     
     @staticmethod
-    def load_music():
+    def load_start_music():
+        pass
+
+    @staticmethod
+    def load__music():
         pass
     
     @staticmethod
