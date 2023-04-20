@@ -40,6 +40,18 @@ class AssetLoader:
             images.append(image)
         return images
     
+    @staticmethod
+    def load_player_ship(name):
+        dir = SPRITE_DIR / name
+        sprite_count = len(os.listdir(dir))
+        images = []
+        for i in range(1, sprite_count):
+            img_path = dir / f"{name}ship{i}.png"
+            img = pg.image.load(str(img_path)).convert_alpha()
+            images.append(img)
+        return images
+        
+    
     #load the sprites for the animated dune ship
     @staticmethod
     def load_dune_ship():
@@ -62,6 +74,15 @@ class AssetLoader:
             images.append(image)
         return images
     
+    @staticmethod
+    def load_avatar(name):
+        ava_path = UI_DIR / f"{name}.png"
+        return pg.image.load(str(ava_path)).convert_alpha()
+    
+    @staticmethod
+    def load_nameplate(name):
+        ava_path = UI_DIR / f"{name}txt.png"
+        return pg.image.load(str(ava_path)).convert_alpha()
     
     @staticmethod
     def load_player_bullet():
@@ -89,6 +110,10 @@ class AssetLoader:
         #count up how many sprites are in the bg folder
         bg_count = len(os.listdir(BG_DIR))
         return pg.image.load(BG_DIR.joinpath("bg" + str(random.randint(1,bg_count)) + ".png")).convert_alpha()
+    
+    @staticmethod
+    def load_char_bg():
+        return pg.image.load(ASSET_DIR / "charsel.png").convert_alpha()
 
     # load a random power sprite
     @staticmethod
@@ -97,24 +122,10 @@ class AssetLoader:
         sprite_count = len(os.listdir(POWER_DIR))
         return pg.image.load(POWER_DIR.joinpath("power" + str(random.randint(1,sprite_count)) + ".png")).convert_alpha()
     
-    
     # font loading
     # loads up the font used for the story crawl
     @staticmethod
     def load_story_font(size):
         font = pg.font.Font(FONT_DIR / "space-wham.ttf", size)
         return font
-    
-    @staticmethod
-    def load_start_music():
-        pass
-
-    @staticmethod
-    def load__music():
-        pass
-    
-    @staticmethod
-    def load_sound():
-        pass
-    
     

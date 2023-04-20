@@ -19,18 +19,18 @@ class Player(pg.sprite.Sprite):
     _instance = None
     
         #make the class a singleton - don't want multiple player objects (for now)
-    def __new__(cls): 
+    def __new__(cls,  *args, **kwargs): 
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
     
-    def __init__(self):
+    def __init__(self, name):
         if hasattr(self, '_initialized'):
             return
         super().__init__()
         self._initialized = True
         #set up the ship image, adjust the scaling and animation speed here
-        self.images = AssetLoader.load_toad_ship()
+        self.images = AssetLoader.load_player_ship(name)
         self.image = self.images[0]
         self.original_image = self.image.copy()
         self.animation_speed = 30 # adjust animation speed

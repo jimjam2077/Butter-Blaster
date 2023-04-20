@@ -9,6 +9,7 @@ from components.power import Power
 from components.explosion import Explosion
 from utils.asset_loader import AssetLoader
 from utils.state import State
+from utils.audio_loader import AudioLoader
 
 class Game:
     _instance = None
@@ -32,17 +33,14 @@ class Game:
     # This might need to be refactored later - it's very important to keep track of these groups
         self._game_state = State.START
         self._screen = Config.SCREEN
-        self.P1 =  Player()
         self.background = Background()
         self.bullets = pg.sprite.Group() # player bullet group
         self.enemies = pg.sprite.Group() # enemy group
         self.enemy_bullets = pg.sprite.Group() # enemy bullet group
         self.all_sprites = pg.sprite.Group() # collection of all sprites - potentially don't need this!
-        self.all_sprites.add(self.P1)
         self.all_sprites.add(self.bullets)
         self.all_sprites.add(self.enemies)
         self.all_sprites.add(self.enemy_bullets)
-
 
     # returns the current state of the game
     def get_game_state(self):
@@ -66,7 +64,7 @@ class Game:
         # splash screen image
         start_img = pg.image.load("assets/title.png").convert_alpha()
         start_img_rect = start_img.get_rect(center=(Config.WIDTH/2, Config.HEIGHT/2))
-        
+        AudioLoader.play_start_music()   
         alpha = 0
         fade_spd = 255 / (8 * 60)
         fade_in = True
@@ -80,6 +78,7 @@ class Game:
                     pg.quit()
                     sys.exit()
                 if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                    AudioLoader.stop_sound()
                     self._game_state = State.CHAR
                     return
             
@@ -114,71 +113,90 @@ class Game:
 
             # this is broken because each frame  this method is called in main, alpha is reset to 0 and all of the ifs are skipped
             # need to preserve the value of alpha to be able to use it
+            
             self._screen.blit(start_img, start_img_rect)
             self._screen.blit(start_text, start_rect)
             pg.display.update()
         
     def run_char_screen(self):
+        # build the assets
+        AudioLoader.play_menu_music()
         # create font objects
-        title_font = pg.font.Font(None, 64)
-        text_font = pg.font.Font(None, 32)
-        credit_font = pg.font.Font(None, 20)
-        
-        # create title text
-        title_text = title_font.render("SELECT YOUR PILOT!", True, (255, 255, 255))
-        title_rect = title_text.get_rect(center=(Config.WIDTH/2, 40+title_text.get_height()/2))
-        
+        title_font = AssetLoader.load_story_font(64)
+        # load images
+        toad_img = AssetLoader.load_avatar("toad")
+        dune_img = AssetLoader.load_avatar("dune")
+        jena_img = AssetLoader.load_avatar("jena")     
         # create image rects
-        image1_rect = pg.Rect(Config.WIDTH/2 - 400, Config.HEIGHT/2 - 50, 200, 200)
-        image2_rect = pg.Rect(Config.WIDTH/2 - 100, Config.HEIGHT/2 - 50, 200, 200)
-        image3_rect = pg.Rect(Config.WIDTH/2 + 200, Config.HEIGHT/2 - 50, 200, 200)
-        
-        # create text objects
-        text1 = text_font.render("Dune", True, (255, 255, 255))
-        text2 = text_font.render("Toad", True, (255, 255, 255))
-        text3 = text_font.render("Jena", True, (255, 255, 255))
-        
-        # create credit text
-        credit_text = credit_font.render("copyright bibleboyschurch",
-                                        True, (255, 255, 255))
-        credit_rect = credit_text.get_rect(bottomright=(Config.WIDTH-10, Config.HEIGHT-10))
-        
-        # fill screen with grey
-        self._screen.fill((100, 100, 100))
-        
-        # draw title
-        self._screen.blit(title_text, title_rect)
-        
-        # draw images
-        # replace image1.png, image2.png, and image3.png with actual image file names
-        image1 = pg.image.load("src/Capture.PNG").convert_alpha()
-        image2 = pg.image.load("src/Capture.PNG").convert_alpha()
-        image3 = pg.image.load("src/Capture.PNG").convert_alpha()
-        self._screen.blit(image1, image1_rect)
-        self._screen.blit(image2, image2_rect)
-        self._screen.blit(image3, image3_rect)
-        
-        # draw text
-        self._screen.blit(text1, text1.get_rect(center=image1_rect.center).move(0, 150))
-        self._screen.blit(text2, text2.get_rect(center=image2_rect.center).move(0, 150))
-        self._screen.blit(text3, text3.get_rect(center=image3_rect.center).move(0, 150))
-        
-        # draw credit
-        self._screen.blit(credit_text, credit_rect)
-        
+        toad_rect = toad_img.get_rect(center=(Config.WIDTH/2, Config.HEIGHT/2)) # place centrally
+        dune_rect = dune_img.get_rect(center=toad_rect.center).move(-300, 0) # left of toad
+        jena_rect = jena_img.get_rect(center=toad_rect.center).move(300, 0) # left of toad
+        characters = {
+            "toad": toad_rect,
+            "dune": dune_rect
+        }
+        # create title text
+        title_text = title_font.render("SELECT YOUR PILOT", True, pg.Color("firebrick2"))
+        title_rect = title_text.get_rect(center=toad_rect.center).move(0, -250)
+        # create nameplates
+        dune_name = AssetLoader.load_nameplate("dune")
+        toad_name = AssetLoader.load_nameplate("toad")
+        jena_name = AssetLoader.load_nameplate("jena")
+        d_n_rect = dune_name.get_rect(center=dune_rect.center).move(0, 150)
+        t_n_rect = toad_name.get_rect(center=toad_rect.center).move(0, 150)
+        j_n_rect = jena_name.get_rect(center=jena_rect.center).move(0, 150)
+        # create background 
+        bg = AssetLoader.load_char_bg()
+        bg_rect = bg.get_rect(center=(Config.WIDTH/2, Config.HEIGHT/2))
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 # change the value to False, to exit the main loop
                 pg.quit()
                 sys.exit()
-            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                self._game_state = State.STORY # CHANGE THIS LATER ON
-                return
+            if event.type == pg.MOUSEBUTTONDOWN:
+                # iterate over characters dictionary to check if a rectangle has been clicked
+                for char_name, char_rect in characters.items():
+                    if char_rect.collidepoint(pg.mouse.get_pos()):
+                        AudioLoader.stop_sound() 
+                        self._game_state = State.STORY 
+                        self.P1 = Player(char_name) 
+                        self.all_sprites.add(self.P1)
+                        break #exit the loop
+                    
+        if toad_rect.collidepoint(pg.mouse.get_pos()):
+            # Scale image by 10%
+            toad_img, toad_rect = self.scale_on_mouseover(AssetLoader.load_avatar("toad"), toad_rect, 1.1)
+        else:
+            # Reset image to original size
+            toad_img, toad_rect = AssetLoader.load_avatar("toad"), toad_img.get_rect(center=toad_rect.center)
+
+        if dune_rect.collidepoint(pg.mouse.get_pos()):
+            # Scale image by 10%
+            dune_img, dune_rect = self.scale_on_mouseover(AssetLoader.load_avatar("dune"), dune_rect, 1.1)
+        else:
+            # Reset image to original size
+            dune_img, dune_rect = AssetLoader.load_avatar("dune"), dune_img.get_rect(center=dune_rect.center)
+
+    
+        #start drawing. draw base elements at the top
+        self._screen.fill((100, 100, 100)) # fill screen
+        self._screen.blit(bg, bg_rect) # draw the background
+        self._screen.blit(title_text, title_rect) # draw title
+        self._screen.blit(dune_img, dune_rect) # draw the portraits
+        self._screen.blit(toad_img, toad_rect)
+        self._screen.blit(jena_img, jena_rect)
+        self._screen.blit(dune_name, d_n_rect) #draw the text relative to the images
+        self._screen.blit(toad_name, t_n_rect)
+        self._screen.blit(jena_name, j_n_rect)
+
         pg.display.update()
         
+        
     def run_story_screen(self):
+        AudioLoader.play_story_audio()
         text = Config.STORY
-        font = AssetLoader.load_story_font(50)
+        font = AssetLoader.load_story_font(46)
         skip = 0 # check for number of space presses to skip
         
         lines = []
@@ -204,12 +222,13 @@ class Game:
                 if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                     skip +=1
                     if skip == 2:
+                        AudioLoader.stop_sound()
                         self._game_state = State.PLAYING
                         return
                 
 
             # Update text position and size
-            y -= 0.1
+            y -= 0.12
             text_surfaces = [font.render(line, True, (255, 255, 255)) for line in lines]
             text_rects = [text_surface.get_rect(centerx=self._screen.get_rect().centerx, centery=y+64*i) for i, text_surface in enumerate(text_surfaces)]
 
@@ -276,3 +295,14 @@ class Game:
 
     def pause_game():
         print("placeholder")
+        
+
+    def scale_on_mouseover(self, image, rect, scale_factor):
+        # Calculate the new size for the image
+        new_size = (int(rect.width * scale_factor), int(rect.height * scale_factor))
+        # Scale the image
+        scaled_image = pg.transform.scale(image, new_size)
+        # Calculate the new rect with the same center as the original rect
+        new_rect = scaled_image.get_rect(center=rect.center)
+        # Return the scaled image and rect
+        return scaled_image, new_rect
