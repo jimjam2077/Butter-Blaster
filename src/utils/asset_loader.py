@@ -26,20 +26,7 @@ ENEMY_DIR = SPRITE_DIR / "enemy"
 # not really a big concern because this is a tiny game
 class AssetLoader:
     
-    # TODO: refactor these ship loading methods - can just pass in the filename variable
-    # sprite_count = len(os.listdir(DIR))
-    # image_path = DIR / f"name"+"ship{i}.png"
-    # loads in all of the sprites for the animated toad ship
-    @staticmethod
-    def load_toad_ship():
-        sprite_count = len(os.listdir(TOAD_DIR))
-        images = []
-        for i in range(1, sprite_count):
-            image_path = TOAD_DIR / f"toadship{i}.png"
-            image = pg.image.load(str(image_path)).convert_alpha()
-            images.append(image)
-        return images
-    
+    # loads a set of player ship sprites from a named folder
     @staticmethod
     def load_player_ship(name):
         dir = SPRITE_DIR / name
@@ -51,18 +38,7 @@ class AssetLoader:
             images.append(img)
         return images
         
-    
-    #load the sprites for the animated dune ship
-    @staticmethod
-    def load_dune_ship():
-        sprite_count = len(os.listdir(DUNE_DIR))
-        images = []
-        for i in range(1, sprite_count):
-            image_path = DUNE_DIR / f"duneship{i}.png"
-            image = pg.image.load(str(image_path)).convert_alpha()
-            images.append(image)
-        return images
-    
+            
     # load the explosion sprites into an array
     @staticmethod 
     def load_explosion():
