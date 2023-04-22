@@ -1,21 +1,17 @@
-from gamestates.state import State
-from utils.audio_loader import AudioLoader
-#from gamestates.char_select import Cha
 import sys
-import random
+
 import pygame as pg
+
 from config import Config
-from components.player import Player
-from components.enemy import Enemy
-from components.background import Background
-from components.power import Power
-from components.explosion import Explosion
+from gamestates.char_select import CharSelect
+from gamestates.state import State
 from utils.asset_loader import AssetLoader
 from utils.audio_loader import AudioLoader
 
+
 class Title(State):
     def __init__(self, game):
-        State.__init__(self, game)
+        super().__init__(game)
         self.font = AssetLoader.load_story_font(34)
         self.presenting_text = self.font.render("Balding By Choice Studios PRESENTS...", True, (255, 255, 255))
         self.presenting_rect = self.presenting_text.get_rect(center=(Config.WIDTH/2, Config.HEIGHT/2))
@@ -37,7 +33,7 @@ class Title(State):
         self.start_faded_out = False
         
 
-    def update(self, delta_time, actions):
+    def update(self, delta_time):
         if not self.pres_faded_in: # if presenting hasn't displayed, fade it in
             self.fade_in(delta_time, self.presenting_text, "pres_faded_in")
         elif not self.pres_faded_out: # if it has displayed, fade it out
@@ -48,17 +44,21 @@ class Title(State):
         if self.img_faded_in: # once the image is up...
             self.blink(delta_time, self.start_text)
             
-        
-        if actions["start"]:
-            pass
-            #new_state = Game_World(self.game)
-            #new_state.enter_state()
-        #self.game.reset_keys()
+        for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    # change the value to False, to exit the main loop
+                    pg.quit()
+                    sys.exit()
+                if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                    AudioLoader.stop_sound()
+                    new_state = CharSelect(self.game)
+                    new_state.enter_state()
+                    return
 
 
 
     def render(self, display):
-        display.fill(Config.BLK)
+        display.fill(pg.Color("black"))
         display.blit(self.presenting_text, self.presenting_rect)
         display.blit(self.start_img, self.start_img_rect)
         display.blit(self.start_text, self.start_rect)
@@ -91,4 +91,14 @@ class Title(State):
             setattr(self, faded_variable_name, not faded_variable)
         surface.set_alpha(int(self.alpha))
         #return faded_variable
+    
+    # not really used, but code here for posterity
+    def reset(self):
+        self.start_text.set_alpha(0)
+        self.start_img.set_alpha(0)
+        self.alpha = 0        
+        self.pres_faded_in = False
+        self.pres_faded_out = False # maybe i don't need 2 variables for this? check later
+        self.img_faded_in = False
+        self.start_faded_out = False
             
