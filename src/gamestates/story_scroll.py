@@ -36,7 +36,7 @@ class StoryScroll(State):
         AudioLoader.play_story_audio()
         
     def update(self, delta_time):
-        print(delta_time)
+        #print(delta_time)
         self._y -= 0.6 #sets the scroll speed
         self._text_surfaces = [self._font.render(line, True, (255, 255, 255)) for line in self._lines] # render each line as a surface
         # create rects using the text surface positions

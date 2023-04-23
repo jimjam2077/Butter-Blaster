@@ -46,7 +46,7 @@ class MainLevel(State):
                 self.enemies.add(e)
                 self.all_sprites.add(e)
         #update and draw the sprites!        
-        self.P1.update(self.game.clock, self.all_sprites, self.bullets, self.enemies, self.enemy_bullets)
+        self.P1.update(delta_time, self.game.clock, self.all_sprites, self.bullets, self.enemies, self.enemy_bullets)
         #check for death, do something, update the 
         for sprite in self.all_sprites:
             if sprite != self.P1:

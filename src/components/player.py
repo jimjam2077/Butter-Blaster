@@ -19,7 +19,7 @@ class Player(pg.sprite.Sprite):
     _instance = None
     
         #make the class a singleton - don't want multiple player objects (for now)
-    def __new__(cls,  *args, **kwargs): 
+    def __new__(cls, *args, **kwargs): 
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
@@ -132,7 +132,7 @@ class Player(pg.sprite.Sprite):
     # deals with all of the key inputs
     # directional input, plus space to shoot.
     # calculates acceleration using velocity * friction for smooth movement
-    def handle_input(self, all_sprites, bullets):
+    def handle_input(self, dt, all_sprites, bullets):
         self.acc = vector(0,0)
         pressed_keys = pg.key.get_pressed()
         if pressed_keys[pg.K_UP] or pressed_keys[pg.K_w]:
@@ -148,9 +148,10 @@ class Player(pg.sprite.Sprite):
         #calc acceleration
         self.acc.x += self.velocity.x * Config.FRIC
         self.acc.y += self.velocity.y * Config.FRIC
-       
-    def update(self, clock, all_sprites, bullets, enemy_grp, enemy_blt_grp):
-        self.handle_input(all_sprites, bullets)
+        
+        
+    def update(self, dt,clock, all_sprites, bullets, enemy_grp, enemy_blt_grp):
+        self.handle_input(dt, all_sprites, bullets)
         # limit player's movement within the screen boundaries
         if self.rect.right > MARGIN_RIGHT:
             self.velocity.x = -self.velocity.x
@@ -170,8 +171,9 @@ class Player(pg.sprite.Sprite):
             self.pos.y = self.rect.height / 2
         
         #move the ship 
-        self.velocity += self.acc
-        self.pos += self.velocity + 0.5 * self.acc
+        self.velocity += self.acc * dt
+        self.pos += self.velocity * dt
+        print("vel: " + str(self.velocity) + "acc: " + str(self.acc))
         
         # Screen boundary detection
         # offsets +/- onto the already-defined margin so the center point is correct later
