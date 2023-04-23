@@ -58,7 +58,7 @@ class Title(State):
 
 
     def render(self, display):
-        display.fill(pg.Color("black"))
+        display.fill((0,0,0))
         display.blit(self.presenting_text, self.presenting_rect)
         display.blit(self.start_img, self.start_img_rect)
         display.blit(self.start_text, self.start_rect)

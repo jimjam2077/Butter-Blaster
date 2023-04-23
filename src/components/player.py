@@ -110,32 +110,24 @@ class Player(pg.sprite.Sprite):
                 
                 
     def blink_ship(self):
-        # here is just some fluff code to make the ship blink while it's
+        # here is just some fluff code to make the ship semi-transparent while it's
         # invulnerable (visual player feedback)
-        # use blink_len and blink_col to control the speed and colour
+        # use blink_alpha to control the transparency level
         now = pg.time.get_ticks()
-        blink_len = 500 # how long each blink lasts
-        blink_clr = (255, 255, 255) # set blink 222,23,56 dune
+        blink_len = 100 # how long each blink lasts
+        blink_alpha = 50 # set blink alpha value (0-255)
         blink_on = (now - self._last_hit_time) % blink_len < blink_len / 2
-        # if the ship is invulnerable, make it blink
+        # if the ship is invulnerable, make it semi-transparent
         if now - self._last_hit_time < Config.INVULN_WINDOW:
             if blink_on:
-                # create a surface with the pixels and fill with blink colour
-                fill_pixels = pg.Surface(self.original_image.get_size(), pg.SRCALPHA)
-                fill_pixels.fill((blink_clr))
-                # multiply RGB values of the surface and source
-                fill_pixels.blit(self.original_image, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
-                # blend the resul with the current image - overlays colour on the original image
-                #fill_pixels.blit(self.image, (0, 0), special_flags=pg.BLEND_RGBA_ADD)
-                # set the new filled pixels as the ship image
+                # create a copy of the original image and set its alpha value
                 self.image = self.original_image.copy()
-                self.image.blit(fill_pixels, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
-                # add a transparency effect
-                self.image.set_colorkey((blink_clr)) 
+                self.image.set_alpha(blink_alpha)
             else:
                 # go back to the original image
-                self.image.blit(self.original_image, (0, 0))
-                self.image.set_colorkey(None)
+                self.image = self.original_image.copy()
+
+
     
     # deals with all of the key inputs
     # directional input, plus space to shoot.

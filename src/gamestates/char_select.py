@@ -1,7 +1,7 @@
 import sys
 from gamestates.state import State
 from config import Config
-from gamestates.main_level import MainLevel
+from gamestates.story_scroll import StoryScroll
 from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
 import pygame as pg
@@ -81,8 +81,9 @@ class CharSelect(State):
                 # iterate over characters dictionary to check if a rectangle has been clicked
                 for char_name, char_rect in self._characters.items():
                     if char_rect.collidepoint(pg.mouse.get_pos()):
-                        AudioLoader.stop_sound() 
-                        new_state = MainLevel(self.game, char_name)
+                        AudioLoader.stop_sound()
+                        self.game.set_pilot(char_name)
+                        new_state = StoryScroll(self.game)
                         new_state.enter_state()
                         break #exit the loop
         #print(self._toad_rect.width)
@@ -116,7 +117,7 @@ class CharSelect(State):
             display (pygame.Surface): The surface to which the game is rendered.
         """
         #start drawing. draw base elements at the top
-        display.fill((pg.Color("black"))) # fill screen
+        display.fill((0,0,0)) # fill screen
         display.blit(self._bg, self._bg_rect) # draw the background
         display.blit(self._title_text, self._title_rect) # draw title
         display.blit(self._dune_img, self._dune_rect) # draw the portraits
@@ -125,7 +126,8 @@ class CharSelect(State):
         display.blit(self._dune_name, self._d_n_rect) #draw the text relative to the images
         display.blit(self._toad_name, self._t_n_rect)
         display.blit(self._jena_name, self._j_n_rect)
-           
+    
+    
     
     def scale_on_mouseover(self, image, rect):
         """Performs scale transformation on a pygame image

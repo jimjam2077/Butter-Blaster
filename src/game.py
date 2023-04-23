@@ -19,6 +19,7 @@ class Game():
            # self.load_assets()
             self.load_states()
             self.clock = pg.time.Clock()
+            self.pilot = ""
 
         def game_loop(self):
             while self.playing:
@@ -83,13 +84,12 @@ class Game():
             self.dt = now - self.prev_time
             self.prev_time = now
 
-        def draw_text(self, surface, text, color, x, y):
-            text_surface = self.font.render(text, True, color)
-            #text_surface.set_colorkey((0,0,0))
-            text_rect = text_surface.get_rect()
-            text_rect.center = (x, y)
-            surface.blit(text_surface, text_rect)
-
+        def get_pilot(self):
+            return self.pilot
+        
+        def set_pilot(self, name):
+            self.pilot = name
+        
         """ def load_assets(self):
             # Create pointers to directories 
             self.assets_dir = os.path.join("assets")
