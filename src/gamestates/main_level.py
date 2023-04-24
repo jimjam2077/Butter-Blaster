@@ -34,7 +34,7 @@ class MainLevel(State):
                 pg.quit()
                 sys.exit()
                 # running = False
-        self.background.update()
+        self.background.update(delta_time)
         
         # generate a new group of enemies if the enemies have been kill()ed
         # kill() removes the sprite from all groups
@@ -51,7 +51,7 @@ class MainLevel(State):
         for sprite in self.all_sprites:
             if sprite != self.P1:
                 if isinstance(sprite, Enemy):
-                    sprite.update(self.all_sprites, self.enemies, self.enemy_bullets)
+                    sprite.update(delta_time, self.all_sprites, self.enemies, self.enemy_bullets)
                 elif isinstance(sprite, Power) or isinstance(sprite, Explosion):
                     sprite.update(self.game.clock)
                 else:

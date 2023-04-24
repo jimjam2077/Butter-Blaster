@@ -15,11 +15,11 @@ class Background():
             self.bgY2 = 0
             self.bgX2 = self.rect.width
  
-            self.moving_speed = 1
+            self.moving_speed = 60
          
-      def update(self):
-        self.bgX1 -= self.moving_speed
-        self.bgX2 -= self.moving_speed
+      def update(self, dt):
+        self.bgX1 -= self.moving_speed * dt
+        self.bgX2 -= self.moving_speed * dt
         if self.bgX1 <= -self.rect.width:
             self.bgX1 = self.rect.width
             self.img_one = AssetLoader.load_random_bg()

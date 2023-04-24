@@ -37,7 +37,7 @@ class StoryScroll(State):
         
     def update(self, delta_time):
         #print(delta_time)
-        self._y -= 0.6 #sets the scroll speed
+        self._y -= 36*delta_time #sets the scroll speed
         self._text_surfaces = [self._font.render(line, True, (255, 255, 255)) for line in self._lines] # render each line as a surface
         # create rects using the text surface positions
         # the y position is determined by the y + fontsize * line no

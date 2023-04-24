@@ -13,9 +13,13 @@ class Enemy(pg.sprite.Sprite):
         #add code here to randomise scaling
         self.rect = self.image.get_rect()
         self.rect.center=(random.randint(Config.WIDTH, Config.WIDTH+700), random.randint(40, Config.HEIGHT-40))
-        self.angle = 0
         self._last_shot_time = 0 #used to limit fire rate later
         self._shot_delay = random.randint(Config.SHOT_DELAY*6, Config.SHOT_DELAY*10)
+        self.amplitude = random.randint(1,4) / abs(math.sin(0.5 * math.pi))  #wave height
+        self.frequency = random.uniform(1.5, 3) #larger = tighter wave
+        self.phase = random.uniform(0, math.pi*2) 
+        self.time = 0  # current time
+        self.x_spd = 200
         
     def shoot(self, all_sprites, bullets):
         now = pg.time.get_ticks()
@@ -25,26 +29,20 @@ class Enemy(pg.sprite.Sprite):
             all_sprites.add(bullet)
             self._last_shot_time = now 
  
-    def update(self, all_sprites, enemies, bullets):
-                  # rotate the image based on the angle
-        #self.image = pg.transform.rotate(self.original_image, self.rot)
-        self.rect = self.image.get_rect(center=self.rect.center)            
-        # add some randomness to the horizontal and vertical speed
-        x = random.uniform(-5, -8)  # horizontal speed (negative for moving left)
-        y = random.uniform(-2, 2)   # vertical speed - set one higher to make enemies veer up or down
-      
-        # add some variability to the angle of movement
-        self.angle += random.uniform(-0.5, 0.5)  # increment angle
-        
-        
-      
+    def update(self, dt, all_sprites, enemies, bullets):
+        self.time += dt
+        # calculate positive/negative speed according to sine calculation
+        y_spd = self.amplitude * math.sin(self.frequency * self.time + self.phase)
         # update the position based on the speed and angle
-        dx = x + math.sin(self.angle) * random.uniform(0, 0) # horizontal displacement
-        dy = y + math.cos(self.angle) * random.uniform(-0, 4) # vertical displacement - determines "waviness" of movement
-        self.rect.move_ip(dx, dy)
+        x_pos = self.x_spd *dt
+        y_pos = y_spd * 60 *dt # vertical displacement - determines "waviness" of movement
+        # update the rect
+        self.rect.centerx -= x_pos
+        self.rect.centery += y_pos
+        # fire a bullet if possible
         self.shoot(all_sprites, bullets)
         if (self.rect.right < 0): # check if object goes beyond the left edge
-            #self.kill()
+            # reset the position off-screen to the right
             self.rect.centerx = random.randint(Config.WIDTH, Config.WIDTH+700)
             self.rect.centery = random.randint(40, Config.HEIGHT - 40)
         
@@ -57,7 +55,6 @@ class Enemy(pg.sprite.Sprite):
                 else:
                     enemy.rect.right-=1
                     self.rect.left+=1
- 
  
     def draw(self, screen):
         screen.blit(self.image, self.rect)
