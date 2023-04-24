@@ -7,6 +7,7 @@ from components.player import Player
 from components.enemy import Enemy
 from components.explosion import Explosion
 from components.power import Power
+from components.hazard import Hazard
 from utils.asset_loader import AssetLoader
 import pygame as pg
 
@@ -25,17 +26,17 @@ class MainLevel(State):
         self.all_sprites.add(self.enemies)
         self.all_sprites.add(self.enemy_bullets)
     
-    def update(self, delta_time):
-    
+    def update(self, delta_time):            
         for event in pg.event.get():
         # Must handle the QUIT event, else there's an error
             if event.type == pg.QUIT:
                 # change the value to False, to exit the main loop
                 pg.quit()
                 sys.exit()
-                # running = False
         self.background.update(delta_time)
-        
+        if random.random() <= 0.001:
+            hazard = Hazard()
+            self.all_sprites.add(hazard)
         # generate a new group of enemies if the enemies have been kill()ed
         # kill() removes the sprite from all groups
         # this way i can generate a random number of enemies to attack at a time
@@ -52,10 +53,10 @@ class MainLevel(State):
             if sprite != self.P1:
                 if isinstance(sprite, Enemy):
                     sprite.update(delta_time, self.all_sprites, self.enemies, self.enemy_bullets)
-                elif isinstance(sprite, Power) or isinstance(sprite, Explosion):
-                    sprite.update(self.game.clock)
+                #elif isinstance(sprite, Power) or isinstance(sprite, Explosion):
+                 #   sprite.update(delta_time)
                 else:
-                    sprite.update()
+                    sprite.update(delta_time)
         
 
     def render(self, display):

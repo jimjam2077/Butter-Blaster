@@ -149,7 +149,7 @@ class Player(pg.sprite.Sprite):
         self.acc.x += self.velocity.x * Config.FRIC
         self.acc.y += self.velocity.y * Config.FRIC
         
-        
+   
     def update(self, dt,clock, all_sprites, bullets, enemy_grp, enemy_blt_grp):
         self.handle_input(dt, all_sprites, bullets)
         # limit player's movement within the screen boundaries
@@ -173,7 +173,7 @@ class Player(pg.sprite.Sprite):
         #move the ship 
         self.velocity += self.acc * dt
         self.pos += self.velocity * dt
-        print("vel: " + str(self.velocity) + "acc: " + str(self.acc))
+        #print("vel: " + str(self.velocity) + "acc: " + str(self.acc))
         
         # Screen boundary detection
         # offsets +/- onto the already-defined margin so the center point is correct later

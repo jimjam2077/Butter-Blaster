@@ -11,10 +11,10 @@ class Power(pg.sprite.Sprite):
         super().__init__()
         self.image = AssetLoader.load_powerup()
         self.rect = self.image.get_rect(center=center)
-        self.speed = -5
+        self.speed = -200
 
-    def update(self, clock):
-        self.rect.move_ip(self.speed, 0)
+    def update(self, delta_time):
+        self.rect.move_ip(self.speed*delta_time, 0)
         if self.rect.right < 0:
             self.kill()
             

@@ -15,7 +15,7 @@ class Background():
             self.bgY2 = 0
             self.bgX2 = self.rect.width
  
-            self.moving_speed = 60
+            self.moving_speed = 100
          
       def update(self, dt):
         self.bgX1 -= self.moving_speed * dt

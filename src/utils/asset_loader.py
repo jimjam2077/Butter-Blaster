@@ -69,7 +69,7 @@ class AssetLoader:
         return pg.image.load(BULLET_DIR / "enemybullet.png").convert_alpha()
         
     
-    #TODO: refactor
+    #TODO: Load_enemy, load_background, load_hazard and load power are all similar and could be one method
     # randomised load methods
     # want to randomly select an enemy sprite each time, out of the available enemy files
     # need to use joinpath() here because SPRITE_DIR / returns a WindowsPath object
@@ -90,6 +90,11 @@ class AssetLoader:
     @staticmethod
     def load_char_bg():
         return pg.image.load(ASSET_DIR / "charsel.png").convert_alpha()
+
+    @staticmethod
+    def load_hazard():
+        sprite_count = len(os.listdir(HAZARD_DIR))
+        return pg.image.load(HAZARD_DIR.joinpath("hazard" + str(random.randint(1,sprite_count)) + ".png")).convert_alpha()
 
     # load a random power sprite
     @staticmethod

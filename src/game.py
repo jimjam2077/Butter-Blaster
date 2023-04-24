@@ -4,13 +4,14 @@ import pygame as pg
 from gamestates.title import Title
 from config import Config
 
+
 class Game():
         def __init__(self):
             pg.init()
             self.GAME_W,self.GAME_H = 1280, 720
             self.SCREEN_WIDTH,self.SCREEN_HEIGHT = 1280, 720
             self.game_canvas = pg.Surface((self.GAME_W,self.GAME_H))
-            self.screen = pg.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
+            self.screen = Config.setup_window()
             self.running, self.playing = True, True
             #self.actions = {"left": False, "right": False, "up" : False, "down" : False, "action1" : False, "action2" : False, "start" : False}
             self.dt = 0

@@ -19,7 +19,7 @@ class Enemy(pg.sprite.Sprite):
         self.frequency = random.uniform(1.5, 3) #larger = tighter wave
         self.phase = random.uniform(0, math.pi*2) 
         self.time = 0  # current time
-        self.x_spd = 200
+        self.x_spd = 300
         
     def shoot(self, all_sprites, bullets):
         now = pg.time.get_ticks()
