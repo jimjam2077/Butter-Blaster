@@ -62,7 +62,7 @@ class Title(State):
         display.blit(self.presenting_text, self.presenting_rect)
         display.blit(self.start_img, self.start_img_rect)
         display.blit(self.start_text, self.start_rect)
-    
+        pg.display.update()
     
     def blink(self, delta_time, surface):
         self.alpha += self.fade_spd * delta_time * 120

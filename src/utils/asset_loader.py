@@ -19,6 +19,13 @@ TOAD_DIR = SPRITE_DIR / "toad"
 DUNE_DIR = SPRITE_DIR / "dune"
 ENEMY_DIR = SPRITE_DIR / "enemy"
 
+POWERS = {
+    '1': "pill",
+    '2': "taser",
+    '3': "assist"
+}
+WEIGHTS = [60, 25, 15] # adjust to decide how often 1, 2 or 3 is chosen
+
 # this could be a bunch of static variables
 # i.e. PLAYER_SHIP = pygame.image.load(file).convert_alpha()
 # however, it would mean more memory overhead as everything is loaded at once
@@ -100,8 +107,8 @@ class AssetLoader:
     @staticmethod
     def load_powerup():
         #count up how many sprites are in the power folder
-        sprite_count = len(os.listdir(POWER_DIR))
-        return pg.image.load(POWER_DIR.joinpath("power" + str(random.randint(1,sprite_count)) + ".png")).convert_alpha()
+        num = str(random.choices(range(1, 4), WEIGHTS)[0])
+        return pg.image.load(POWER_DIR.joinpath("power" + num + ".png")).convert_alpha(), POWERS[num]
     
     # font loading
     # loads up the font used for the story crawl

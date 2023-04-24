@@ -14,7 +14,7 @@ class StoryScroll(State):
         self._spacing = 1.3 # used to detemine how squished the font is
         self._wes_img = AssetLoader.load_avatar("wes")
         self._wes_img = pg.transform.scale(self._wes_img, (int(self._wes_img.get_width() * 0.75), int(self._wes_img.get_height() * 0.75)))
-        self._wes_rect = self._wes_img.get_rect(topleft = (5, 5))
+        self._wes_rect = self._wes_img.get_rect(topleft = (10, 10))
         self._text = Config.STORY
         self._font = AssetLoader.load_story_font(46)
         self._skip = 0 # check for number of space presses to skip

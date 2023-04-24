@@ -126,7 +126,7 @@ class CharSelect(State):
         display.blit(self._dune_name, self._d_n_rect) #draw the text relative to the images
         display.blit(self._toad_name, self._t_n_rect)
         display.blit(self._jena_name, self._j_n_rect)
-    
+        pg.display.update()
     
     
     def scale_on_mouseover(self, image, rect):

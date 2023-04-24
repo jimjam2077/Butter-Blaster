@@ -20,11 +20,13 @@ class MainLevel(State):
         self.bullets = pg.sprite.Group() # player bullet group
         self.enemies = pg.sprite.Group() # enemy group
         self.enemy_bullets = pg.sprite.Group() # enemy bullet group
+        self.powers = pg.sprite.Group()
         self.all_sprites = pg.sprite.Group() # collection of all sprites - potentially don't need this!
         self.all_sprites.add(self.P1)
         self.all_sprites.add(self.bullets)
         self.all_sprites.add(self.enemies)
         self.all_sprites.add(self.enemy_bullets)
+        self.all_sprites.add(self.powers)
     
     def update(self, delta_time):            
         for event in pg.event.get():
@@ -47,7 +49,7 @@ class MainLevel(State):
                 self.enemies.add(e)
                 self.all_sprites.add(e)
         #update and draw the sprites!        
-        self.P1.update(delta_time, self.game.clock, self.all_sprites, self.bullets, self.enemies, self.enemy_bullets)
+        self.P1.update(delta_time, self.game.clock, self.all_sprites, self.bullets, self.powers, self.enemies, self.enemy_bullets)
         #check for death, do something, update the 
         for sprite in self.all_sprites:
             if sprite != self.P1:
@@ -63,6 +65,7 @@ class MainLevel(State):
         display.fill((0,0,0))
         self.background.draw(display)
         self.all_sprites.draw(display)
-        pass
+        self.P1.advanced_health(display)
+        pg.display.update()
         
         
