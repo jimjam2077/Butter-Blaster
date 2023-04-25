@@ -8,7 +8,9 @@ from components.enemy import Enemy
 from components.explosion import Explosion
 from components.power import Power
 from components.hazard import Hazard
+from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
+from gamestates.game_over import GameOver
 import pygame as pg
 
 
@@ -16,6 +18,7 @@ class MainLevel(State):
     def __init__(self, game):
         super().__init__(game)
         self.P1 = Player(game.get_pilot())
+        self.P1.reset()
         self.background = Background()
         self.bullets = pg.sprite.Group() # player bullet group
         self.enemies = pg.sprite.Group() # enemy group
@@ -30,7 +33,14 @@ class MainLevel(State):
         self.all_sprites.add(self.powers)
         self.all_sprites.add(self.hazards)
     
-    def update(self, delta_time):            
+    def update(self, delta_time):
+        if not self.P1.alive():
+            AudioLoader.stop_sound()
+            explosion = Explosion(self.P1.rect.center)
+            self.all_sprites.add(explosion)
+            new_state = GameOver(self.game)
+            new_state.enter_state()
+            self.P1.reset()            
         for event in pg.event.get():
         # Must handle the QUIT event, else there's an error
             if event.type == pg.QUIT:

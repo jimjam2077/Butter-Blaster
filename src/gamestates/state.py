@@ -8,6 +8,11 @@ class State():
     def render(self, surface):
         pass
 
+    def reset_game(self):
+        while len(self.game.state_stack) > 3:
+            self.game.state_stack.pop()
+        self.game.state_stack.append(self)
+                    
     def enter_state(self):
         if len(self.game.state_stack) > 1:
             self.prev_state = self.game.state_stack[-1]

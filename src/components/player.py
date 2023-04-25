@@ -314,8 +314,12 @@ class Player(pg.sprite.Sprite):
         screen.blit(self.images[self.animation_frame], self.rect)
 
         
+    def reset(self):
+        self.current_health = 1
+        self.target_health = 5
+        self.max_health = 10
+        self.level = 0
+        self.pos = vector((Config.PLAYER_POS))
         
-
-#    def reset(self):
 
 

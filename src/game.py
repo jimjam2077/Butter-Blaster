@@ -30,46 +30,6 @@ class Game():
                 self.render()
                 self.clock.tick(Config.FPS)
 
-        """ def get_events(self):
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    self.playing = False
-                    self.running = False
-                if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_ESCAPE:
-                        self.playing = False
-                        self.running = False
-                    if event.key == pg.K_a:
-                        self.actions['left'] = True
-                    if event.key == pg.K_d:
-                        self.actions['right'] = True
-                    if event.key == pg.K_w:
-                        self.actions['up'] = True
-                    if event.key == pg.K_s:
-                        self.actions['down'] = True
-                    if event.key == pg.K_p:
-                        self.actions['action1'] = True
-                    if event.key == pg.K_o:
-                        self.actions['action2'] = True    
-                    if event.key == pg.K_RETURN:
-                        self.actions['start'] = True  
-
-                if event.type == pg.KEYUP:
-                    if event.key == pg.K_a:
-                        self.actions['left'] = False
-                    if event.key == pg.K_d:
-                        self.actions['right'] = False
-                    if event.key == pg.K_w:
-                        self.actions['up'] = False
-                    if event.key == pg.K_s:
-                        self.actions['down'] = False
-                    if event.key == pg.K_p:
-                        self.actions['action1'] = False
-                    if event.key == pg.K_o:
-                        self.actions['action2'] = False
-                    if event.key == pg.K_RETURN:
-                        self.actions['start'] = False """  
-
         def update(self):
             self.state_stack[-1].update(self.dt)
 
