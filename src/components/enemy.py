@@ -14,7 +14,7 @@ class Enemy(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center=(random.randint(Config.WIDTH, Config.WIDTH+700), random.randint(40, Config.HEIGHT-40))
         self._last_shot_time = 0 #used to limit fire rate later
-        self._shot_delay = random.randint(Config.SHOT_DELAY*6, Config.SHOT_DELAY*10)
+        self._shot_delay = random.randint(Config.SHOT_DELAY*3, Config.SHOT_DELAY*5)
         self.amplitude = random.randint(1,4) / abs(math.sin(0.5 * math.pi))  #wave height
         self.frequency = random.uniform(1.5, 3) #larger = tighter wave
         self.phase = random.uniform(0, math.pi*2) 

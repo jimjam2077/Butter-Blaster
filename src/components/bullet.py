@@ -10,6 +10,7 @@ class Bullet(pg.sprite.Sprite):
             self.speed = -Config.BULLET_SPEED*0.75
         else:
             self.image = AssetLoader.load_player_bullet()
+            self.mask = pg.mask.from_surface(self.image)
             self.speed = Config.BULLET_SPEED
         self.rect = self.image.get_rect()
         self.rect.centerx = x

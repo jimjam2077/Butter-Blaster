@@ -22,7 +22,7 @@ class Config:
     #combat
     PLAYER_LIVES = 3
     INVULN_WINDOW = 3000
-    SHOT_DELAY = 200
+    SHOT_DELAY = 500
     BULLET_SPEED = 900
     
     

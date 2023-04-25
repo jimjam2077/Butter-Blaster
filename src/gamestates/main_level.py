@@ -21,12 +21,14 @@ class MainLevel(State):
         self.enemies = pg.sprite.Group() # enemy group
         self.enemy_bullets = pg.sprite.Group() # enemy bullet group
         self.powers = pg.sprite.Group()
+        self.hazards = pg.sprite.Group()
         self.all_sprites = pg.sprite.Group() # collection of all sprites - potentially don't need this!
         self.all_sprites.add(self.P1)
         self.all_sprites.add(self.bullets)
         self.all_sprites.add(self.enemies)
         self.all_sprites.add(self.enemy_bullets)
         self.all_sprites.add(self.powers)
+        self.all_sprites.add(self.hazards)
     
     def update(self, delta_time):            
         for event in pg.event.get():
@@ -39,6 +41,7 @@ class MainLevel(State):
         if random.random() <= 0.001:
             hazard = Hazard()
             self.all_sprites.add(hazard)
+            self.hazards.add(hazard)
         # generate a new group of enemies if the enemies have been kill()ed
         # kill() removes the sprite from all groups
         # this way i can generate a random number of enemies to attack at a time
@@ -49,7 +52,7 @@ class MainLevel(State):
                 self.enemies.add(e)
                 self.all_sprites.add(e)
         #update and draw the sprites!        
-        self.P1.update(delta_time, self.game.clock, self.all_sprites, self.bullets, self.powers, self.enemies, self.enemy_bullets)
+        self.P1.update(delta_time, self.game.clock, self.hazards, self.all_sprites, self.bullets, self.powers, self.enemies, self.enemy_bullets)
         #check for death, do something, update the 
         for sprite in self.all_sprites:
             if sprite != self.P1:
