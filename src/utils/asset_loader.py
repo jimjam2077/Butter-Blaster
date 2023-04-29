@@ -44,7 +44,28 @@ class AssetLoader:
             img = pg.image.load(str(img_path)).convert_alpha()
             images.append(img)
         return images
-        
+    
+    @staticmethod # this should really use a sprite sheet instead, but it'll do for now!
+    def load_sprite_list(dir):
+        """Loads up a set of sprites to use in an animation, in order.
+           Assumes a naming convention using a number at the end of each file
+
+        Args:
+            dir (String): the name of the folder to look in
+
+        Returns:
+            List: a list of images representing an animation for a sprite
+        """
+        images = []
+        directory_path = os.path.join(SPRITE_DIR, dir)
+        file_names = [f for f in os.listdir(directory_path) if f.endswith('.png') or f.endswith('.jpg')]
+        file_names = sorted(file_names, key=lambda x: int(x[-5]))
+
+        for file_name in file_names:
+            image_path = os.path.join(directory_path, file_name)
+            image = pg.image.load(image_path).convert_alpha()
+            images.append(image)
+        return images
             
     # load the explosion sprites into an array
     @staticmethod 
@@ -56,6 +77,11 @@ class AssetLoader:
             image = pg.image.load(str(image_path)).convert_alpha()
             images.append(image)
         return images
+    
+    @staticmethod
+    def load_jena():
+        return pg.image.load(SPRITE_DIR / "jena.png").convert_alpha()
+        
     
     @staticmethod
     def load_avatar(name):
