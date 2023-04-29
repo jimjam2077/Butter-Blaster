@@ -2,6 +2,10 @@ import pygame as pg
 from config import Config
 from utils.asset_loader import AssetLoader
 
+
+# TODO: tidy this up
+# 3 entites can spawn bullets: Assist, Player, and Enemy
+# 
 class Bullet(pg.sprite.Sprite):
     def __init__(self, x, y, is_enemy=False):
         super().__init__()

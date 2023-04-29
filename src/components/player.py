@@ -5,6 +5,7 @@ from components.bullet import Bullet
 from config import Config
 from components.power import Power
 from components.explosion import Explosion
+from components.jena import Jena
 from utils.asset_loader import AssetLoader
 
 vector = pg.math.Vector2
@@ -156,10 +157,13 @@ class Player(pg.sprite.Sprite):
                         self.rect.centery += dy / dist * 15
                 #todo: kill if not alive
     
-    def check_powerup_touched(self, powers):
+    def check_powerup_touched(self, all_sprites, powers):
         #handle powerups!
         touched_powers = pg.sprite.spritecollide(self, powers, True)
         for power in touched_powers:
+            if power.get_name() == "assist":
+                jena = Jena()
+                all_sprites.add(jena)
             if power.get_name() == "pill":
                     self.add_health(2)
             if power.get_name() == "taser":
@@ -259,7 +263,7 @@ class Player(pg.sprite.Sprite):
         self.check_enemy_hit(hazards, all_sprites, bullets, enemy_grp, powers)
         self.check_player_hit(hazards, enemy_grp, enemy_blt_grp)
         self.blink_ship()
-        self.check_powerup_touched(powers)
+        self.check_powerup_touched(all_sprites, powers)
         #animate the ship
         self.animation_timer += clock.get_time()
         if self.animation_timer > self.animation_speed:

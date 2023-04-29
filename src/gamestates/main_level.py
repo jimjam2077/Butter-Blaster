@@ -8,6 +8,8 @@ from components.enemy import Enemy
 from components.explosion import Explosion
 from components.power import Power
 from components.hazard import Hazard
+from components.jena import Jena
+from gamestates.pause import Pause
 from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
 from gamestates.game_over import GameOver
@@ -38,8 +40,8 @@ class MainLevel(State):
             AudioLoader.stop_sound()
             explosion = Explosion(self.P1.rect.center)
             self.all_sprites.add(explosion)
-            new_state = GameOver(self.game)
-            new_state.enter_state()
+            game_over = GameOver(self.game)
+            game_over.enter_state()
             self.P1.reset()            
         for event in pg.event.get():
         # Must handle the QUIT event, else there's an error
@@ -47,6 +49,9 @@ class MainLevel(State):
                 # change the value to False, to exit the main loop
                 pg.quit()
                 sys.exit()
+            if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+                pause = Pause(self.game)
+                pause.enter_state()
         self.background.update(delta_time)
         if random.random() <= 0.001:
             hazard = Hazard()
@@ -68,8 +73,8 @@ class MainLevel(State):
             if sprite != self.P1:
                 if isinstance(sprite, Enemy):
                     sprite.update(delta_time, self.all_sprites, self.enemies, self.enemy_bullets)
-                #elif isinstance(sprite, Power) or isinstance(sprite, Explosion):
-                 #   sprite.update(delta_time)
+                elif isinstance(sprite, Jena):
+                    sprite.update(delta_time, self.all_sprites, self.bullets)
                 else:
                     sprite.update(delta_time)
         

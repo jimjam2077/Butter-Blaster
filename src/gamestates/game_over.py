@@ -12,7 +12,7 @@ class GameOver(State):
         super().__init__(game)
         # graphics
         self.overlay = pg.Surface((Config.WIDTH, Config.HEIGHT))
-        self.overlay.set_alpha(150)  # Set alpha to 128 (half-transparent)
+        #self.overlay.set_alpha(150)  # Set alpha to 128 (half-transparent)
         self.overlay.fill((0, 0, 0))  # Fill with black color
         self.portrait = AssetLoader.load_avatar("wes")
         self.port_rect = self.portrait.get_rect(midtop=(Config.WIDTH/2, 80))
