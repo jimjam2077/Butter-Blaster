@@ -61,7 +61,12 @@ class Player(pg.sprite.Sprite):
         self.level = 0
         self.score = 0
 
+    def add_score(self, amount):
+        self.score+=amount;
 
+    def get_score(self):
+        return self.score
+    
     #property getter for lives  
     def alive(self):
         return self.current_health > 0

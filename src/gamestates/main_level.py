@@ -11,6 +11,7 @@ from components.hazard import Hazard
 from components.jena import Jena
 from gamestates.pause import Pause
 from components.boss import Boss
+from utils.collision_handler import CollisionHandler
 from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
 from gamestates.game_over import GameOver
@@ -21,38 +22,24 @@ class MainLevel(State):
     def __init__(self, game):
         super().__init__(game)
         # all of the entities that make up the game
-        self.P1 = Player(game.get_pilot())
-        self.P1.reset()
-        self.background = Background()
-        self.bullets = pg.sprite.Group() # player bullet group
-        self.enemies = pg.sprite.Group() # enemy group
-        self.enemy_bullets = pg.sprite.Group() # enemy bullet group
-        self.powers = pg.sprite.Group()
-        self.hazards = pg.sprite.Group()
-        self.boss = None
-        self.all_sprites = pg.sprite.Group() # collection of all sprites - potentially don't need this!
-        self.all_sprites.add(self.P1)
-        self.all_sprites.add(self.bullets)
-        self.all_sprites.add(self.enemies)
-        self.all_sprites.add(self.enemy_bullets)
-        self.all_sprites.add(self.powers)
-        self.all_sprites.add(self.hazards)
+        self.collision_handler = CollisionHandler()
+        self.collision_handler.add_player(Player(game.get_pilot()))
+        self.collision_handler.player.reset()
+        
         # for calculating how many enemies to spawn and when
         self.start_time = pg.time.get_ticks()
         self.enemy_strength = 1 # update continuously to spawn more mobs
-        self.max_strength = 12
-    
+        self.max_strength = 12 # max number of enemies in a wave
     
     
     #TODO: Two main phases: enemy phase -> boss phase
     def update(self, delta_time):
         # player dead? -> game over
-        if not self.P1.alive():
+        if not self.collision_handler.player.alive():
             self.game_over()
-        if self.P1.score == 10:
-            self.boss = Boss();
-            self.all_sprites.add(self.boss)
-            self.P1.score+=1;
+        if self.collision_handler.player.get_score() == 10:
+            self.collision_handler.add_boss(Boss());
+            self.collision_handler.player.add_score(1);
         
         # Must handle the QUIT event, else there's an error
         for event in pg.event.get():
