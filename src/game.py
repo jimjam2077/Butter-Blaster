@@ -51,20 +51,9 @@ class Game():
         def set_pilot(self, name):
             self.pilot = name
         
-        """ def load_assets(self):
-            # Create pointers to directories 
-            self.assets_dir = os.path.join("assets")
-            self.sprite_dir = os.path.join(self.assets_dir, "sprites")
-            self.font_dir = os.path.join(self.assets_dir, "font")
-            self.font= pygame.font.Font(os.path.join(self.font_dir, "PressStart2P-vaV7.ttf"), 20) """
-
         def load_states(self):
             self.title_screen = Title(self)
             self.state_stack.append(self.title_screen)
-
-        """def reset_keys(self):
-            for action in self.actions:
-                self.actions[action] = False """
 
 
 if __name__ == "__main__":

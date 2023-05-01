@@ -18,6 +18,7 @@ SPRITE_DIR = ASSET_DIR / "entities"
 TOAD_DIR = SPRITE_DIR / "toad"
 DUNE_DIR = SPRITE_DIR / "dune"
 ENEMY_DIR = SPRITE_DIR / "enemy"
+BOSS_DIR = SPRITE_DIR / "boss"
 
 POWERS = {
     '1': "pill",
@@ -81,7 +82,10 @@ class AssetLoader:
     @staticmethod
     def load_jena():
         return pg.image.load(SPRITE_DIR / "jena.png").convert_alpha()
-        
+    
+    @staticmethod
+    def load_boss_img():
+        return pg.image.load(BOSS_DIR / "idle1.png")
     
     @staticmethod
     def load_avatar(name):

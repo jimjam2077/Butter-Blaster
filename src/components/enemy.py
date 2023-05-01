@@ -3,6 +3,8 @@ import random
 import pygame as pg
 from config import Config
 from components.bullet import Bullet
+from components.explosion import Explosion
+from components.power import Power
 from utils.asset_loader import AssetLoader
 
 
@@ -55,7 +57,7 @@ class Enemy(pg.sprite.Sprite):
                 else:
                     enemy.rect.right-=1
                     self.rect.left+=1
- 
+    
     def draw(self, screen):
         screen.blit(self.image, self.rect)
         

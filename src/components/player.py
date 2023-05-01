@@ -46,19 +46,20 @@ class Player(pg.sprite.Sprite):
         self.acc = vector(0,0)
         self.rect = self.image.get_rect(center=self.pos)  # defines the borders according to image size
         # set up the player statistics
+        self.health_bar_length = 150
         self.portrait = AssetLoader.load_avatar(name)
         self.portrait = pg.transform.scale(self.portrait, (30, 30))
-        self.port_rect = self.portrait.get_rect(topleft = (10,10))
+        self.port_rect = self.portrait.get_rect(midright = (Config.WIDTH/2 - (self.health_bar_length+20), 25))
         self._last_shot_time = 0 #used to limit fire rate later
         self._last_hit_time = 0 #used for invulnerability window
         self.current_health = 0
         self.target_health = 5
         self.max_health = 10
-        self.health_bar_length = 150
         self.health_ratio = self.max_health / self.health_bar_length
-        self.health_change_speed = 0.025
+        self.health_change_speed = 0.25 * self.max_health / 100
         self.shot_delay = Config.SHOT_DELAY
         self.level = 0
+        self.score = 0
 
 
     #property getter for lives  
@@ -116,18 +117,16 @@ class Player(pg.sprite.Sprite):
         """
         # Check for collisions between bullets and enemies
         bullet_enemy_collisions = pg.sprite.groupcollide(bullets, enemy_grp, True, True)
-
         for bullet, enemy_list in bullet_enemy_collisions.items():
             for enemy in enemy_list:
-                # Create explosion at the center of the enemy rect
-                explosion = Explosion(enemy.rect.center)
-                all_sprites.add(explosion)
-
                 # Add power with a 8% chance at the center of the enemy rect
                 if random.random() < 0.90:
                     power = Power(enemy.rect.center)
                     all_sprites.add(power)
-                    powers.add(power)
+                    powers.add(power)    
+                explosion = Explosion(enemy.rect.center)
+                all_sprites.add(explosion)
+                self.score+=1
 
         # Check for collisions between bullets and hazards
         bullet_hazard_collisions = pg.sprite.groupcollide(bullets, hazards, True, False, pg.sprite.collide_mask)
@@ -135,6 +134,7 @@ class Player(pg.sprite.Sprite):
             for hazard in hazards_list:
                 # Kill bullet if it collides with a hazard
                 bullet.kill()
+    
     
     def check_player_hit(self, hazards, enemy_grp, enemy_blt_grp):
         now = pg.time.get_ticks()
@@ -156,6 +156,7 @@ class Player(pg.sprite.Sprite):
                         self.rect.centerx += dx / dist * 15
                         self.rect.centery += dy / dist * 15
                 #todo: kill if not alive
+    
     
     def check_powerup_touched(self, all_sprites, powers):
         #handle powerups!
@@ -180,7 +181,6 @@ class Player(pg.sprite.Sprite):
         now = pg.time.get_ticks()
         blink_len = 200 # how long each blink lasts
         blink_alpha = 100 # set blink alpha value (0-255)
-        
         # only blink the ship if it's currently invulnerable
         if now - self._last_hit_time < Config.INVULN_WINDOW:
             blink_on = (now - self._last_hit_time) % blink_len < blink_len / 2
@@ -273,11 +273,13 @@ class Player(pg.sprite.Sprite):
             # update the original image
             self.original_image = self.image.copy() 
 
+
     def add_damage(self,amount):
         if self.target_health > 0:
             self.target_health -= amount
         if self.target_health < 0:
             self.target_health = 0
+
 
     def add_health(self,amount):
         if self.target_health < self.max_health:
@@ -288,30 +290,29 @@ class Player(pg.sprite.Sprite):
         
     def advanced_health(self, screen):
         transition_width = 0
-        transition_color = (0,255,0)
+        transition_color = (0, 255, 0)
         bar_height = 15
 
         if self.current_health < self.target_health:
             self.current_health += self.health_change_speed
             transition_width = int((self.target_health - self.current_health) / self.health_ratio)
-            transition_color = (255,255,0)
+            transition_color = (255, 255, 0)
 
         if self.current_health > self.target_health:
-            self.current_health -= self.health_change_speed 
+            self.current_health -= self.health_change_speed
             transition_width = int((self.target_health - self.current_health) / self.health_ratio)
-            transition_color = (255,0,0)
+            transition_color = (255, 0, 0)
 
-        
         health_bar_width = int(self.current_health / self.health_ratio)
-        health_bar = pg.Rect(14+self.port_rect.width,10,health_bar_width,bar_height)
-        transition_bar = pg.Rect(health_bar.right,10,transition_width,bar_height)
+        health_bar = pg.Rect(self.port_rect.right + 10, 10, health_bar_width, bar_height)
+        transition_bar = pg.Rect(health_bar.right, health_bar.top, transition_width, bar_height)
         transition_bar.normalize()
-        
+
         screen.blit(self.portrait, self.port_rect)
-        pg.draw.rect(screen,(0,255,0),health_bar, 0, 5)
-        pg.draw.rect(screen,transition_color,transition_bar, 0, 5)	
-        pg.draw.rect(screen,(119,119,119),(14+self.port_rect.width,10,self.health_bar_length,bar_height),2, 5)	
-   
+        pg.draw.rect(screen, (0, 255, 0), health_bar, 0, 5)
+        pg.draw.rect(screen, transition_color, transition_bar, 0, 5)
+        pg.draw.rect(screen, (119, 119, 119), (self.port_rect.right + 10, 10, self.health_bar_length, bar_height), 2, 5)
+
     
     def draw(self, screen):
          # can add other things to draw here
