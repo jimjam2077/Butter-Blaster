@@ -11,7 +11,7 @@ from components.hazard import Hazard
 from components.jena import Jena
 from gamestates.pause import Pause
 from components.boss import Boss
-from utils.collision_handler import CollisionHandler
+from utils.sprite_handler import SpriteHandler
 from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
 from gamestates.game_over import GameOver
@@ -22,9 +22,10 @@ class MainLevel(State):
     def __init__(self, game):
         super().__init__(game)
         # all of the entities that make up the game
-        self.collision_handler = CollisionHandler()
-        self.collision_handler.add_player(Player(game.get_pilot()))
-        self.collision_handler.player.reset()
+        self.sprite_handler = SpriteHandler()
+        self.player = Player(game.get_pilot())
+        self.sprite_handler.add_player(self.player)
+        self.sprite_handler.player.reset()
         
         # for calculating how many enemies to spawn and when
         self.start_time = pg.time.get_ticks()
@@ -35,11 +36,11 @@ class MainLevel(State):
     #TODO: Two main phases: enemy phase -> boss phase
     def update(self, delta_time):
         # player dead? -> game over
-        if not self.collision_handler.player.alive():
+        if not self.sprite_handler.player.alive():
             self.game_over()
-        if self.collision_handler.player.get_score() == 10:
-            self.collision_handler.add_boss(Boss());
-            self.collision_handler.player.add_score(1);
+        if self.sprite_handler.player.get_score() == 10:
+            self.sprite_handler.add_boss(Boss());
+            self.sprite_handler.player.add_score(1);
         
         # Must handle the QUIT event, else there's an error
         for event in pg.event.get():
@@ -50,27 +51,27 @@ class MainLevel(State):
                 pause = Pause(self.game)
                 pause.enter_state()
         # spawn some enemies and obstacles randomly, as long as the boss is not alive
-        if self.boss is None:
+        if self.sprite_handler.boss is None:
             self.spawn_enemies()
         else:
             pass # do boss stuff
         #update sprites   
-        self.update_all_sprites(delta_time)
+        self.sprite_handler.update_all_sprites(delta_time)
 
 
     def render(self, display):
         display.fill((0,0,0))
-        self.background.draw(display)
-        self.all_sprites.draw(display)
-        self.P1.advanced_health(display)
-        if(self.boss is not None):
-            self.boss.advanced_health(display)
+        self.sprite_handler.background.draw(display)
+        self.sprite_handler.all_sprites.draw(display)
+        self.sprite_handler.player.advanced_health(display)
+        if(self.sprite_handler.boss is not None):
+            self.sprite_handler.boss.advanced_health(display)
         # render boss hp
         # render score
         pg.display.update()
         
 
-    def update_all_sprites(self, delta_time):
+    """def update_all_sprites(self, delta_time):
         self.background.update(delta_time)  
         self.P1.update(delta_time, self.game.clock, self.hazards, self.all_sprites, self.bullets, self.powers, self.enemies, self.enemy_bullets)
         for sprite in self.all_sprites:
@@ -80,14 +81,13 @@ class MainLevel(State):
                 elif isinstance(sprite, Jena) or isinstance(sprite, Boss):
                     sprite.update(delta_time, self.all_sprites, self.bullets)
                 else:
-                    sprite.update(delta_time)
+                    sprite.update(delta_time)"""
 
 
     def spawn_enemies(self):
         if random.random() <= 0.001*self.enemy_strength:
             hazard = Hazard()
-            self.all_sprites.add(hazard)
-            self.hazards.add(hazard)
+            self.sprite_handler.add_hazard(hazard)
         if self.enemy_strength > self.max_strength:
             self.enemy_strength = self.max_strength
         else:
@@ -99,19 +99,18 @@ class MainLevel(State):
                 self.enemy_strength = max(0, min(self.enemy_strength, 10))
             #print(f"Time: {time_since_start / 1000} seconds, Strength: {self.enemy_strength}")
             
-        if not self.enemies or len(self.enemies)<=2: # check for empty
+        if not self.sprite_handler.enemies or len(self.sprite_handler.enemies)<=2: # check for empty
             print("generating enemies!")
             for x in range(random.randint(1,self.enemy_strength)):
-                e = Enemy()
-                self.enemies.add(e)
-                self.all_sprites.add(e)
+                enemy = Enemy()
+                self.sprite_handler.add_enemy(enemy)
 
 
     def game_over(self):
         AudioLoader.stop_sound()
-        explosion = Explosion(self.P1.rect.center)
-        self.all_sprites.add(explosion)
+        explosion = Explosion(self.sprite_handler.player.rect.center)
+        self.sprite_handler.all_sprites.add(explosion)
         game_over = GameOver(self.game)
         game_over.enter_state()
-        self.P1.reset()
+        self.sprite_handler.player.reset()
         

@@ -21,7 +21,7 @@ class Bullet(pg.sprite.Sprite):
         self.rect.centery =y
         self._is_enemy = is_enemy #use this later to check whether bullet is damaging?
         
-    def update(self, dt):
+    def update(self, sprite_handler, dt):
         self.rect.move_ip(self.speed*dt, 0)
         if self.rect.centerx >= Config.WIDTH or self.rect.centerx <= 0:
             self.kill()

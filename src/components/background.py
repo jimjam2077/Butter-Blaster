@@ -17,7 +17,7 @@ class Background():
  
             self.moving_speed = 100
          
-      def update(self, dt):
+      def update(self, sprite_handler, dt):
         self.bgX1 -= self.moving_speed * dt
         self.bgX2 -= self.moving_speed * dt
         if self.bgX1 <= -self.rect.width:

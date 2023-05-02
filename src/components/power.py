@@ -16,8 +16,8 @@ class Power(pg.sprite.Sprite):
     def get_name(self):
         return self.name
     
-    def update(self, delta_time):
-        self.rect.move_ip(self.speed*delta_time, 0)
+    def update(self, sprite_handler, dt):
+        self.rect.move_ip(self.speed*dt, 0)
         if self.rect.right < 0:
             self.kill()
             

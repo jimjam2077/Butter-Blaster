@@ -13,7 +13,7 @@ class Explosion(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=center)
         self.speed = -200
 
-    def update(self, dt):
+    def update(self, sprite_handler, dt):
         self.rect.move_ip(self.speed * dt, 0)
         self.time_since_last_frame += dt
         if self.image_index < len(self.images) - 1:

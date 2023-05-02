@@ -37,8 +37,8 @@ class Player(pg.sprite.Sprite):
         self.mask = pg.mask.from_surface(self.image)
         self.original_image = self.image.copy()
         self.original_images = self.images.copy()
-        self.animation_speed = 30 # adjust animation speed
-        self.animation_timer = 0
+        self.animation_speed = 0.0 # adjust animation speed
+        self.animation_timer = 0.032
         self.animation_frame = 0
         # set up the position and movement variables
         self.pos = vector((Config.PLAYER_POS))
@@ -62,7 +62,7 @@ class Player(pg.sprite.Sprite):
         self.score = 0
 
     def add_score(self, amount):
-        self.score+=amount;
+        self.score += amount;
 
     def get_score(self):
         return self.score
@@ -86,7 +86,7 @@ class Player(pg.sprite.Sprite):
         return pg.transform.scale(self.image, (x_size, y_size)) # defines a starting position for rect
 
 
-    def shoot(self, all_sprites, bullets):
+    def shoot(self, sprite_handler):
         """Creates a bullet centred on the creating entity (the player)
         and adds it to the group
 
@@ -99,18 +99,15 @@ class Player(pg.sprite.Sprite):
             if self.level == 3:
                 bullet1 = Bullet(self.rect.right, self.rect.centery + 8)
                 bullet2 = Bullet(self.rect.right, self.rect.centery - 8)
-                bullets.add(bullet1)
-                bullets.add(bullet2)
-                all_sprites.add(bullet1)
-                all_sprites.add(bullet2)
+                sprite_handler.add_bullet(bullet1)
+                sprite_handler.add_bullet(bullet2)
             else:     
                 bullet = Bullet(self.rect.right, self.rect.centery)
-                bullets.add(bullet)
-                all_sprites.add(bullet)
+                sprite_handler.add_bullet(bullet)
             self._last_shot_time = now
                 
     
-    def check_enemy_hit(self, hazards, all_sprites, bullets, enemy_grp, powers):
+    def check_enemy_hit(self, sprite_handler):
         """Looks for collisions between player bullets and enemy rects
         
         Args:
@@ -121,34 +118,36 @@ class Player(pg.sprite.Sprite):
             powers (pg.Group): the sprite group containing powers
         """
         # Check for collisions between bullets and enemies
-        bullet_enemy_collisions = pg.sprite.groupcollide(bullets, enemy_grp, True, True)
-        for bullet, enemy_list in bullet_enemy_collisions.items():
-            for enemy in enemy_list:
-                # Add power with a 8% chance at the center of the enemy rect
-                if random.random() < 0.90:
-                    power = Power(enemy.rect.center)
-                    all_sprites.add(power)
-                    powers.add(power)    
-                explosion = Explosion(enemy.rect.center)
-                all_sprites.add(explosion)
-                self.score+=1
+    # Check for collisions between bullets and enemies
+        for bullet in sprite_handler.bullets:
+            enemy_collisions = pg.sprite.spritecollide(bullet, sprite_handler.enemies, True)
+            for enemy in enemy_collisions:
+                    print("enemy killed")
+                    # Add power with a 8% chance at the center of the enemy rect
+                    if random.random() < 0.90:
+                        power = Power(enemy.rect.center)
+                        sprite_handler.add_power(power)   
+                    explosion = Explosion(enemy.rect.center)
+                    sprite_handler.add_explosion(explosion)
+                    self.score += 1
+
 
         # Check for collisions between bullets and hazards
-        bullet_hazard_collisions = pg.sprite.groupcollide(bullets, hazards, True, False, pg.sprite.collide_mask)
+        bullet_hazard_collisions = pg.sprite.groupcollide(sprite_handler.bullets, sprite_handler.hazards, True, False, pg.sprite.collide_mask)
         for bullet, hazards_list in bullet_hazard_collisions.items():
             for hazard in hazards_list:
                 # Kill bullet if it collides with a hazard
                 bullet.kill()
     
     
-    def check_player_hit(self, hazards, enemy_grp, enemy_blt_grp):
+    def check_player_hit(self, sprite_handler):
         now = pg.time.get_ticks()
         if now - self._last_hit_time > Config.INVULN_WINDOW:
             # enemies or enemy bullets hitting player
             #add code for hit by obstacle, boss, or boss bullet
-            hit_by_ship = pg.sprite.spritecollide(self, enemy_grp, True)
-            hit_by_bullet = pg.sprite.spritecollide(self, enemy_blt_grp, True)
-            hit_by_hazard = pg.sprite.spritecollide(self, hazards, False, pg.sprite.collide_mask)
+            hit_by_ship = pg.sprite.spritecollide(self, sprite_handler.enemies, True)
+            hit_by_bullet = pg.sprite.spritecollide(self, sprite_handler.enemy_bullets, True)
+            hit_by_hazard = pg.sprite.spritecollide(self, sprite_handler.hazards, False, pg.sprite.collide_mask)
             # handle collisions
             if hit_by_ship or hit_by_bullet or hit_by_hazard:
                 self.add_damage(2)
@@ -163,13 +162,13 @@ class Player(pg.sprite.Sprite):
                 #todo: kill if not alive
     
     
-    def check_powerup_touched(self, all_sprites, powers):
+    def check_powerup_touched(self, sprite_handler):
         #handle powerups!
-        touched_powers = pg.sprite.spritecollide(self, powers, True)
+        touched_powers = pg.sprite.spritecollide(self, sprite_handler.powers, True)
         for power in touched_powers:
             if power.get_name() == "assist":
                 jena = Jena()
-                all_sprites.add(jena)
+                sprite_handler.all_sprites.add(jena)
             if power.get_name() == "pill":
                     self.add_health(2)
             if power.get_name() == "taser":
@@ -209,7 +208,7 @@ class Player(pg.sprite.Sprite):
     # deals with all of the key inputs
     # directional input, plus space to shoot.
     # calculates acceleration using velocity * friction for smooth movement
-    def handle_input(self, all_sprites, bullets):
+    def handle_input(self,sprite_handler):
         self.acc = vector(0,0)
         pressed_keys = pg.key.get_pressed()
         if pressed_keys[pg.K_UP] or pressed_keys[pg.K_w]:
@@ -221,14 +220,14 @@ class Player(pg.sprite.Sprite):
         if pressed_keys[pg.K_RIGHT] or pressed_keys[pg.K_d]:
             self.acc.x = +Config.ACC
         if pressed_keys[pg.K_SPACE]:
-            self.shoot(all_sprites, bullets)
+            self.shoot(sprite_handler)
         #calc acceleration
         self.acc.x += self.velocity.x * Config.FRIC
         self.acc.y += self.velocity.y * Config.FRIC
         
    
-    def update(self, dt,clock, hazards, all_sprites, bullets, powers, enemy_grp, enemy_blt_grp):
-        self.handle_input(all_sprites, bullets)
+    def update(self, sprite_handler, dt):
+        self.handle_input(sprite_handler)
         # limit player's movement within the screen boundaries
         if self.rect.right > MARGIN_RIGHT:
             self.velocity.x = -self.velocity.x
@@ -265,12 +264,12 @@ class Player(pg.sprite.Sprite):
         # update hitbox
         self.rect.center = self.pos   
         #finally, deal with any collisions
-        self.check_enemy_hit(hazards, all_sprites, bullets, enemy_grp, powers)
-        self.check_player_hit(hazards, enemy_grp, enemy_blt_grp)
+        self.check_enemy_hit(sprite_handler)
+        self.check_player_hit(sprite_handler)
         self.blink_ship()
-        self.check_powerup_touched(all_sprites, powers)
+        self.check_powerup_touched(sprite_handler)
         #animate the ship
-        self.animation_timer += clock.get_time()
+        self.animation_timer += dt
         if self.animation_timer > self.animation_speed:
             self.animation_timer = 0
             self.animation_frame = (self.animation_frame + 1) % len(self.images)

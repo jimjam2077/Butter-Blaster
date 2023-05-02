@@ -15,8 +15,8 @@ class Hazard(pg.sprite.Sprite):
         self.rect.center=(random.randint(Config.WIDTH, Config.WIDTH+300), random.randint(40, Config.HEIGHT-40))
         self.speed = -200
 
-    def update(self, delta_time):
-        self.rect.move_ip(self.speed*delta_time, 0)
+    def update(self, sprite_handler, dt):
+        self.rect.move_ip(self.speed*dt, 0)
         if self.rect.right < 0:
             self.kill()
             

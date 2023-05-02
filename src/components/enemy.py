@@ -31,7 +31,7 @@ class Enemy(pg.sprite.Sprite):
             all_sprites.add(bullet)
             self._last_shot_time = now 
  
-    def update(self, dt, all_sprites, enemies, bullets):
+    def update(self, sprite_handler, dt):
         self.time += dt
         # calculate positive/negative speed according to sine calculation
         y_spd = self.amplitude * math.sin(self.frequency * self.time + self.phase)
@@ -42,14 +42,14 @@ class Enemy(pg.sprite.Sprite):
         self.rect.centerx -= x_pos
         self.rect.centery += y_pos
         # fire a bullet if possible
-        self.shoot(all_sprites, bullets)
+        self.shoot(sprite_handler.all_sprites, sprite_handler.enemy_bullets)
         if (self.rect.right < 0): # check if object goes beyond the left edge
             # reset the position off-screen to the right
             self.rect.centerx = random.randint(Config.WIDTH, Config.WIDTH+700)
             self.rect.centery = random.randint(40, Config.HEIGHT - 40)
         
         # check for collisions with other enemies
-        for enemy in enemies:
+        for enemy in sprite_handler.enemies:
             if enemy != self and self.rect.colliderect(enemy.rect):
                 if self.rect.centerx < enemy.rect.centerx:
                     enemy.rect.left+=1

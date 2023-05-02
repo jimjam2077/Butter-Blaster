@@ -38,10 +38,10 @@ class Jena(pg.sprite.Sprite):
             all_sprites.add(bullet)
             self._last_shot_time = now 
 
-    def update(self, delta_time, all_sprites, bullets):
+    def update(self, sprite_handler, dt):
         # Update the position of the Jena sprite
-        x = self.pos[0] + self.speed * delta_time * math.sin(math.radians(self.angle))
-        y = self.pos[1] + self.speed * delta_time * math.cos(math.radians(self.angle))
+        x = self.pos[0] + self.speed * dt * math.sin(math.radians(self.angle))
+        y = self.pos[1] + self.speed * dt * math.cos(math.radians(self.angle))
         self.pos = [x, y]
         self.rect.center = tuple(self.pos)
         self.angle += 1  # Rotate at 1 degree per frame
@@ -50,7 +50,7 @@ class Jena(pg.sprite.Sprite):
             
         # add a portrait + "meow!" at bottom center, small
         
-        self.shoot(all_sprites, bullets)
+        self.shoot(sprite_handler.all_sprites, sprite_handler.bullets)
     
 
 

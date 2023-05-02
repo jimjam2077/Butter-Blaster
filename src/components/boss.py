@@ -63,8 +63,8 @@ class Boss(pg.sprite.Sprite):
             self.state = "attacking"
 
     
-    def update(self, dt, all_sprites, bullet_grp):
-        self.check_hit(all_sprites, bullet_grp)
+    def update(self, sprite_handler, dt):
+        self.check_hit(sprite_handler.all_sprites, sprite_handler.bullets)
         if self.state == "attacking":
             self.update_animation(dt)
         else:
