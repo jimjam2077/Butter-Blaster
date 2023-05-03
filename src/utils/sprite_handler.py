@@ -66,7 +66,9 @@ class SpriteHandler:
                     sprite.update(self, delta_time)
                 else:
                     sprite.update(self, delta_time)
-
-    def update_physics(self):
-        # Update physics for all game objects
+                    
+    def check_collisions(self, delta_time):
         pass
+    
+    def check_player_hit
+

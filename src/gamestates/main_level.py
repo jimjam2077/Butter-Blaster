@@ -57,6 +57,7 @@ class MainLevel(State):
             pass # do boss stuff
         #update sprites   
         self.sprite_handler.update_all_sprites(delta_time)
+        self.sprite_handler.check_collisions(delta_time)
 
 
     def render(self, display):
