@@ -20,11 +20,11 @@ class Boss(pg.sprite.Sprite):
         self._last_shot_time = 0 #used to limit fire rate later
         self._last_hit_time = 0 #used for invulnerability window
         self.current_health = 0
-        self.target_health = 1800
-        self.max_health = 1800
+        self.target_health = 1000
+        self.max_health = 1000
         self.health_bar_length = 150
         self.health_ratio = self.max_health / self.health_bar_length
-        self.health_change_speed = 0.25 * self.max_health / 100
+        self.health_change_speed = 0.75 * self.max_health / 100
         self.shot_delay = Config.SHOT_DELAY
         self.portrait = AssetLoader.load_avatar("andy")
         self.portrait = pg.transform.scale(self.portrait, (30, 30))

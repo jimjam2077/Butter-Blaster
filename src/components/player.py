@@ -56,7 +56,7 @@ class Player(pg.sprite.Sprite):
         self.target_health = 5
         self.max_health = 10
         self.health_ratio = self.max_health / self.health_bar_length
-        self.health_change_speed = 0.25 * self.max_health / 100
+        self.health_change_speed = 0.75 * self.max_health / 100
         self.shot_delay = Config.SHOT_DELAY
         self.level = 0
         self.score = 0
@@ -118,18 +118,19 @@ class Player(pg.sprite.Sprite):
             powers (pg.Group): the sprite group containing powers
         """
         # Check for collisions between bullets and enemies
-    # Check for collisions between bullets and enemies
-        for bullet in sprite_handler.bullets:
-            enemy_collisions = pg.sprite.spritecollide(bullet, sprite_handler.enemies, True)
-            for enemy in enemy_collisions:
-                    print("enemy killed")
-                    # Add power with a 8% chance at the center of the enemy rect
-                    if random.random() < 0.90:
-                        power = Power(enemy.rect.center)
-                        sprite_handler.add_power(power)   
-                    explosion = Explosion(enemy.rect.center)
-                    sprite_handler.add_explosion(explosion)
-                    self.score += 1
+        # Check for collisions between bullets and enemies
+        bullet_enemy_collisions = pg.sprite.groupcollide(sprite_handler.bullets, sprite_handler.enemies, True, True)
+        for bullet, enemy_list in bullet_enemy_collisions.items():
+            for enemy in enemy_list:
+                print("enemy killed")
+                # Add power with a 8% chance at the center of the enemy rect
+                if random.random() < 0.90:
+                    power = Power(enemy.rect.center)
+                    sprite_handler.all_sprites.add(power)
+                    sprite_handler.powers.add(power)    
+                explosion = Explosion(enemy.rect.center)
+                sprite_handler.all_sprites.add(explosion)
+                self.score+=1
 
 
         # Check for collisions between bullets and hazards
