@@ -40,7 +40,7 @@ class MainLevel(State):
             self.game_over()
         if self.sprite_handler.player.get_score() == 10:
             self.sprite_handler.add_boss(Boss());
-            self.sprite_handler.player.add_score(1);
+            self.sprite_handler.player.increase_score();
         
         # Must handle the QUIT event, else there's an error
         for event in pg.event.get():

@@ -28,22 +28,40 @@ class GameOver(State):
         self.taunt_rect = self.taunt_text.get_rect(midtop = (Config.WIDTH/2, self.port_rect.bottom + 40))
         self.retry_text = self.font.render("Retry", True, (255,255,255))
         self.retry_rect = self.retry_text.get_rect(midright = (Config.WIDTH/2 - 160, self.taunt_rect.bottom + 160))
-        self.char_text = self.font.render("Quit", True, (255,255,255))
-        self.char_rect = self.char_text.get_rect(midleft = (Config.WIDTH/2 + 160, self.taunt_rect.bottom + 160))
-        
+        self.quit_text = self.font.render("Quit", True, (255,255,255))
+        self.quit_rect = self.quit_text.get_rect(midleft = (Config.WIDTH/2 + 160, self.taunt_rect.bottom + 160))
+        # Set up image scaling variables
+        self._retry_scaled = False
+        self._chars_scaled = False
+        self._surfaces = [self.retry_rect, self.quit_rect]
+     
 
     def update(self, delta_time):
         print(len(self.game.state_stack))
+
         for event in pg.event.get():
-        # Must handle the QUIT event, else there's an error
             if event.type == pg.QUIT:
                 # change the value to False, to exit the main loop
                 pg.quit()
                 sys.exit()
-            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                from gamestates.main_level import MainLevel
-                new_state = MainLevel(self.game)
-                new_state.reset_game()   
+            if event.type == pg.MOUSEBUTTONDOWN:
+                # iterate over characters dictionary to check if a rectangle has been clicked
+                for rect in self._surfaces:
+                    if rect.collidepoint(pg.mouse.get_pos()):
+                        if rect == self.retry_rect:
+                            from gamestates.main_level import MainLevel
+                            new_state = MainLevel(self.game)
+                            new_state.reset_game()   
+                            pass
+                        elif rect == self.quit_rect:
+                            from gamestates.title import Title
+                            new_state = Title(self.game)
+                            new_state.restart()
+                            pass
+        #print(self._toad_rect.width)
+        #self.retry_text, self.retry_rect = self.check_mouseover(self.retry_text, self.retry_rect, "Retry")
+        #self.quit_text, self.quit_rect = self.check_mouseover(self.quit_text, self.quit_rect, "Quit")
+
 
     def render(self, display):
         self.prev_state.render(display)
@@ -51,4 +69,4 @@ class GameOver(State):
         display.blit(self.portrait, self.port_rect)
         display.blit(self.taunt_text, self.taunt_rect)
         display.blit(self.retry_text, self.retry_rect)
-        display.blit(self.char_text, self.char_rect)
+        display.blit(self.quit_text, self.quit_rect)

@@ -26,7 +26,6 @@ class Jena(pg.sprite.Sprite):
         self.angle = 0
         self._last_shot_time = 0 
         self._shot_delay = 100 # decrease to fire quicker
-        AudioLoader.play_meow()
         print(str(self.text_rect) + " " + str(self.port_rect))
         
         

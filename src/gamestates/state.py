@@ -8,6 +8,10 @@ class State():
     def render(self, surface):
         pass
 
+    def restart(self):
+        self.game.state_stack.clear()
+        self.game.state_stack.append(self)
+    
     def reset_game(self):
         while len(self.game.state_stack) > 3:
             self.game.state_stack.pop()

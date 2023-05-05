@@ -12,7 +12,7 @@ class Enemy(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = AssetLoader.load_enemy_ship()
-        #add code here to randomise scaling
+        # add code here to randomise scaling?
         self.rect = self.image.get_rect()
         self.rect.center=(random.randint(Config.WIDTH, Config.WIDTH+700), random.randint(40, Config.HEIGHT-40))
         self._last_shot_time = 0 #used to limit fire rate later

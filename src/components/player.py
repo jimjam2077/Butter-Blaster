@@ -51,7 +51,7 @@ class Player(pg.sprite.Sprite):
         self.portrait = pg.transform.scale(self.portrait, (30, 30))
         self.port_rect = self.portrait.get_rect(midright = (Config.WIDTH/2 - (self.health_bar_length+20), 25))
         self._last_shot_time = 0 #used to limit fire rate later
-        self._last_hit_time = 0 #used for invulnerability window
+        self.last_hit_time = 0 #used for invulnerability window
         self.current_health = 0
         self.target_health = 5
         self.max_health = 10
@@ -61,15 +61,16 @@ class Player(pg.sprite.Sprite):
         self.level = 0
         self.score = 0
 
-    def add_score(self, amount):
-        self.score += amount;
+    def increase_score(self):
+        self.score = min(self.score+1, 250);
 
     def get_score(self):
         return self.score
     
-    #property getter for lives  
+    # looks at whether the health is about to deplete to 0
+    # using current health here would cause a delay as it ticks down 
     def alive(self):
-        return self.current_health > 0
+        return self.target_health > 0
 
     # not currently used for anything
     def scale_image(self, factor):
@@ -107,8 +108,8 @@ class Player(pg.sprite.Sprite):
             self._last_shot_time = now
                 
     
-    def check_enemy_hit(self, sprite_handler):
-        """Looks for collisions between player bullets and enemy rects
+    """     def check_enemy_hit(self, sprite_handler):
+        Looks for collisions between player bullets and enemy rects
         
         Args:
             hazards (pg.Group): the sprite group containing hazards
@@ -116,7 +117,7 @@ class Player(pg.sprite.Sprite):
             bullets (pg.Group): the sprite group containing player bullets
             enemy_grp (pg.Group): the sprite group containing enemies
             powers (pg.Group): the sprite group containing powers
-        """
+        
         # Check for collisions between bullets and enemies
         # Check for collisions between bullets and enemies
         bullet_enemy_collisions = pg.sprite.groupcollide(sprite_handler.bullets, sprite_handler.enemies, True, True)
@@ -138,10 +139,10 @@ class Player(pg.sprite.Sprite):
         for bullet, hazards_list in bullet_hazard_collisions.items():
             for hazard in hazards_list:
                 # Kill bullet if it collides with a hazard
-                bullet.kill()
+                bullet.kill() """
     
     
-    def check_player_hit(self, sprite_handler):
+    """     def check_player_hit(self, sprite_handler):
         now = pg.time.get_ticks()
         if now - self._last_hit_time > Config.INVULN_WINDOW:
             # enemies or enemy bullets hitting player
@@ -160,16 +161,17 @@ class Player(pg.sprite.Sprite):
                     if dist != 0:
                         self.rect.centerx += dx / dist * 15
                         self.rect.centery += dy / dist * 15
-                #todo: kill if not alive
+                #todo: kill if not alive """
     
     
-    def check_powerup_touched(self, sprite_handler):
+    """     def check_powerup_touched(self, sprite_handler):
         #handle powerups!
         touched_powers = pg.sprite.spritecollide(self, sprite_handler.powers, True)
         for power in touched_powers:
             if power.get_name() == "assist":
                 jena = Jena()
                 sprite_handler.all_sprites.add(jena)
+                AudioLoader.play_meow()
             if power.get_name() == "pill":
                     self.add_health(2)
             if power.get_name() == "taser":
@@ -179,7 +181,7 @@ class Player(pg.sprite.Sprite):
                     if self.level<2:
                         self.shot_delay *= 0.5477
                     self.level+=1
-            # add other power-up handling logic here
+            # add other power-up handling logic here """
                    
                 
     def blink_ship(self):
@@ -187,8 +189,8 @@ class Player(pg.sprite.Sprite):
         blink_len = 200 # how long each blink lasts
         blink_alpha = 100 # set blink alpha value (0-255)
         # only blink the ship if it's currently invulnerable
-        if now - self._last_hit_time < Config.INVULN_WINDOW:
-            blink_on = (now - self._last_hit_time) % blink_len < blink_len / 2
+        if now - self.last_hit_time < Config.INVULN_WINDOW:
+            blink_on = (now - self.last_hit_time) % blink_len < blink_len / 2
             if blink_on:
                 # create a list to store the new images
                 new_images = []
@@ -265,10 +267,10 @@ class Player(pg.sprite.Sprite):
         # update hitbox
         self.rect.center = self.pos   
         #finally, deal with any collisions
-        self.check_enemy_hit(sprite_handler)
-        self.check_player_hit(sprite_handler)
+        #self.check_enemy_hit(sprite_handler)
+        #self.check_player_hit(sprite_handler)
         self.blink_ship()
-        self.check_powerup_touched(sprite_handler)
+        #self.check_powerup_touched(sprite_handler)
         #animate the ship
         self.animation_timer += dt
         if self.animation_timer > self.animation_speed:
@@ -291,6 +293,9 @@ class Player(pg.sprite.Sprite):
             self.target_health += amount
         if self.target_health > self.max_health:
             self.target_health = self.max_health
+            
+    def increase_level(self):
+        self.level = min(self.level+1, 3)
 
         
     def advanced_health(self, screen):
