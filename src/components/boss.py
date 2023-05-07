@@ -14,11 +14,7 @@ class Boss(pg.sprite.Sprite):
         self.rect = self.image.get_rect(right= Config.WIDTH-30, centery =Config.HEIGHT/2)
         self.mask = pg.mask.from_surface(self.image)
         
-        
         # boss stats
-        # set up the player statistics
-        self._last_shot_time = 0 #used to limit fire rate later
-        self._last_hit_time = 0 #used for invulnerability window
         self.current_health = 0
         self.target_health = 1000
         self.max_health = 1000
@@ -35,14 +31,20 @@ class Boss(pg.sprite.Sprite):
         self.moves = {
             "idle": [AssetLoader.load_boss_img()],
             "mouth": AssetLoader.load_sprite_list("boss/mouth"),
-            "eye": AssetLoader.load_sprite_list("boss/eye")
+            "eye": AssetLoader.load_sprite_list("boss/eye"),
+            "spider": AssetLoader.load_sprite_list("boss/spider")
             }
         self.current_move = "idle"
         self.state = "idle"
         self.current_frame = 0
         self.num_frames = len(self.moves[self.current_move])
-        self.animation_speed = 0.25  # 2 frames per second
+        self.animation_speed = 0.5  # 2 frames per second
         self.animation_timer = 0.0
+        
+        # ability lengths and cooldowns
+        self.spider_time = 3
+        self.suck_time = 5      
+        self._last_shot_time = 0 #used to limit fire rate later
 
     def update_animation(self, dt):
         frames = self.moves[self.current_move]
@@ -57,14 +59,13 @@ class Boss(pg.sprite.Sprite):
 
     def perform_action(self):
         if self.state == "idle":
-            self.current_move = random.choice(["mouth", "eye"])
+            self.current_move = random.choice(["mouth", "eye", "spider"])
             self.num_frames = len(self.moves[self.current_move])
             self.current_frame = 0
             self.state = "attacking"
 
     
     def update(self, sprite_handler, dt):
-        self.check_hit(sprite_handler.all_sprites, sprite_handler.bullets)
         if self.state == "attacking":
             self.update_animation(dt)
         else:
@@ -75,17 +76,19 @@ class Boss(pg.sprite.Sprite):
             self.target_health -= amount
         if self.target_health < 0:
             self.target_health = 0
-
-    def check_hit(self, all_sprites, bullet_grp):
-        hit_by_bullet = pg.sprite.spritecollideany(self, bullet_grp, pg.sprite.collide_mask)
-        # handle collisions
-        if hit_by_bullet:
-            self.add_damage(1)
-            hit_bullet = hit_by_bullet
-            hit_bullet.kill()
-            explosion = Explosion(hit_bullet.rect.center)
-            all_sprites.add(explosion)
-            # todo: kill if not alive
+   
+   
+    def beam_attack(self):
+        pass
+    
+    def laser_attack(self):
+        pass
+    
+    def suck_attack(self):
+        pass
+    
+    def spawn_adds(self):
+        pass    
    
     def advanced_health(self, screen):
         transition_width = 0
