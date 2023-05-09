@@ -36,35 +36,35 @@ class Boss(pg.sprite.Sprite):
             }
         self.current_move = "idle"
         self.state = "idle"
+        self.frames
         self.current_frame = 0
         self.num_frames = len(self.moves[self.current_move])
         self.animation_speed = 0.25  # 2 frames per second
         self.animation_timer = 0.0
         
         # ability lengths and cooldowns
-        self.spider_time = 3
-        self.suck_time = 5      
+        self.suck_time = 0      
         self._last_shot_time = 0 #used to limit fire rate later
+        self._attack_delay = 0
 
 
     def update_animation(self, dt):
-        frames = self.moves[self.current_move]
+        self.frames = self.moves[self.current_move]
         self.animation_timer += dt
 
         if self.current_frame < self.num_frames:
-            self.image = frames[self.current_frame]
+            self.image = self.frames[self.current_frame]
             if self.animation_timer >= self.animation_speed:
                 self.current_frame += 1
                 self.animation_timer = 0
         else:
             self.current_frame = self.num_frames-1
-            self.image = frames[self.current_frame]
+            self.image = self.frames[self.current_frame]
             self.state = "aftercast"
 
 
-            
     def become_idle(self, dt):
-        frames = self.moves[self.current_move]
+        self.frames = self.moves[self.current_move]
         self.animation_timer += dt
         print(self.current_move)
         print(self.current_frame)
@@ -72,13 +72,13 @@ class Boss(pg.sprite.Sprite):
             self.current_frame -= 1
             if self.current_frame < 0:
                 self.current_frame = 0
+                self.image = self.moves["idle"][0]
                 self.state = "idle"
             else:
-                self.image = frames[self.current_frame]
+                self.image = self.frames[self.current_frame]
             self.animation_timer = 0
         else:
-            self.image = frames[self.current_frame]
-
+            self.image = self.frames[self.current_frame]
 
 
     def choose_action(self):
@@ -99,7 +99,7 @@ class Boss(pg.sprite.Sprite):
         # Call the appropriate behavior method based on the sprite's current attack
         if self.current_move == "mouth":
             self.suck_attack()
-        elif self.current_move == "eye":
+        elif self.current_move == "eye" and self.current_frame == self.num_frames-1:
             self.laser_attack()
         elif self.current_move == "spider":
             self.beam_attack()
@@ -117,7 +117,7 @@ class Boss(pg.sprite.Sprite):
         pass
     
     def laser_attack(self):
-        pass
+        
     
     def suck_attack(self):
         pass

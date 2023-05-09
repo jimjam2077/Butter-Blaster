@@ -104,7 +104,10 @@ class AssetLoader:
     @staticmethod
     def load_enemy_bullet():
         return pg.image.load(BULLET_DIR / "enemybullet.png").convert_alpha()
-        
+    
+    @staticmethod
+    def load_bullet(file):
+        return pg.image.load(BULLET_DIR / file).convert_alpha  
     
     #TODO: Load_enemy, load_background, load_hazard and load power are all similar and could be one method
     # randomised load methods
