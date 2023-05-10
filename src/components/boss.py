@@ -2,7 +2,7 @@ import math
 import random
 import pygame as pg
 from config import Config
-from components.bullet import Bullet
+from components.boss_bullet import Bullet
 from components.explosion import Explosion
 from utils.asset_loader import AssetLoader
 
@@ -36,7 +36,7 @@ class Boss(pg.sprite.Sprite):
             }
         self.current_move = "idle"
         self.state = "idle"
-        self.frames
+        self.frames = []
         self.current_frame = 0
         self.num_frames = len(self.moves[self.current_move])
         self.animation_speed = 0.25  # 2 frames per second
@@ -102,7 +102,7 @@ class Boss(pg.sprite.Sprite):
         elif self.current_move == "eye" and self.current_frame == self.num_frames-1:
             self.laser_attack()
         elif self.current_move == "spider":
-            self.beam_attack()
+            self.beam_attack(sprite_handler)
     
     
     
@@ -113,11 +113,16 @@ class Boss(pg.sprite.Sprite):
             self.target_health = 0
    
    
-    def beam_attack(self):
-        pass
+    def beam_attack(self, sprite_handler):
+        self._attack_delay = 50
+        now = pg.time.get_ticks()
+        if not self.current_frame == self.num_frames-1:
+            if now - self._last_shot_time > self._attack_delay:
+                spider = Bullet(self.rect.center, "spider.png", 350, sprite_handler.player.rect.center)
+                sprite_handler.add_enemy_bullet(spider)
     
     def laser_attack(self):
-        
+        pass
     
     def suck_attack(self):
         pass
