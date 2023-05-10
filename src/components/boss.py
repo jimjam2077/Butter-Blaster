@@ -13,6 +13,12 @@ class Boss(pg.sprite.Sprite):
         self.image = AssetLoader.load_boss_img()
         self.rect = self.image.get_rect(right= Config.WIDTH-30, centery =Config.HEIGHT/2)
         self.mask = pg.mask.from_surface(self.image)
+        self.beard_rect = self.rect.copy()  # make a copy of self.rect
+        self.beard_rect.height //= 4  # reduce the height to one third of the original
+        self.beard_rect.bottom = self.rect.bottom-100  # set the bottom of the new rect to the bottom of self.rect
+        self.beard_rect.width //= 1.5
+        self.beard_rect.centerx = self.rect.centerx
+
         
         # boss stats
         self.current_health = 0
@@ -43,6 +49,7 @@ class Boss(pg.sprite.Sprite):
         self.animation_timer = 0.0
         
         # ability lengths and cooldowns
+        self.swarm_size = 3
         self.suck_time = 0      
         self._last_shot_time = 0 #used to limit fire rate later
         self._attack_delay = 0
@@ -66,8 +73,6 @@ class Boss(pg.sprite.Sprite):
     def become_idle(self, dt):
         self.frames = self.moves[self.current_move]
         self.animation_timer += dt
-        print(self.current_move)
-        print(self.current_frame)
         if self.animation_timer >= self.animation_speed:
             self.current_frame -= 1
             if self.current_frame < 0:
@@ -101,7 +106,7 @@ class Boss(pg.sprite.Sprite):
             self.suck_attack()
         elif self.current_move == "eye" and self.current_frame == self.num_frames-1:
             self.laser_attack()
-        elif self.current_move == "spider":
+        elif self.current_move == "spider" and self.state == "attacking":
             self.beam_attack(sprite_handler)
     
     
@@ -114,11 +119,13 @@ class Boss(pg.sprite.Sprite):
    
    
     def beam_attack(self, sprite_handler):
-        self._attack_delay = 50
+        self._attack_delay = 100
         now = pg.time.get_ticks()
-        if not self.current_frame == self.num_frames-1:
-            if now - self._last_shot_time > self._attack_delay:
-                spider = Bullet(self.rect.center, "spider.png", 350, sprite_handler.player.rect.center)
+        if now - self._last_shot_time > self._attack_delay:
+            for x in range (0,self.swarm_size):
+                rand_x = random.randint(self.beard_rect.left, self.beard_rect.right)
+                rand_y = random.randint(self.beard_rect.top, self.beard_rect.bottom)
+                spider = Bullet((rand_x, rand_y), "spider.png", 500, sprite_handler.player.rect.center)
                 sprite_handler.add_enemy_bullet(spider)
     
     def laser_attack(self):
@@ -155,6 +162,12 @@ class Boss(pg.sprite.Sprite):
         pg.draw.rect(screen,(0,255,0),health_bar, 0, 5)
         pg.draw.rect(screen,transition_color,transition_bar, 0, 5)	
         pg.draw.rect(screen,(119,119,119),(Config.WIDTH/2+10, 10, self.health_bar_length, bar_height), 2, 5)
+        #debug rects
+        # assuming you have created the beard_rect as described
+        pg.draw.rect(screen, (255, 255, 255), self.beard_rect, 3)
+        
             
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+        # assuming you have created the beard_rect as described
+        pg.draw.rect(screen, (255, 0, 0), self.beard_rect)
