@@ -106,83 +106,7 @@ class Player(pg.sprite.Sprite):
                 bullet = Bullet(self.rect.right, self.rect.centery)
                 sprite_handler.add_bullet(bullet)
             self._last_shot_time = now
-                
-    
-    """     def check_enemy_hit(self, sprite_handler):
-        Looks for collisions between player bullets and enemy rects
-        
-        Args:
-            hazards (pg.Group): the sprite group containing hazards
-            all_sprites (pg.Group): the sprite group containing all sprites
-            bullets (pg.Group): the sprite group containing player bullets
-            enemy_grp (pg.Group): the sprite group containing enemies
-            powers (pg.Group): the sprite group containing powers
-        
-        # Check for collisions between bullets and enemies
-        # Check for collisions between bullets and enemies
-        bullet_enemy_collisions = pg.sprite.groupcollide(sprite_handler.bullets, sprite_handler.enemies, True, True)
-        for bullet, enemy_list in bullet_enemy_collisions.items():
-            for enemy in enemy_list:
-                print("enemy killed")
-                # Add power with a 8% chance at the center of the enemy rect
-                if random.random() < 0.90:
-                    power = Power(enemy.rect.center)
-                    sprite_handler.all_sprites.add(power)
-                    sprite_handler.powers.add(power)    
-                explosion = Explosion(enemy.rect.center)
-                sprite_handler.all_sprites.add(explosion)
-                self.score+=1
-
-
-        # Check for collisions between bullets and hazards
-        bullet_hazard_collisions = pg.sprite.groupcollide(sprite_handler.bullets, sprite_handler.hazards, True, False, pg.sprite.collide_mask)
-        for bullet, hazards_list in bullet_hazard_collisions.items():
-            for hazard in hazards_list:
-                # Kill bullet if it collides with a hazard
-                bullet.kill() """
-    
-    
-    """     def check_player_hit(self, sprite_handler):
-        now = pg.time.get_ticks()
-        if now - self._last_hit_time > Config.INVULN_WINDOW:
-            # enemies or enemy bullets hitting player
-            #add code for hit by obstacle, boss, or boss bullet
-            hit_by_ship = pg.sprite.spritecollide(self, sprite_handler.enemies, True)
-            hit_by_bullet = pg.sprite.spritecollide(self, sprite_handler.enemy_bullets, True)
-            hit_by_hazard = pg.sprite.spritecollide(self, sprite_handler.hazards, False, pg.sprite.collide_mask)
-            # handle collisions
-            if hit_by_ship or hit_by_bullet or hit_by_hazard:
-                self.add_damage(2)
-                self._last_hit_time = now
-                # bounce away from hazards
-                for hazard in hit_by_hazard:
-                    dx, dy = self.rect.centerx - hazard.rect.centerx, self.rect.centery - hazard.rect.centery
-                    dist = math.hypot(dx, dy)
-                    if dist != 0:
-                        self.rect.centerx += dx / dist * 15
-                        self.rect.centery += dy / dist * 15
-                #todo: kill if not alive """
-    
-    
-    """     def check_powerup_touched(self, sprite_handler):
-        #handle powerups!
-        touched_powers = pg.sprite.spritecollide(self, sprite_handler.powers, True)
-        for power in touched_powers:
-            if power.get_name() == "assist":
-                jena = Jena()
-                sprite_handler.all_sprites.add(jena)
-                AudioLoader.play_meow()
-            if power.get_name() == "pill":
-                    self.add_health(2)
-            if power.get_name() == "taser":
-                if self.level == 3:
-                    self.add_health(1)
-                elif self.level < 3:
-                    if self.level<2:
-                        self.shot_delay *= 0.5477
-                    self.level+=1
-            # add other power-up handling logic here """
-                   
+                                 
                 
     def blink_ship(self):
         now = pg.time.get_ticks()
@@ -336,6 +260,7 @@ class Player(pg.sprite.Sprite):
         self.level = 0
         self.score = 0
         self.pos = vector((Config.PLAYER_POS))
+        self.shot_delay = Config.SHOT_DELAY
         
 
 

@@ -120,7 +120,7 @@ class Boss(pg.sprite.Sprite):
         if self.current_move == "mouth" and self.start_time < self.suck_time/2:
             self.suck_attack(sprite_handler)
         elif self.current_move == "eye" and self.current_frame == self.num_frames-1:
-            self.laser_attack()
+            self.laser_attack(sprite_handler)
         elif self.current_move == "spider" and self.state == "attacking":
             self.beam_attack(sprite_handler)
     
@@ -144,11 +144,12 @@ class Boss(pg.sprite.Sprite):
                 sprite_handler.add_enemy_bullet(bullet)
                 self._last_shot_time = now 
     
-    def laser_attack(self):
-        pass
+    def laser_attack(self, sprite_handler):
+        bullet = Bullet(self.rect.center, "baby1.png", 400)
+        sprite_handler.add_enemy_bullet(bullet)
     
     def suck_attack(self, sprite_handler):
-        self._attack_delay = 300
+        self._attack_delay = 250
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self._attack_delay:
             # randomly choose a side (top, left, or bottom)
