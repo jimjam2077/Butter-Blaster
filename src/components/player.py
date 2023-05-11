@@ -334,6 +334,7 @@ class Player(pg.sprite.Sprite):
         self.target_health = 5
         self.max_health = 10
         self.level = 0
+        self.score = 0
         self.pos = vector((Config.PLAYER_POS))
         
 

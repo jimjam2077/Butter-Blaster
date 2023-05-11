@@ -55,7 +55,8 @@ class Boss(pg.sprite.Sprite):
         
         # ability lengths and cooldowns
         self.swarm_size = 3
-        self.suck_time = 0      
+        self.start_time = 0
+        self.suck_time = 5000      
         self._last_shot_time = 0 #used to limit fire rate later
         self._attack_delay = 0
 
@@ -63,12 +64,20 @@ class Boss(pg.sprite.Sprite):
     def update_animation(self, dt):
         self.frames = self.moves[self.current_move]
         self.animation_timer += dt
-
+        now = pg.time.get_ticks()   
         if self.current_frame < self.num_frames:
             self.image = self.frames[self.current_frame]
             if self.animation_timer >= self.animation_speed:
                 self.current_frame += 1
                 self.animation_timer = 0
+                self.start_time = now
+        elif self.current_move == "mouth":
+            if now - self.start_time <= self.suck_time:
+                self.image = self.frames[self.num_frames-1]
+            else:
+                self.current_frame = self.num_frames-1
+                self.image = self.frames[self.current_frame]
+                self.state = "aftercast"
         else:
             self.current_frame = self.num_frames-1
             self.image = self.frames[self.current_frame]
@@ -124,7 +133,7 @@ class Boss(pg.sprite.Sprite):
    
    
     def beam_attack(self, sprite_handler):
-        self._attack_delay = 30
+        self._attack_delay = 75
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self._attack_delay:
             for x in range (0,self.swarm_size):
@@ -138,12 +147,11 @@ class Boss(pg.sprite.Sprite):
         pass
     
     def suck_attack(self, sprite_handler):
-        self._attack_delay = 100
+        self._attack_delay = 200
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self._attack_delay:
             # randomly choose a side (top, left, or bottom)
             side = random.choice(['top', 'left', 'bottom'])
-
             if side == 'top':
                 # generate a point outside the top side
                 rand_x = random.randint(-20, Config.WIDTH)
@@ -156,7 +164,7 @@ class Boss(pg.sprite.Sprite):
                 # generate a point outside the bottom side
                 rand_x = random.randint(-20, Config.WIDTH)
                 rand_y = Config.HEIGHT + 20
-            bullet = Bullet((rand_x, rand_y), "dorito.png", 400, self.mouth_rect.center)
+            bullet = Bullet((rand_x, rand_y), "dorito.png", 300, self.mouth_rect.center)
             sprite_handler.add_enemy_bullet(bullet)
             self._last_shot_time = now 
     
