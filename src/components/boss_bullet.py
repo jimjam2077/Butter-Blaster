@@ -1,4 +1,5 @@
 import pygame
+from config import Config
 
 from utils.asset_loader import AssetLoader
 
@@ -45,20 +46,12 @@ class Bullet(pygame.sprite.Sprite):
         else:
             #simply move left on x axis
             pass
+       
 
 
-
-
-
-            
-
-        
-
-
-        if "dorito" in self.type and self.rect.colliderect(pygame.Rect(self.target_pos[0]-10, self.target_pos[1]-10, 20, 20)):
-            self.kill()
-        elif self.rect.x < 0:
-            self.kill()
+        if "dorito" in self.type:
+            if self.rect.colliderect(pygame.Rect(self.target_pos[0]-10, self.target_pos[1]-10, 20, 20)) or self.rect.left > self.target_pos[0]:
+                self.kill()
 
     def draw(self, screen):
         # can add other things to draw here

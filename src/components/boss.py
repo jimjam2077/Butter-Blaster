@@ -18,6 +18,11 @@ class Boss(pg.sprite.Sprite):
         self.beard_rect.bottom = self.rect.bottom-100  # set the bottom of the new rect to the bottom of self.rect
         self.beard_rect.width //= 1.5
         self.beard_rect.centerx = self.rect.centerx
+        self.mouth_rect = self.beard_rect.copy()
+        self.mouth_rect.height //= 2
+        self.mouth_rect.width //= 4
+        self.mouth_rect.left = self.beard_rect.left+50
+        self.mouth_rect.top = self.beard_rect.top+10
 
         
         # boss stats
@@ -103,7 +108,7 @@ class Boss(pg.sprite.Sprite):
             
         # Call the appropriate behavior method based on the sprite's current attack
         if self.current_move == "mouth":
-            self.suck_attack()
+            self.suck_attack(sprite_handler)
         elif self.current_move == "eye" and self.current_frame == self.num_frames-1:
             self.laser_attack()
         elif self.current_move == "spider" and self.state == "attacking":
@@ -119,20 +124,41 @@ class Boss(pg.sprite.Sprite):
    
    
     def beam_attack(self, sprite_handler):
-        self._attack_delay = 100
+        self._attack_delay = 30
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self._attack_delay:
             for x in range (0,self.swarm_size):
                 rand_x = random.randint(self.beard_rect.left, self.beard_rect.right)
                 rand_y = random.randint(self.beard_rect.top, self.beard_rect.bottom)
-                spider = Bullet((rand_x, rand_y), "spider.png", 500, sprite_handler.player.rect.center)
-                sprite_handler.add_enemy_bullet(spider)
+                bullet = Bullet((rand_x, rand_y), "spider.png", 500, sprite_handler.player.rect.center)
+                sprite_handler.add_enemy_bullet(bullet)
+                self._last_shot_time = now 
     
     def laser_attack(self):
         pass
     
-    def suck_attack(self):
-        pass
+    def suck_attack(self, sprite_handler):
+        self._attack_delay = 100
+        now = pg.time.get_ticks()
+        if now - self._last_shot_time > self._attack_delay:
+            # randomly choose a side (top, left, or bottom)
+            side = random.choice(['top', 'left', 'bottom'])
+
+            if side == 'top':
+                # generate a point outside the top side
+                rand_x = random.randint(-20, Config.WIDTH)
+                rand_y = -20
+            elif side == 'left':
+                # generate a point outside the left side
+                rand_x = -20
+                rand_y = random.randint(-20, Config.HEIGHT)
+            else:  # bottom
+                # generate a point outside the bottom side
+                rand_x = random.randint(-20, Config.WIDTH)
+                rand_y = Config.HEIGHT + 20
+            bullet = Bullet((rand_x, rand_y), "dorito.png", 400, self.mouth_rect.center)
+            sprite_handler.add_enemy_bullet(bullet)
+            self._last_shot_time = now 
     
     def spawn_adds(self):
         pass    
@@ -165,6 +191,7 @@ class Boss(pg.sprite.Sprite):
         #debug rects
         # assuming you have created the beard_rect as described
         pg.draw.rect(screen, (255, 255, 255), self.beard_rect, 3)
+        pg.draw.rect(screen, (255, 0, 0), self.mouth_rect, 3)
         
             
     def draw(self, screen):
