@@ -56,7 +56,7 @@ class Boss(pg.sprite.Sprite):
         # ability lengths and cooldowns
         self.swarm_size = 3
         self.start_time = 0
-        self.suck_time = 5000      
+        self.suck_time = 6    
         self._last_shot_time = 0 #used to limit fire rate later
         self._attack_delay = 0
 
@@ -70,9 +70,10 @@ class Boss(pg.sprite.Sprite):
             if self.animation_timer >= self.animation_speed:
                 self.current_frame += 1
                 self.animation_timer = 0
-                self.start_time = now
-        elif self.current_move == "mouth":
-            if now - self.start_time <= self.suck_time:
+                self.start_time = 0
+        elif self.current_move == "mouth": # hold the animation for the sucking attack
+            self.start_time += dt
+            if self.start_time <= self.suck_time:
                 self.image = self.frames[self.num_frames-1]
             else:
                 self.current_frame = self.num_frames-1
@@ -116,7 +117,7 @@ class Boss(pg.sprite.Sprite):
             self.choose_action()    
             
         # Call the appropriate behavior method based on the sprite's current attack
-        if self.current_move == "mouth":
+        if self.current_move == "mouth" and self.start_time < self.suck_time/2:
             self.suck_attack(sprite_handler)
         elif self.current_move == "eye" and self.current_frame == self.num_frames-1:
             self.laser_attack()
@@ -147,7 +148,7 @@ class Boss(pg.sprite.Sprite):
         pass
     
     def suck_attack(self, sprite_handler):
-        self._attack_delay = 200
+        self._attack_delay = 300
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self._attack_delay:
             # randomly choose a side (top, left, or bottom)
@@ -164,7 +165,7 @@ class Boss(pg.sprite.Sprite):
                 # generate a point outside the bottom side
                 rand_x = random.randint(-20, Config.WIDTH)
                 rand_y = Config.HEIGHT + 20
-            bullet = Bullet((rand_x, rand_y), "dorito.png", 300, self.mouth_rect.center)
+            bullet = Bullet((rand_x, rand_y), "dorito.png", 400, self.mouth_rect.center)
             sprite_handler.add_enemy_bullet(bullet)
             self._last_shot_time = now 
     

@@ -1,8 +1,6 @@
 import pygame
 from config import Config
-
 from utils.asset_loader import AssetLoader
-
 import math
 
 
@@ -37,7 +35,6 @@ class Bullet(pygame.sprite.Sprite):
             # calculate the original distance between the bullet's starting position and its target position
 
 
-
     def update(self, sprite_handler, dt):
         if self.target_pos is not None:   
             # move the bullet in a straight line
@@ -55,7 +52,6 @@ class Bullet(pygame.sprite.Sprite):
         if "dorito" in self.type:
             if self.rect.colliderect(pygame.Rect(self.target_pos[0]-15, self.target_pos[1]-15, 30, 30)) or self.rect.left > self.target_pos[0]:
                 self.kill()
-
 
 
     def draw(self, screen):
