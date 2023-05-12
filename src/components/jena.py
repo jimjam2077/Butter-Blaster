@@ -29,12 +29,11 @@ class Jena(pg.sprite.Sprite):
         print(str(self.text_rect) + " " + str(self.port_rect))
         
         
-    def shoot(self, all_sprites, bullets):
+    def shoot(self, sprite_handler):
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self._shot_delay:
             bullet = StraightBullet((self.rect.right, self.rect.centery), Config.BULLET_SPEED, "allybullet.png", 1, 0)
-            bullets.add(bullet)
-            all_sprites.add(bullet)
+            sprite_handler.add_bullet(bullet)
             self._last_shot_time = now 
 
     def update(self, sprite_handler, dt):
