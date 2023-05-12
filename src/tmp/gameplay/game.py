@@ -1,4 +1,4 @@
-import sys
+""" import sys
 import random
 import pygame as pg
 from config import Config
@@ -194,7 +194,12 @@ class Game:
         
         
     def run_story_screen(self):
+        font_size = 46
+        spacing = 1.3 # used to detemine how squished the font is
         AudioLoader.play_story_audio()
+        wes_img = AssetLoader.load_avatar("wes")
+        wes_img = pg.transform.scale(wes_img, (int(wes_img.get_width() * 0.75), int(wes_img.get_height() * 0.75)))
+        wes_rect = wes_img.get_rect(topleft = (5, 5))
         text = Config.STORY
         font = AssetLoader.load_story_font(46)
         skip = 0 # check for number of space presses to skip
@@ -212,7 +217,13 @@ class Game:
             lines.append(line)
         
         y = self._screen.get_height()
-        while True:
+        while True:             
+            y -= 0.13 #sets the scroll speed
+            text_surfaces = [font.render(line, True, (255, 255, 255)) for line in lines] # render each line as a surface
+            # create rects using the text surface positions
+            # the y position is determined by the y + fontsize * line no
+            text_rects = [text_surface.get_rect(centerx=self._screen.get_rect().centerx, centery=y+(font_size*spacing)*i) for i, text_surface in enumerate(text_surfaces)]
+            
             # Handle events
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -221,21 +232,19 @@ class Game:
                     sys.exit()
                 if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                     skip +=1
-                    if skip == 2:
+                    if skip == 2 or text_rects[-1].y < Config.HEIGHT/2: # change if the last line went offscreen or player skipped
                         AudioLoader.stop_sound()
                         self._game_state = State.PLAYING
                         return
-                
-
-            # Update text position and size
-            y -= 0.12
-            text_surfaces = [font.render(line, True, (255, 255, 255)) for line in lines]
-            text_rects = [text_surface.get_rect(centerx=self._screen.get_rect().centerx, centery=y+64*i) for i, text_surface in enumerate(text_surfaces)]
-
-            # Draw the background and text
+            #update the screen
             self._screen.fill((0, 0, 0))
+            if text_rects[-1].y < Config.HEIGHT/2: #move on if the text has fully moves off screen
+                cont_txt = font.render("Press Space to Continue", True, (255,255,255))
+                cont_rect = cont_txt.get_rect(center=(Config.WIDTH/2, Config.HEIGHT -40 -cont_txt.get_height()/2))
+                self._screen.blit(cont_txt, cont_rect)
             for text_surface, text_rect in zip(text_surfaces, text_rects):
                 self._screen.blit(text_surface, text_rect)
+            self._screen.blit(wes_img, wes_rect)
             pg.display.update()
         
 
@@ -305,4 +314,4 @@ class Game:
         # Calculate the new rect with the same center as the original rect
         new_rect = scaled_image.get_rect(center=rect.center)
         # Return the scaled image and rect
-        return scaled_image, new_rect
+        return scaled_image, new_rect """

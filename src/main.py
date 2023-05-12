@@ -1,4 +1,4 @@
-# import the pygame module, so you can use it
+""" # import the pygame module, so you can use it
 import pygame as pg
 from config import Config
 from gameplay.game import Game
@@ -18,7 +18,7 @@ def main():
         # calculate delta time in seconds
         current_tick = pg.time.get_ticks()
         dt = (current_tick - last_tick) / 1000.0
-        print(dt)
+        #print(dt)
         state = game.get_game_state()
         if(state== State.START):
             game.run_start_screen(dt)
@@ -40,3 +40,4 @@ def main():
 if __name__ == "__main__":
     # call the main function
     main()
+ """

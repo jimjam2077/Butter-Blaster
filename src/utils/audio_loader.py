@@ -25,7 +25,13 @@ class AudioLoader:
             MUSIC_DIR / "bgm2.ogg",
             MUSIC_DIR / "bgm3.ogg"
         ]
-        
+    
+    @staticmethod
+    def play_meow():
+        meow = pg.mixer.Sound(SFX_DIR / "meow.wav")
+        meow.play()
+      
+  
     @staticmethod
     def get_shots():
         return [
