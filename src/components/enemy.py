@@ -2,9 +2,9 @@ import math
 import random
 import pygame as pg
 from config import Config
-from components.bullet import Bullet
 from components.explosion import Explosion
 from components.power import Power
+from components.bullets.straight_bullet import StraightBullet
 from utils.asset_loader import AssetLoader
 
 
@@ -23,12 +23,11 @@ class Enemy(pg.sprite.Sprite):
         self.time = 0  # current time
         self.x_spd = 300
         
-    def shoot(self, all_sprites, bullets):
+    def shoot(self, sprite_handler):
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self._shot_delay:
-            bullet = Bullet(self.rect.left, self.rect.centery, True)
-            bullets.add(bullet)
-            all_sprites.add(bullet)
+            bullet = StraightBullet((self.rect.left, self.rect.centery), Config.BULLET_SPEED*0.75, "enemybullet.png", -1, 0)
+            sprite_handler.add_enemy_bullet(bullet)
             self._last_shot_time = now 
  
     def update(self, sprite_handler, dt):
@@ -42,7 +41,7 @@ class Enemy(pg.sprite.Sprite):
         self.rect.centerx -= x_pos
         self.rect.centery += y_pos
         # fire a bullet if possible
-        self.shoot(sprite_handler.all_sprites, sprite_handler.enemy_bullets)
+        self.shoot(sprite_handler)
         if (self.rect.right < 0): # check if object goes beyond the left edge
             # reset the position off-screen to the right
             self.rect.centerx = random.randint(Config.WIDTH, Config.WIDTH+700)

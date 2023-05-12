@@ -1,4 +1,4 @@
-import sys
+""" import sys
 import random
 import pygame as pg
 from config import Config
@@ -314,4 +314,4 @@ class Game:
         # Calculate the new rect with the same center as the original rect
         new_rect = scaled_image.get_rect(center=rect.center)
         # Return the scaled image and rect
-        return scaled_image, new_rect
+        return scaled_image, new_rect """

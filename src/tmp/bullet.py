@@ -1,4 +1,4 @@
-import pygame as pg
+""" import pygame as pg
 from config import Config
 from utils.asset_loader import AssetLoader
 
@@ -28,4 +28,4 @@ class Bullet(pg.sprite.Sprite):
             
     def draw(self, screen):
         # can add other things to draw here
-        screen.blit(self.image, self.rect)
+        screen.blit(self.image, self.rect) """

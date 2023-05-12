@@ -2,8 +2,9 @@ import math
 import random
 import pygame as pg
 from config import Config
-from components.boss_bullet import Bullet
 from components.explosion import Explosion
+from components.bullets.aiming_bullet import AimingBullet
+from components.bullets.straight_bullet import StraightBullet
 from utils.asset_loader import AssetLoader
 
 
@@ -140,13 +141,15 @@ class Boss(pg.sprite.Sprite):
             for x in range (0,self.swarm_size):
                 rand_x = random.randint(self.beard_rect.left, self.beard_rect.right)
                 rand_y = random.randint(self.beard_rect.top, self.beard_rect.bottom)
-                bullet = Bullet((rand_x, rand_y), "spider.png", 500, sprite_handler.player.rect.center)
+                bullet = AimingBullet((rand_x, rand_y), 500, "spider.png", sprite_handler.player.rect.center)
                 sprite_handler.add_enemy_bullet(bullet)
                 self._last_shot_time = now 
     
+    
     def laser_attack(self, sprite_handler):
-        bullet = Bullet(self.rect.center, "baby1.png", 400)
+        bullet = StraightBullet(self.rect.center, 400, "baby1.png", -1, 0, True)
         sprite_handler.add_enemy_bullet(bullet)
+    
     
     def suck_attack(self, sprite_handler):
         self._attack_delay = 250
@@ -166,7 +169,7 @@ class Boss(pg.sprite.Sprite):
                 # generate a point outside the bottom side
                 rand_x = random.randint(-20, Config.WIDTH)
                 rand_y = Config.HEIGHT + 20
-            bullet = Bullet((rand_x, rand_y), "dorito.png", 400, self.mouth_rect.center)
+            bullet = AimingBullet((rand_x, rand_y), 400, "dorito.png", self.mouth_rect.center)
             sprite_handler.add_enemy_bullet(bullet)
             self._last_shot_time = now 
     
@@ -206,5 +209,3 @@ class Boss(pg.sprite.Sprite):
             
     def draw(self, screen):
         screen.blit(self.image, self.rect)
-        # assuming you have created the beard_rect as described
-        pg.draw.rect(screen, (255, 0, 0), self.beard_rect)

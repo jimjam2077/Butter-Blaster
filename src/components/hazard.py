@@ -2,7 +2,6 @@ import math
 import random
 import pygame as pg
 from config import Config
-from components.bullet import Bullet
 from utils.asset_loader import AssetLoader
 
 class Hazard(pg.sprite.Sprite):

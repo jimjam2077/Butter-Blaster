@@ -1,7 +1,7 @@
 import math
 import random
 import pygame as pg
-from components.bullet import Bullet
+from components.bullets.straight_bullet import StraightBullet
 from config import Config
 from components.power import Power
 from components.explosion import Explosion
@@ -32,6 +32,7 @@ class Player(pg.sprite.Sprite):
         super().__init__()
         self._initialized = True
         #set up the ship image, adjust the scaling and animation speed here
+        self.ammo_name = name+"bullet.png"
         self.images = AssetLoader.load_player_ship(name)
         self.image = self.images[0]
         self.mask = pg.mask.from_surface(self.image)
@@ -98,12 +99,12 @@ class Player(pg.sprite.Sprite):
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self.shot_delay:
             if self.level == 3:
-                bullet1 = Bullet(self.rect.right, self.rect.centery + 8)
-                bullet2 = Bullet(self.rect.right, self.rect.centery - 8)
+                bullet1 = StraightBullet((self.rect.right, self.rect.centery + 8), Config.BULLET_SPEED, self.ammo_name, 1, 0)
+                bullet2 = StraightBullet((self.rect.right, self.rect.centery - 8), Config.BULLET_SPEED, self.ammo_name, 1, 0)
                 sprite_handler.add_bullet(bullet1)
                 sprite_handler.add_bullet(bullet2)
             else:     
-                bullet = Bullet(self.rect.right, self.rect.centery)
+                bullet = StraightBullet((self.rect.right, self.rect.centery), Config.BULLET_SPEED, self.ammo_name, 1, 0)
                 sprite_handler.add_bullet(bullet)
             self._last_shot_time = now
                                  

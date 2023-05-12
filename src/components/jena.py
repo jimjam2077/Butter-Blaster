@@ -2,7 +2,7 @@ import math
 import random
 import pygame as pg
 from config import Config
-from components.bullet import Bullet
+from components.bullets.straight_bullet import StraightBullet
 from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
 
@@ -32,7 +32,7 @@ class Jena(pg.sprite.Sprite):
     def shoot(self, all_sprites, bullets):
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self._shot_delay:
-            bullet = Bullet(self.rect.right, self.rect.centery, False)
+            bullet = StraightBullet((self.rect.right, self.rect.centery), Config.BULLET_SPEED, "allybullet.png", 1, 0)
             bullets.add(bullet)
             all_sprites.add(bullet)
             self._last_shot_time = now 
@@ -48,8 +48,7 @@ class Jena(pg.sprite.Sprite):
             self.kill()
             
         # add a portrait + "meow!" at bottom center, small
-        
-        self.shoot(sprite_handler.all_sprites, sprite_handler.bullets)
+        self.shoot(sprite_handler)
     
 
 
