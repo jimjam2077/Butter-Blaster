@@ -6,8 +6,8 @@ import math
 
 # represents a bullet which can only travel in a straight line in one direction
 class AimingBullet(Bullet, pygame.sprite.Sprite):
-    def __init__(self, pos, speed, img_name, target_pos, rotate=False):
-        super().__init__(pos, speed, img_name)
+    def __init__(self, pos, speed, img_name, target_pos, rotate=False, delay = 0):
+        super().__init__(pos, speed, img_name, delay)
         self.type = img_name
         self.target_pos = target_pos  # store the target position
         dx = self.target_pos[0] - self.rect.centerx # x distance
