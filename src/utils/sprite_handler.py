@@ -86,7 +86,7 @@ class SpriteHandler:
             # enemies or enemy bullets hitting player
             #add code for hit by obstacle, boss, or boss bullet
             hit_by_ship = pg.sprite.spritecollide(self.player, self.enemies, True)
-            hit_by_bullet = pg.sprite.spritecollide(self.player, self.enemy_bullets, True)
+            hit_by_bullet = pg.sprite.spritecollide(self.player, self.enemy_bullets, True, pg.sprite.collide_mask)
             hit_by_hazard = pg.sprite.spritecollide(self.player, self.hazards, False, pg.sprite.collide_mask)
             # handle collisions
             if hit_by_ship or hit_by_bullet or hit_by_hazard:

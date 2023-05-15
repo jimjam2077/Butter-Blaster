@@ -41,23 +41,22 @@ class Boss(pg.sprite.Sprite):
         #used for animations
         self.speed = 200
         self.moves = {
-            "idle": [AssetLoader.load_boss_img()],
-            "mouth": AssetLoader.load_sprite_list("boss/mouth"),
-            "eye": AssetLoader.load_sprite_list("boss/eye"),
-            "spider": AssetLoader.load_sprite_list("boss/spider")
-            }
+            "idle": {"frames": [AssetLoader.load_boss_img()], "duration": 0, "cooldown": 0},
+            "mouth": {"frames": AssetLoader.load_sprite_list("boss/mouth"), "duration": 6, "cooldown": 2},
+            "eye": {"frames": AssetLoader.load_sprite_list("boss/eye"), "duration": 10,"cooldown": 5},
+            "spider": {"frames": AssetLoader.load_sprite_list("boss/spider"), "duration": 0,"cooldown": 1}
+        }
         self.current_move = "idle"
         self.state = "idle"
         self.frames = []
         self.current_frame = 0
-        self.num_frames = len(self.moves[self.current_move])
+        self.num_frames = len(self.moves[self.current_move]["frames"])
         self.animation_speed = 0.25  # 2 frames per second
         self.animation_timer = 0.0
         
         # ability lengths and cooldowns
         self.swarm_size = 3
-        self.start_time = 0
-        self.suck_time = 6    
+        self.start_time = 0 
         self._last_shot_time = 0 #used to limit fire rate later
         self._attack_delay = 0
         
@@ -76,10 +75,10 @@ class Boss(pg.sprite.Sprite):
         self.bullet_count = 0
 
 
-    def update_animation(self, dt):
-        self.frames = self.moves[self.current_move]
+    """     def update_animation(self, dt):
+        self.frames = self.moves[self.current_move]["frames"]
         self.animation_timer += dt
-        now = pg.time.get_ticks()   
+          
         if self.current_frame < self.num_frames:
             self.image = self.frames[self.current_frame]
             if self.animation_timer >= self.animation_speed:
@@ -97,29 +96,52 @@ class Boss(pg.sprite.Sprite):
         else:
             self.current_frame = self.num_frames-1
             self.image = self.frames[self.current_frame]
-            self.state = "aftercast"
+            self.state = "aftercast" """
+            
+        
+    def update_animation(self, dt):
+        self.frames = self.moves[self.current_move]["frames"]
+        self.animation_timer += dt
+
+        if self.current_frame < self.num_frames: # not on the last frame
+            self.image = self.frames[self.current_frame] # set the image
+            if self.animation_timer >= self.animation_speed: # time to update the current frame
+                self.current_frame = min(self.current_frame + 1, self.num_frames-1)
+                self.animation_timer = 0 #reset the animation timer
+                if self.current_frame < self.num_frames-1: # not on the last frame
+                    self.start_time = 0
+        if self.current_frame == self.num_frames-1 and self.state != "aftercast":
+            if "duration" in self.moves[self.current_move]:
+                print(self.start_time)
+                self.start_time += dt
+                if self.start_time >= self.moves[self.current_move]["duration"]:
+                    self.state = "aftercast"
+                    self.animation_timer = 0
+
 
 
     def become_idle(self, dt):
-        self.frames = self.moves[self.current_move]
+        self.frames = self.moves[self.current_move]["frames"] # get the frames for the current move
         self.animation_timer += dt
         if self.animation_timer >= self.animation_speed:
-            self.current_frame -= 1
-            if self.current_frame < 0:
-                self.current_frame = 0
-                self.image = self.moves["idle"][0]
+            self.current_frame = max(self.current_frame-1, 0)
+            self.image = self.frames[self.current_frame]
+            if self.current_frame == 0:
                 self.state = "idle"
-            else:
-                self.image = self.frames[self.current_frame]
+                self.image = self.moves["idle"]["frames"][0]
+                random.shuffle(self.grid_starts)
+                self.grid_index = 0
             self.animation_timer = 0
         else:
             self.image = self.frames[self.current_frame]
 
 
+
     def choose_action(self):
             self.current_move = random.choice(["mouth", "eye", "spider"])
-            self.num_frames = len(self.moves[self.current_move])
+            self.num_frames = len(self.moves[self.current_move]["frames"])
             self.current_frame = 0
+            self.start_time = 0
             self.state = "attacking"
 
     
@@ -132,7 +154,7 @@ class Boss(pg.sprite.Sprite):
             self.choose_action()    
             
         # Call the appropriate behavior method based on the sprite's current attack
-        if self.current_move == "mouth" and self.start_time < self.suck_time/2:
+        if self.current_move == "mouth" and self.start_time < self.moves["mouth"]["duration"]/1.5:
             self.suck_attack(sprite_handler, dt)
         elif self.current_move == "eye" and self.state == "attacking":
             self.grid_attack(sprite_handler, dt)
@@ -149,7 +171,7 @@ class Boss(pg.sprite.Sprite):
    
    
     def swarm_attack(self, sprite_handler, dt):
-        self._attack_delay = 0.075 # time in seconds
+        self._attack_delay = 0.025 # time in seconds
         self._last_shot_time +=dt
         if self._last_shot_time >= self._attack_delay:
             for x in range (0,self.swarm_size):
@@ -161,7 +183,7 @@ class Boss(pg.sprite.Sprite):
     
     
     def grid_attack(self, sprite_handler, dt):
-        self._attack_delay = 0.1 # time in seconds
+        self._attack_delay = 0.15 # time in seconds
         self._last_shot_time += dt
         if self._last_shot_time < self._attack_delay:
             return
@@ -175,7 +197,7 @@ class Boss(pg.sprite.Sprite):
             elif self.current_bullet < self.bullet_count:
                 x = start_point[0] + self.current_bullet * (self.grid_blt_width + self.grid_spacing) * spawn_direction[0]
                 y = start_point[1] + self.current_bullet * (self.grid_blt_width + self.grid_spacing) * spawn_direction[1]
-                bullet = StraightBullet((x,y), 300, f"baby{random.randint(1,10)}.png", bullet_dir[0], bullet_dir[1], True, self.grid_delay)
+                bullet = StraightBullet((x,y), 600, f"baby{random.randint(1,10)}.png", bullet_dir[0], bullet_dir[1], True, self.grid_delay)
                 sprite_handler.add_enemy_bullet(bullet)
                 self.grid_delay += 0.5
                 self.current_bullet += 1
@@ -186,7 +208,6 @@ class Boss(pg.sprite.Sprite):
         else:
             self.grid_delay = 0
             random.shuffle(self.grid_starts)
-            self.grid_index = 0
 
         
 

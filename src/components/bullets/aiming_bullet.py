@@ -29,7 +29,7 @@ class AimingBullet(Bullet, pygame.sprite.Sprite):
         
     def update(self, sprite_handler, dt):
         if self.rotate == True:
-            self.angle = (self.angle + 1) % 360
+            self.angle = (self.angle + 5) % 360
             self.image = pygame.transform.rotate(self.rotated_image, self.angle)
             self.rect = self.image.get_rect(center=self.rect.center)
         self.rect.move_ip(self.direction * self.speed * dt)
