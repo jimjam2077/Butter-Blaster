@@ -119,7 +119,6 @@ class Boss(pg.sprite.Sprite):
                     self.animation_timer = 0
 
 
-
     def become_idle(self, dt):
         self.frames = self.moves[self.current_move]["frames"] # get the frames for the current move
         self.animation_timer += dt
@@ -177,7 +176,7 @@ class Boss(pg.sprite.Sprite):
             for x in range (0,self.swarm_size):
                 rand_x = random.randint(self.beard_rect.left, self.beard_rect.right)
                 rand_y = random.randint(self.beard_rect.top, self.beard_rect.bottom)
-                bullet = AimingBullet((rand_x, rand_y), 500, "spider.png", sprite_handler.player.rect.center)
+                bullet = AimingBullet((rand_x, rand_y), 700, "spider.png", sprite_handler.player.rect.center)
                 sprite_handler.add_enemy_bullet(bullet)
                 self._last_shot_time = 0 
     
@@ -199,7 +198,7 @@ class Boss(pg.sprite.Sprite):
                 y = start_point[1] + self.current_bullet * (self.grid_blt_width + self.grid_spacing) * spawn_direction[1]
                 bullet = StraightBullet((x,y), 600, f"baby{random.randint(1,10)}.png", bullet_dir[0], bullet_dir[1], True, self.grid_delay)
                 sprite_handler.add_enemy_bullet(bullet)
-                self.grid_delay += 0.5
+                self.grid_delay += 0.3
                 self.current_bullet += 1
             else:
                 self.grid_index += 1
@@ -213,7 +212,7 @@ class Boss(pg.sprite.Sprite):
 
     
     def suck_attack(self, sprite_handler, dt):
-        self._attack_delay = 0.250 # time in seconds
+        self._attack_delay = 0.225 # time in seconds
         self._last_shot_time += dt
         if self._last_shot_time >= self._attack_delay:
             # randomly choose a side (top, left, or bottom)
@@ -230,7 +229,7 @@ class Boss(pg.sprite.Sprite):
                 # generate a point outside the bottom side
                 rand_x = random.randint(-20, Config.WIDTH)
                 rand_y = Config.HEIGHT + 20
-            bullet = AimingBullet((rand_x, rand_y), 400, "dorito.png", self.mouth_rect.center)
+            bullet = AimingBullet((rand_x, rand_y), 500, "dorito.png", self.mouth_rect.center)
             sprite_handler.add_enemy_bullet(bullet)
             self._last_shot_time = 0
     

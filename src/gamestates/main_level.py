@@ -64,7 +64,7 @@ class MainLevel(State):
         display.fill((0,0,0))
         self.sprite_handler.background.draw(display)
         self.sprite_handler.all_sprites.draw(display)
-        self.sprite_handler.player.advanced_health(display)
+        self.sprite_handler.player.update_hud(display)
         if(self.sprite_handler.boss is not None):
             self.sprite_handler.boss.advanced_health(display)
         # render boss hp

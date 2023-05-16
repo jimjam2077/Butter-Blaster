@@ -142,15 +142,14 @@ class SpriteHandler:
         touched_powers = pg.sprite.spritecollide(self.player, self.powers, True)
         for power in touched_powers:
             if power.get_name() == "assist":
-                jena = Jena()
-                self.all_sprites.add(jena)
-                AudioLoader.play_meow()
+                self.player.add_assist()
             if power.get_name() == "pill":
-                    self.player.add_health(2)
+                self.player.add_health(2)
             if power.get_name() == "taser":
                 if self.player.level == 3:
                     self.player.add_health(1)
                 elif self.player.level < 3:
+                    self.player.damage *= 1.2599210498948732
                     if self.player.level<2:
                         self.player.shot_delay *= 0.5477
                     self.player.increase_level()
