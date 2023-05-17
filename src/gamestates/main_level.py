@@ -41,7 +41,7 @@ class MainLevel(State):
         if self.sprite_handler.player.get_score() == 3 and self.sprite_handler.boss is None:
             self.sprite_handler.add_boss(Boss());
             self.sprite_handler.player.increase_score();
-        
+            # change the background speed
         # Must handle the QUIT event, else there's an error
         for event in pg.event.get():
             if event.type == pg.QUIT:

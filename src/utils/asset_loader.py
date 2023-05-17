@@ -47,7 +47,7 @@ class AssetLoader:
         return images
     
     @staticmethod # this should really use a sprite sheet instead, but it'll do for now!
-    def load_sprite_list(dir):
+    def load_sprite_list(sub_folder):
         """Loads up a set of sprites to use in an animation, in order.
            Assumes a naming convention using a number at the end of each file
 
@@ -58,12 +58,12 @@ class AssetLoader:
             List: a list of images representing an animation for a sprite
         """
         images = []
-        directory_path = os.path.join(SPRITE_DIR, dir)
-        file_names = [f for f in os.listdir(directory_path) if f.endswith('.png') or f.endswith('.jpg')]
+        dir_path = os.path.join(SPRITE_DIR, sub_folder)
+        file_names = [f for f in os.listdir(dir_path) if f.endswith('.png') or f.endswith('.jpg')]
         file_names = sorted(file_names, key=lambda x: int(x[-5]))
 
         for file_name in file_names:
-            image_path = os.path.join(directory_path, file_name)
+            image_path = os.path.join(dir_path, file_name)
             image = pg.image.load(image_path).convert_alpha()
             images.append(image)
         return images
@@ -122,10 +122,12 @@ class AssetLoader:
     
     # loads up a random background image
     @staticmethod
-    def load_random_bg():
+    def load_random_bg(sub_folder):
+        dir_path = os.path.join(BG_DIR, sub_folder)
         #count up how many sprites are in the bg folder
         bg_count = len(os.listdir(BG_DIR))
-        return pg.image.load(BG_DIR.joinpath("bg" + str(random.randint(1,bg_count)) + ".png")).convert_alpha()
+        return pg.image.load(os.path.join(dir_path, "bg" + str(random.randint(1, bg_count)) + ".png")).convert_alpha()
+
     
     @staticmethod
     def load_char_bg():

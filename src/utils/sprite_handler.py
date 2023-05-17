@@ -62,6 +62,8 @@ class SpriteHandler:
         self.all_sprites.add(hazard)
 
     def update_all_sprites(self, delta_time):
+        if self.boss is not None:
+            self.background.fade_boss_bg(delta_time)
         self.background.update(self, delta_time)  
         self.player.update(self, delta_time)
         for sprite in self.all_sprites:
@@ -81,7 +83,6 @@ class SpriteHandler:
         if self.boss is not None:
             self.detect_boss_collision()
         
-    
     
     def detect_player_collision(self):
         """ Looks for collisions between the player and all types of external entities,
