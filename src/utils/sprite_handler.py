@@ -78,29 +78,44 @@ class SpriteHandler:
         self.detect_enemy_collision()
         self.detect_power_collision()
         self.detect_hazard_collision()
-        pass
+        if self.boss is not None:
+            self.detect_boss_collision()
+        
+    
     
     def detect_player_collision(self):
+        """ Looks for collisions between the player and all types of external entities,
+            such as enemies and their bullets, hazard, and bosses
+        """
         now = pg.time.get_ticks()
-        if now - self.player.last_hit_time > Config.INVULN_WINDOW:
-            # enemies or enemy bullets hitting player
-            #add code for hit by obstacle, boss, or boss bullet
-            hit_by_ship = pg.sprite.spritecollide(self.player, self.enemies, True)
-            hit_by_bullet = pg.sprite.spritecollide(self.player, self.enemy_bullets, True, pg.sprite.collide_mask)
-            hit_by_hazard = pg.sprite.spritecollide(self.player, self.hazards, False, pg.sprite.collide_mask)
-            # handle collisions
-            if hit_by_ship or hit_by_bullet or hit_by_hazard:
-                self.player.add_damage(2)
+        if now - self.player.last_hit_time <= Config.INVULN_WINDOW:
+            return
+        collision_data = { # use this dictionary to specify how much damage each type of collision should do
+        'bullet': {'damage': 1},
+        'hazard': {'damage': 2, 'bounce': True},
+        'ship': {'damage': 2},
+        'boss': {'damage': 4}
+        }
+        
+        collisions = { # use this dictionary to retrieve results for each type of collidable object
+            'bullet': pg.sprite.spritecollide(self.player, self.enemy_bullets, True, pg.sprite.collide_mask),
+            'hazard': pg.sprite.spritecollide(self.player, self.hazards, False, pg.sprite.collide_mask),
+            'ship': pg.sprite.spritecollide(self.player, self.enemies, True),
+            'boss': pg.sprite.collide_mask(self.player, self.boss) if self.boss else []
+        }
+        
+        for collision_type, collision_result in collisions.items():
+            if collision_result:
+                self.player.add_damage(collision_data[collision_type]['damage'])
+                if 'bounce' in collision_data[collision_type]:
+                    for hazard in collision_result:
+                        dx, dy = self.player.rect.centerx - hazard.rect.centerx, self.player.rect.centery - hazard.rect.centery
+                        dist = math.hypot(dx, dy)
+                        if dist != 0:
+                            self.player.rect.centerx += dx / dist * 15
+                            self.player.rect.centery += dy / dist * 15
                 self.player.last_hit_time = now
-                # bounce away from hazards
-                for hazard in hit_by_hazard:
-                    dx, dy = self.player.rect.centerx - hazard.rect.centerx, self.player.rect.centery - hazard.rect.centery
-                    dist = math.hypot(dx, dy)
-                    if dist != 0:
-                        self.player.rect.centerx += dx / dist * 15
-                        self.player.rect.centery += dy / dist * 15
-                #todo: kill if not alive
-    
+
     
     def detect_enemy_collision(self):
         """Looks for collisions between player bullets and enemy rects
@@ -127,6 +142,12 @@ class SpriteHandler:
                 self.all_sprites.add(explosion)
                 self.player.increase_score()
 
+    def detect_boss_collision(self):
+        hit_by_bullet = pg.sprite.spritecollide(self.boss, self.bullets, True, pg.sprite.collide_mask)
+        for bullet in hit_by_bullet:
+            self.boss.add_damage(self.player.get_damage())
+            explosion = Explosion(bullet.rect.center)
+            self.all_sprites.add(explosion)
 
     def detect_hazard_collision(self):
         # Check for collisions between bullets and hazards

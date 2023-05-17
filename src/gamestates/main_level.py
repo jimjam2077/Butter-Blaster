@@ -38,7 +38,7 @@ class MainLevel(State):
         # player dead? -> game over
         if not self.sprite_handler.player.alive():
             self.game_over()
-        if self.sprite_handler.player.get_score() == 10:
+        if self.sprite_handler.player.get_score() == 3 and self.sprite_handler.boss is None:
             self.sprite_handler.add_boss(Boss());
             self.sprite_handler.player.increase_score();
         

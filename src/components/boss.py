@@ -36,7 +36,7 @@ class Boss(pg.sprite.Sprite):
         self.shot_delay = Config.SHOT_DELAY
         self.portrait = AssetLoader.load_avatar("andy")
         self.portrait = pg.transform.scale(self.portrait, (30, 30))
-        self.port_rect = self.portrait.get_rect(topleft = (Config.WIDTH/2 + self.health_bar_length+20,10))
+        self.port_rect = self.portrait.get_rect(topleft = (Config.WIDTH/2 + self.health_bar_length+20+46,10))
         
         #used for animations
         self.speed = 200
@@ -112,7 +112,7 @@ class Boss(pg.sprite.Sprite):
                     self.start_time = 0
         if self.current_frame == self.num_frames-1 and self.state != "aftercast":
             if "duration" in self.moves[self.current_move]:
-                print(self.start_time)
+                #print(self.start_time)
                 self.start_time += dt
                 if self.start_time >= self.moves[self.current_move]["duration"]:
                     self.state = "aftercast"
@@ -259,14 +259,14 @@ class Boss(pg.sprite.Sprite):
 
         
         health_bar_width = int(self.current_health / self.health_ratio)
-        health_bar = pg.Rect(Config.WIDTH/2+10, 10, health_bar_width, bar_height)
+        health_bar = pg.Rect(Config.WIDTH/2+10+47, 10, health_bar_width, bar_height)
         transition_bar = pg.Rect(health_bar.right,10,transition_width, bar_height)
         transition_bar.normalize()
         
         screen.blit(self.portrait, self.port_rect)
         pg.draw.rect(screen,(0,255,0),health_bar, 0, 5)
         pg.draw.rect(screen,transition_color,transition_bar, 0, 5)	
-        pg.draw.rect(screen,(119,119,119),(Config.WIDTH/2+10, 10, self.health_bar_length, bar_height), 2, 5)
+        pg.draw.rect(screen,(119,119,119),(Config.WIDTH/2+10+47, 10, self.health_bar_length, bar_height), 2, 5)
         #debug rects
         # assuming you have created the beard_rect as described
         pg.draw.rect(screen, (255, 255, 255), self.beard_rect, 3)

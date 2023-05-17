@@ -49,8 +49,10 @@ class Player(pg.sprite.Sprite):
         # HUD elements
         self.score = 0
         self.font = AssetLoader.load_story_font(14)
-        self.score_text = self.font.render(f"{self.score} / 200", True, (255, 255, 255))
+        self.score_text = self.font.render(f"{self.score:03d}/200", True, (255, 255, 255))
         self.score_rect = self.score_text.get_rect(center = (Config.WIDTH/2, 15))
+        # Print the width of the rect
+        print("Width:", self.score_rect.width)
         self.health_bar_length = 150
         self.portrait = AssetLoader.load_avatar(name)
         self.ammo = pg.image.load("assets/powers/power3.png").convert_alpha()
@@ -187,6 +189,8 @@ class Player(pg.sprite.Sprite):
    
     def update(self, sprite_handler, dt):
         self.handle_input(sprite_handler)
+        self.score_text = self.font.render(f"{self.score:03d}/200", True, (255, 255, 255))
+        self.score_rect = self.score_text.get_rect(center = (Config.WIDTH/2, 15))
         # limit player's movement within the screen boundaries
         if self.rect.right > MARGIN_RIGHT:
             self.velocity.x = -self.velocity.x
@@ -254,7 +258,11 @@ class Player(pg.sprite.Sprite):
         """
         self.assists = min(self.assists+1, 3)
     
-        
+    def get_damage(self):
+        return self.damage
+    
+    
+    # should move this and the boss HUD code to a separate file/function
     def update_hud(self, screen):
         transition_width = 0
         transition_color = (0, 255, 0)
