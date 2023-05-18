@@ -35,6 +35,7 @@ class Jena(pg.sprite.Sprite):
         if now - self._last_shot_time > self._shot_delay:
             bullet = StraightBullet((self.rect.right, self.rect.centery), Config.BULLET_SPEED, "allybullet.png", 1, 0)
             sprite_handler.add_bullet(bullet)
+            #AudioLoader.attack_sound("shoot")
             self._last_shot_time = now 
 
     def update(self, sprite_handler, dt):

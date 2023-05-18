@@ -108,6 +108,9 @@ class SpriteHandler:
         for collision_type, collision_result in collisions.items():
             if collision_result:
                 self.player.add_damage(collision_data[collision_type]['damage'])
+                explosion = Explosion(self.player.rect.center, 0)
+                self.all_sprites.add(explosion)
+                AudioLoader.explosion_sound()
                 if 'bounce' in collision_data[collision_type]:
                     for hazard in collision_result:
                         dx, dy = self.player.rect.centerx - hazard.rect.centerx, self.player.rect.centery - hazard.rect.centery
@@ -136,7 +139,10 @@ class SpriteHandler:
                 print("enemy killed")
                 # Add power with a 8% chance at the center of the enemy rect
                 if random.random() < 0.90:
-                    power = Power(enemy.rect.center)
+                    if self.boss is not None:
+                        power = Power(enemy.rect.center, 0)
+                    else: 
+                        power = Power(enemy.rect.center)
                     self.all_sprites.add(power)
                     self.powers.add(power)    
                 explosion = Explosion(enemy.rect.center)
@@ -147,7 +153,7 @@ class SpriteHandler:
         hit_by_bullet = pg.sprite.spritecollide(self.boss, self.bullets, True, pg.sprite.collide_mask)
         for bullet in hit_by_bullet:
             self.boss.add_damage(self.player.get_damage())
-            explosion = Explosion(bullet.rect.center)
+            explosion = Explosion(bullet.rect.center, 0)
             self.all_sprites.add(explosion)
 
     def detect_hazard_collision(self):
@@ -163,6 +169,7 @@ class SpriteHandler:
         #handle powerups!
         touched_powers = pg.sprite.spritecollide(self.player, self.powers, True)
         for power in touched_powers:
+            AudioLoader.pickup_sound()
             if power.get_name() == "assist":
                 self.player.add_assist()
             if power.get_name() == "pill":

@@ -5,6 +5,7 @@ from config import Config
 from components.explosion import Explosion
 from components.bullets.aiming_bullet import AimingBullet
 from components.bullets.straight_bullet import StraightBullet
+from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
 
 
@@ -43,7 +44,7 @@ class Boss(pg.sprite.Sprite):
         self.moves = {
             "idle": {"frames": [AssetLoader.load_boss_img()], "duration": 0, "cooldown": 0},
             "mouth": {"frames": AssetLoader.load_sprite_list("boss/mouth"), "duration": 6, "cooldown": 2},
-            "eye": {"frames": AssetLoader.load_sprite_list("boss/eye"), "duration": 10,"cooldown": 5},
+            "eye": {"frames": AssetLoader.load_sprite_list("boss/eye"), "duration": 7,"cooldown": 5},
             "spider": {"frames": AssetLoader.load_sprite_list("boss/spider"), "duration": 0,"cooldown": 1}
         }
         self.current_move = "idle"
@@ -97,7 +98,15 @@ class Boss(pg.sprite.Sprite):
             self.current_frame = self.num_frames-1
             self.image = self.frames[self.current_frame]
             self.state = "aftercast" """
-            
+    
+    def alive(self):
+        """ Checks if this player object's target health is below 0.
+            This happens when the player takes damage and the healthbar is updating.
+
+        Returns:
+            int: The target health of the player, based on the current damage calculation.
+        """
+        return self.target_health > 0
         
     def update_animation(self, dt):
         self.frames = self.moves[self.current_move]["frames"]
@@ -142,9 +151,11 @@ class Boss(pg.sprite.Sprite):
             self.current_frame = 0
             self.start_time = 0
             self.state = "attacking"
+            AudioLoader.attack_sound(self.current_move)
 
     
     def update(self, sprite_handler, dt):
+        
         if self.state == "attacking":
             self.update_animation(dt)
         elif self.state == "aftercast":
@@ -178,7 +189,7 @@ class Boss(pg.sprite.Sprite):
                 rand_y = random.randint(self.beard_rect.top, self.beard_rect.bottom)
                 bullet = AimingBullet((rand_x, rand_y), 700, "spider.png", sprite_handler.player.rect.center)
                 sprite_handler.add_enemy_bullet(bullet)
-                self._last_shot_time = 0 
+                self._last_shot_time = 0
     
     
     def grid_attack(self, sprite_handler, dt):
@@ -187,7 +198,6 @@ class Boss(pg.sprite.Sprite):
         if self._last_shot_time < self._attack_delay:
             return
         self._last_shot_time = 0
-        
         if self.grid_index < 3:
             start_point, spawn_direction = self.grid_starts[self.grid_index] # get the current statistics
             bullet_dir = self.inward_direction(spawn_direction) # set the flight direction perpendicular to spawn dir
@@ -196,9 +206,9 @@ class Boss(pg.sprite.Sprite):
             elif self.current_bullet < self.bullet_count:
                 x = start_point[0] + self.current_bullet * (self.grid_blt_width + self.grid_spacing) * spawn_direction[0]
                 y = start_point[1] + self.current_bullet * (self.grid_blt_width + self.grid_spacing) * spawn_direction[1]
-                bullet = StraightBullet((x,y), 600, f"baby{random.randint(1,10)}.png", bullet_dir[0], bullet_dir[1], True, self.grid_delay)
+                bullet = StraightBullet((x,y), 650, f"baby{random.randint(1,10)}.png", bullet_dir[0], bullet_dir[1], True, self.grid_delay)
                 sprite_handler.add_enemy_bullet(bullet)
-                self.grid_delay += 0.3
+                self.grid_delay += 0.25
                 self.current_bullet += 1
             else:
                 self.grid_index += 1
@@ -209,7 +219,6 @@ class Boss(pg.sprite.Sprite):
             random.shuffle(self.grid_starts)
 
         
-
     
     def suck_attack(self, sprite_handler, dt):
         self._attack_delay = 0.225 # time in seconds

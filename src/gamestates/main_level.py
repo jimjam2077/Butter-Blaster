@@ -11,6 +11,7 @@ from components.hazard import Hazard
 from components.jena import Jena
 from gamestates.pause import Pause
 from components.boss import Boss
+from gamestates.game_complete import GameComplete
 from utils.sprite_handler import SpriteHandler
 from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
@@ -36,9 +37,8 @@ class MainLevel(State):
     #TODO: Two main phases: enemy phase -> boss phase
     def update(self, delta_time):
         # player dead? -> game over
-        if not self.sprite_handler.player.alive():
-            self.game_over()
         if self.sprite_handler.player.get_score() == 3 and self.sprite_handler.boss is None:
+            pg.mixer.music.fadeout(500)
             self.sprite_handler.add_boss(Boss());
             self.sprite_handler.player.increase_score();
             # change the background speed
@@ -55,9 +55,21 @@ class MainLevel(State):
             self.spawn_enemies()
         else:
             pass # do boss stuff
-        #update sprites   
+        #update sprites
+        if self.sprite_handler.boss is not None:
+            AudioLoader.play_boss_bgm()
+        else:
+            AudioLoader.play_bgm()   
         self.sprite_handler.update_all_sprites(delta_time)
         self.sprite_handler.check_collisions(delta_time)
+        if not self.sprite_handler.player.alive():
+            self.game_over()
+        if self.sprite_handler.boss is not None and not self.sprite_handler.boss.alive():
+            self.sprite_handler.player.reset()
+            game_complete = GameComplete(self.game)
+            game_complete.enter_state()
+            
+            
 
 
     def render(self, display):

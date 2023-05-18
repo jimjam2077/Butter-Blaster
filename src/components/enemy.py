@@ -5,6 +5,7 @@ from config import Config
 from components.explosion import Explosion
 from components.power import Power
 from components.bullets.straight_bullet import StraightBullet
+from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
 
 
@@ -28,6 +29,7 @@ class Enemy(pg.sprite.Sprite):
         if now - self._last_shot_time > self._shot_delay:
             bullet = StraightBullet((self.rect.left, self.rect.centery), Config.BULLET_SPEED*0.75, "enemybullet.png", -1, 0)
             sprite_handler.add_enemy_bullet(bullet)
+            AudioLoader.attack_sound("enemyshoot")
             self._last_shot_time = now 
  
     def update(self, sprite_handler, dt):

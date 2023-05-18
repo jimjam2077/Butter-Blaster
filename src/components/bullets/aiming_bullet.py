@@ -1,6 +1,7 @@
 import pygame
 from config import Config
 from components.bullets.bullet import Bullet
+from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
 import math
 
@@ -37,6 +38,7 @@ class AimingBullet(Bullet, pygame.sprite.Sprite):
             self.kill()       
         elif "dorito" in self.type:
             if self.rect.colliderect(pygame.Rect(self.target_pos[0]-15, self.target_pos[1]-15, 30, 30)) or self.rect.left > self.target_pos[0]:
+                AudioLoader.crunch_sound()
                 self.kill()
 
 

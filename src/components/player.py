@@ -6,6 +6,7 @@ from config import Config
 from components.power import Power
 from components.explosion import Explosion
 from components.jena import Jena
+from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
 
 vector = pg.math.Vector2
@@ -129,6 +130,7 @@ class Player(pg.sprite.Sprite):
             else: # player starts with 1 bullet    
                 bullet = StraightBullet((self.rect.right, self.rect.centery), Config.BULLET_SPEED, self.ammo_name, 1, 0)
                 sprite_handler.add_bullet(bullet)
+            AudioLoader.attack_sound("shoot")
             self._last_shot_time = now
 
 

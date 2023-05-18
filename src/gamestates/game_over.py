@@ -5,13 +5,13 @@ from config import Config
 from components.background import Background
 from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
-import pygame as pg
+import pygame
 
 class GameOver(State):
     def __init__(self, game):
         super().__init__(game)
         # graphics
-        self.overlay = pg.Surface((Config.WIDTH, Config.HEIGHT))
+        self.overlay = pygame.Surface((Config.WIDTH, Config.HEIGHT))
         #self.overlay.set_alpha(150)  # Set alpha to 128 (half-transparent)
         self.overlay.fill((0, 0, 0))  # Fill with black color
         self.portrait = AssetLoader.load_avatar("wes")
@@ -34,20 +34,20 @@ class GameOver(State):
         self._retry_scaled = False
         self._chars_scaled = False
         self._surfaces = [self.retry_rect, self.quit_rect]
-     
+        pygame.mixer.stop()
 
     def update(self, delta_time):
         print(len(self.game.state_stack))
 
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
-                pg.quit()
+                pygame.quit()
                 sys.exit()
-            if event.type == pg.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 # iterate over characters dictionary to check if a rectangle has been clicked
                 for rect in self._surfaces:
-                    if rect.collidepoint(pg.mouse.get_pos()):
+                    if rect.collidepoint(pygame.mouse.get_pos()):
                         if rect == self.retry_rect:
                             from gamestates.main_level import MainLevel
                             new_state = MainLevel(self.game)
