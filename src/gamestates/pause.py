@@ -29,7 +29,7 @@ class Pause(State):
                 sys.exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 pygame.mixer.unpause()
-                pygame.mixer.music.set_volume(0.3)
+                pygame.mixer.music.set_volume(0.20)
                 self.exit_state()
 
     def render(self, display):

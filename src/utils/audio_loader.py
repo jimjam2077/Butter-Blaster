@@ -36,6 +36,7 @@ class AudioLoader:
     @staticmethod
     def pickup_sound():
         shot = pg.mixer.Sound(SFX_DIR / "pickup.ogg")
+        shot.set_volume(1)
         shot.play()
         
     @staticmethod
@@ -52,16 +53,18 @@ class AudioLoader:
     @staticmethod
     def attack_sound(file_name):
         sound = pg.mixer.Sound(str(SFX_DIR / f"{file_name}.wav"))
-        if file_name == "enemyshoot" or "shoot":
-            sound.set_volume(0.20)
+        if file_name == "enemyshoot":
+            sound.set_volume(0.1)
+        elif file_name == "shoot":
+            sound.set_volume(0.10)
         else:
-            sound.set_volume(0.35)
+            sound.set_volume(0.25)
         sound.play()
       
     @staticmethod
     def crunch_sound():
         sound = pg.mixer.Sound(SFX_DIR / "crunch.mp3")
-        sound.set_volume(0.35)
+        sound.set_volume(0.3)
         sound.play()
   
     @staticmethod
@@ -115,7 +118,7 @@ class AudioLoader:
         musics = AudioLoader.get_bgms()
         filename = random.choice(musics)
         pg.mixer.music.load(filename)
-        pg.mixer.music.set_volume(0.3)
+        pg.mixer.music.set_volume(0.2)
         pg.mixer.music.play()
     
     @staticmethod
@@ -125,5 +128,5 @@ class AudioLoader:
         musics = AudioLoader.get_boss_bgms()
         filename = random.choice(musics)
         pg.mixer.music.load(filename)
-        pg.mixer.music.set_volume(0.3)
+        pg.mixer.music.set_volume(0.2)
         pg.mixer.music.play()

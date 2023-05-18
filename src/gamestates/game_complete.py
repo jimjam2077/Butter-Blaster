@@ -24,8 +24,8 @@ class GameComplete(State):
         }
         self.taunt_text = self.font.render(random.choice(tuple(self.lines)), True, (255, 255, 255))
         self.taunt_rect = self.taunt_text.get_rect(midtop = (Config.WIDTH/2, self.port_rect.bottom + 40))
-        self.quit_text = self.font.render("Quit", True, (255,255,255))
-        self.quit_rect = self.quit_text.get_rect(midleft = (Config.WIDTH/2 + 160, self.taunt_rect.bottom + 160))
+        self.quit_text = self.font.render("Main Menu", True, (255,255,255))
+        self.quit_rect = self.quit_text.get_rect(center = (Config.WIDTH/2, self.taunt_rect.bottom + 160))
         # Set up image scaling variables
         self._retry_scaled = False
         self._chars_scaled = False
@@ -59,5 +59,4 @@ class GameComplete(State):
         display.blit(self.overlay, (0,0))
         display.blit(self.portrait, self.port_rect)
         display.blit(self.taunt_text, self.taunt_rect)
-        display.blit(self.retry_text, self.retry_rect)
         display.blit(self.quit_text, self.quit_rect)
