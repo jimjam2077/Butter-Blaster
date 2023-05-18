@@ -56,16 +56,19 @@ class Player(pg.sprite.Sprite):
         print("Width:", self.score_rect.width)
         self.health_bar_length = 150
         self.portrait = AssetLoader.load_avatar(name)
-        self.ammo = pg.image.load("assets/powers/power3.png").convert_alpha()
-        self.ammo_rect = self.ammo.get_rect
         self.portrait = pg.transform.scale(self.portrait, (30, 30))
         self.port_rect = self.portrait.get_rect(midright=(self.score_rect.left - (self.health_bar_length + 20), 25))
+        self.assists = 0 # number of times the player can summon fire support
+        self.assist_img = pg.image.load("assets/powers/power3.png").convert_alpha()
+        self.assist_img = pg.transform.scale_by(self.assist_img, 0.75)
+        self.assist_rect = self.assist_img.get_rect(midright = (self.port_rect.right + (10+self.health_bar_length/2), 50))
+        self.assist_text = self.font.render(f"X {self.assists}", True, (255,255,255))
+        self.assist_text_rect = self.assist_text.get_rect(midleft = (self.assist_rect.right + 5, self.assist_rect.centery))
         # Damage statistics
         self._last_shot_time = 0 # used to limit fire rate later
         self.shot_delay = Config.SHOT_DELAY # determines fire rate
         self.damage = 1 # amount of damage delt by the player
         self.level = 0 # increases up to 3
-        self.assists = 0 # number of times the player can summon fire support
         # Health statistics
         self.last_hit_time = 0 #used for invulnerability window
         self.current_health = 0
@@ -193,6 +196,8 @@ class Player(pg.sprite.Sprite):
         self.handle_input(sprite_handler)
         self.score_text = self.font.render(f"{self.score:03d}/160", True, (255, 255, 255))
         self.score_rect = self.score_text.get_rect(center = (Config.WIDTH/2, 15))
+        self.assist_text = self.font.render(f"X {self.assists}", True, (255,255,255))
+        self.assist_text_rect = self.assist_text.get_rect(midleft = (self.assist_rect.right + 5, self.assist_rect.centery))
         # limit player's movement within the screen boundaries
         if self.rect.right > MARGIN_RIGHT:
             self.velocity.x = -self.velocity.x
@@ -287,11 +292,13 @@ class Player(pg.sprite.Sprite):
 
         screen.blit(self.portrait, self.port_rect)
         screen.blit (self.score_text, self.score_rect)
+        screen.blit(self.assist_img, self.assist_rect)
+        screen.blit(self.assist_text, self.assist_text_rect)
         pg.draw.rect(screen, (0, 255, 0), health_bar, 0, 5)
         pg.draw.rect(screen, transition_color, transition_bar, 0, 5)
         pg.draw.rect(screen, (119, 119, 119), (self.port_rect.right + 5, 10, self.health_bar_length, bar_height), 2, 5)
+
         
-    
     def draw(self, screen):
          # can add other things to draw here
         screen.blit(self.images[self.animation_frame], self.rect)

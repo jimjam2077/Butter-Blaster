@@ -31,6 +31,8 @@ class GameComplete(State):
         self._chars_scaled = False
         self._surfaces = [self.quit_rect]
         pygame.mixer.stop()
+        pygame.mixer.music.stop()
+        AudioLoader.play_end_music()
 
     def update(self, delta_time):
         print(len(self.game.state_stack))
@@ -44,6 +46,8 @@ class GameComplete(State):
                 # iterate over characters dictionary to check if a rectangle has been clicked
                 for rect in self._surfaces:
                     if rect.collidepoint(pygame.mouse.get_pos()):
+                        pygame.mixer.stop()
+                        pygame.mixer.music.stop()
                         if rect == self.quit_rect:
                             from gamestates.title import Title
                             new_state = Title(self.game)

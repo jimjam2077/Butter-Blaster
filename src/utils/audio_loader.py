@@ -42,7 +42,7 @@ class AudioLoader:
     @staticmethod
     def explosion_sound():
         sound = pg.mixer.Sound(SFX_DIR / "explosion.wav")
-        sound.set_volume(0.35)
+        sound.set_volume(0.28)
         sound.play()
     
     @staticmethod
@@ -79,7 +79,7 @@ class AudioLoader:
         if pg.mixer.music.get_busy(): # prevents the mixer from layering another instance of the music
             return
         pg.mixer.music.load(MUSIC_DIR / "start.wav")
-        pg.mixer.music.set_volume(0.4) # 50% vol
+        pg.mixer.music.set_volume(0.3) # 50% vol
         pg.mixer.music.play(-1) # -1 plays the music on an indefinite loop
         
     
@@ -88,7 +88,7 @@ class AudioLoader:
         if pg.mixer.music.get_busy(): # prevents the mixer from layering another instance of the music
             return
         pg.mixer.music.load(MUSIC_DIR / "end.wav")
-        pg.mixer.music.set_volume(0.4) # 50% vol
+        pg.mixer.music.set_volume(0.3) # 50% vol
         pg.mixer.music.play(-1) # -1 plays the music on an indefinite loop
         
         
@@ -97,7 +97,7 @@ class AudioLoader:
         if pg.mixer.music.get_busy(): # prevents the mixer from layering another instance of the music
             return
         pg.mixer.music.load(MUSIC_DIR / "charsel.ogg")
-        pg.mixer.music.set_volume(0.4) # 50% vol
+        pg.mixer.music.set_volume(0.2) # 50% vol
         pg.mixer.music.play(-1) # -1 plays the music on an indefinite loop
     
     @staticmethod

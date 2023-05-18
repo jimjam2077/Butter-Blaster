@@ -33,7 +33,6 @@ WEIGHTS = [60, 25, 15] # adjust to decide how often 1, 2 or 3 is chosen
 # doing it this way means assets are loaded as they are needed
 # not really a big concern because this is a tiny game
 class AssetLoader:
-    
     # loads a set of player ship sprites from a named folder
     @staticmethod
     def load_player_ship(name):
