@@ -77,7 +77,7 @@ class Player(pg.sprite.Sprite):
     def increase_score(self):
         """ Increases the player's score by 1, up to 200
         """
-        self.score = min(self.score+1, 200);
+        self.score = min(self.score+1, 160);
 
 
     def get_score(self):
@@ -191,7 +191,7 @@ class Player(pg.sprite.Sprite):
    
     def update(self, sprite_handler, dt):
         self.handle_input(sprite_handler)
-        self.score_text = self.font.render(f"{self.score:03d}/200", True, (255, 255, 255))
+        self.score_text = self.font.render(f"{self.score:03d}/160", True, (255, 255, 255))
         self.score_rect = self.score_text.get_rect(center = (Config.WIDTH/2, 15))
         # limit player's movement within the screen boundaries
         if self.rect.right > MARGIN_RIGHT:

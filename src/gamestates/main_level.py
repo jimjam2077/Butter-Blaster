@@ -37,7 +37,7 @@ class MainLevel(State):
     #TODO: Two main phases: enemy phase -> boss phase
     def update(self, delta_time):
         # player dead? -> game over
-        if self.sprite_handler.player.get_score() == 200 and self.sprite_handler.boss is None:
+        if self.sprite_handler.player.get_score() == 160 and self.sprite_handler.boss is None:
             pg.mixer.music.fadeout(500)
             self.sprite_handler.add_boss(Boss());
             self.sprite_handler.player.increase_score();

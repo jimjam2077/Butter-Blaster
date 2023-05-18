@@ -92,10 +92,10 @@ class SpriteHandler:
         if now - self.player.last_hit_time <= Config.INVULN_WINDOW:
             return
         collision_data = { # use this dictionary to specify how much damage each type of collision should do
-        'bullet': {'damage': 1},
-        'hazard': {'damage': 2, 'bounce': True},
-        'ship': {'damage': 2},
-        'boss': {'damage': 4}
+        'bullet': {'damage': 1.5},
+        'hazard': {'damage': 3, 'bounce': True},
+        'ship': {'damage': 1},
+        'boss': {'damage': 5}
         }
         
         collisions = { # use this dictionary to retrieve results for each type of collidable object
