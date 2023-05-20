@@ -9,6 +9,7 @@ ASSET_DIR = ROOT_DIR / "assets"
 BG_DIR = ASSET_DIR / "bg"
 BULLET_DIR = ASSET_DIR / "bullets"
 HAZARD_DIR = ASSET_DIR / "hazards"
+TURRET_DIR = ASSET_DIR / "turrets"
 POWER_DIR = ASSET_DIR / "powers"
 EXPLO_DIR = ASSET_DIR / "explosions"
 FONT_DIR = ASSET_DIR / "fonts"
@@ -87,6 +88,11 @@ class AssetLoader:
         return pg.image.load(BOSS_DIR / "idle1.png")
     
     @staticmethod
+    def load_turret():
+        sprite_count = len(os.listdir(TURRET_DIR))
+        return pg.image.load(TURRET_DIR.joinpath("turret" + str(random.randint(1,sprite_count)) + ".png")).convert_alpha()
+    
+    @staticmethod
     def load_avatar(name):
         ava_path = UI_DIR / f"{name}.png"
         return pg.image.load(str(ava_path)).convert_alpha()
@@ -103,6 +109,8 @@ class AssetLoader:
     @staticmethod
     def load_enemy_bullet():
         return pg.image.load(BULLET_DIR / "enemybullet.png").convert_alpha()
+    
+    
     
     @staticmethod
     def load_bullet(file):

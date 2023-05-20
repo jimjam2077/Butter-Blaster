@@ -46,8 +46,7 @@ class Enemy(pg.sprite.Sprite):
         self.shoot(sprite_handler)
         if (self.rect.right < 0): # check if object goes beyond the left edge
             # reset the position off-screen to the right
-            self.rect.centerx = random.randint(Config.WIDTH, Config.WIDTH+700)
-            self.rect.centery = random.randint(40, Config.HEIGHT - 40)
+            self.kill()
         
         # check for collisions with other enemies
         for enemy in sprite_handler.enemies:

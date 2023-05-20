@@ -315,6 +315,7 @@ class Player(pg.sprite.Sprite):
         self.damage = 1
         self.pos = vector((Config.PLAYER_POS))
         self.shot_delay = Config.SHOT_DELAY
+        self.assists = 0
         
 
 

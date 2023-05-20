@@ -29,7 +29,7 @@ class CharSelect(State):
 
         # Create title text
         self._title_font = AssetLoader.load_story_font(64)
-        self._title_text = self._title_font.render("SELECT YOUR PILOT", True, pg.Color("firebrick2"))
+        self._title_text = self._title_font.render("SELECT PILOT", True, pg.Color("firebrick2"))
         self._title_rect = self._title_text.get_rect(center=center).move(0, -250)
 
         # Create nameplates

@@ -59,7 +59,7 @@ class StoryScroll(State):
     def render(self, display):
         display.fill((0, 0, 0))
         if self._text_rects[-1].y < Config.HEIGHT/2: #move on if the text has fully moves off screen
-            cont_txt = self._font.render("Press Space to Continue", True, (255,255,255))
+            cont_txt = self._font.render("Press space to deploy", True, (255,255,255))
             cont_rect = cont_txt.get_rect(center=(Config.WIDTH/2, Config.HEIGHT -40 -cont_txt.get_height()/2))
             display.blit(cont_txt, cont_rect)
         for text_surface, text_rect in zip(self._text_surfaces, self._text_rects):

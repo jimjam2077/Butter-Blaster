@@ -139,13 +139,10 @@ class SpriteHandler:
                 print("enemy killed")
                 # Add power with a 8% chance at the center of the enemy rect
                 if random.random() < 0.90:
-                    if self.boss is not None:
-                        power = Power(enemy.rect.center, 0)
-                    else: 
-                        power = Power(enemy.rect.center)
+                    power = Power(enemy.rect.center, 0) if self.boss is not None else Power(enemy.rect.center)
                     self.all_sprites.add(power)
-                    self.powers.add(power)    
-                explosion = Explosion(enemy.rect.center)
+                    self.powers.add(power)
+                explosion = Explosion(enemy.rect.center, 0) if self.boss is not None else Explosion(enemy.rect.center)
                 self.all_sprites.add(explosion)
                 self.player.increase_score()
 

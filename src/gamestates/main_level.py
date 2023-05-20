@@ -12,6 +12,7 @@ from components.jena import Jena
 from gamestates.pause import Pause
 from components.boss import Boss
 from gamestates.game_complete import GameComplete
+from components.turret import Turret
 from utils.sprite_handler import SpriteHandler
 from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
@@ -37,7 +38,7 @@ class MainLevel(State):
     #TODO: Two main phases: enemy phase -> boss phase
     def update(self, delta_time):
         # player dead? -> game over
-        if self.sprite_handler.player.get_score() == 160 and self.sprite_handler.boss is None:
+        if self.sprite_handler.player.get_score() == 5 and self.sprite_handler.boss is None:
             pg.mixer.music.fadeout(500)
             self.sprite_handler.add_boss(Boss());
             self.sprite_handler.player.increase_score();
@@ -96,9 +97,12 @@ class MainLevel(State):
 
 
     def spawn_enemies(self):
-        if random.random() <= 0.001*self.enemy_strength:
+        if random.random() <= 0.0005*self.enemy_strength:
             hazard = Hazard()
             self.sprite_handler.add_hazard(hazard)
+        if random.random() <= 0.0005*self.enemy_strength:
+            turret = Turret()
+            self.sprite_handler.add_hazard(turret)
         if self.enemy_strength > self.max_strength:
             self.enemy_strength = self.max_strength
         else:

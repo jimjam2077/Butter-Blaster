@@ -5,6 +5,7 @@ from config import Config
 from components.explosion import Explosion
 from components.bullets.aiming_bullet import AimingBullet
 from components.bullets.straight_bullet import StraightBullet
+from components.enemy import Enemy
 from utils.audio_loader import AudioLoader
 from utils.asset_loader import AssetLoader
 
@@ -25,7 +26,24 @@ class Boss(pg.sprite.Sprite):
         self.mouth_rect.width //= 4
         self.mouth_rect.left = self.beard_rect.left+50
         self.mouth_rect.top = self.beard_rect.top+10
-
+        #UI stuff
+        self.font = AssetLoader.load_story_font(24)
+        self.warning_text = self.font.render("Andy is hunkerin' down...", True, (255, 255, 255))
+        self.warning_rect = self.warning_text.get_rect(midbottom = (Config.WIDTH/2, Config.HEIGHT-10))
+        """         # Create a new surface with a border and background
+        border_width = 2  # Adjust the border width as needed
+        new_width = self.warning_rect.width + border_width * 2
+        new_height = self.warning_rect.height + border_width * 2
+        new_surface = pg.Surface((new_width, new_height))
+        new_surface.fill((0,0,0))
+        # Draw the border on the new surface
+        pg.draw.rect(new_surface, (255,255,255), new_surface.get_rect(), border_width)
+        # Blit the text surface onto the new surface with an offset to create the border effect
+        new_surface.blit(self.warning_text, (border_width, border_width))
+        # Set the updated text surface and its rect as the score_text and score_rect variables
+        self.warning_text = new_surface
+        self.warning_rect = new_surface.get_rect(midbottom=(Config.WIDTH / 2, Config.HEIGHT - 10)) """
+        
         
         # boss stats
         self.current_health = 0
@@ -54,12 +72,16 @@ class Boss(pg.sprite.Sprite):
         self.num_frames = len(self.moves[self.current_move]["frames"])
         self.animation_speed = 0.25  # 2 frames per second
         self.animation_timer = 0.0
+        self.destination = None
+        self.speed = 100
         
         # ability lengths and cooldowns
         self.swarm_size = 3
         self.start_time = 0 
         self._last_shot_time = 0 #used to limit fire rate later
         self._attack_delay = 0
+        self.hunker_time = 6
+        self.hunkering = False
         
         # Starting points and directions for a patterned attack
         self.grid_starts = [
@@ -75,29 +97,6 @@ class Boss(pg.sprite.Sprite):
         self.current_bullet = 0
         self.bullet_count = 0
 
-
-    """     def update_animation(self, dt):
-        self.frames = self.moves[self.current_move]["frames"]
-        self.animation_timer += dt
-          
-        if self.current_frame < self.num_frames:
-            self.image = self.frames[self.current_frame]
-            if self.animation_timer >= self.animation_speed:
-                self.current_frame += 1
-                self.animation_timer = 0
-                self.start_time = 0
-        elif self.current_move == "mouth": # hold the animation for the sucking attack
-            self.start_time += dt
-            if self.start_time <= self.suck_time:
-                self.image = self.frames[self.num_frames-1]
-            else:
-                self.current_frame = self.num_frames-1
-                self.image = self.frames[self.current_frame]
-                self.state = "aftercast"
-        else:
-            self.current_frame = self.num_frames-1
-            self.image = self.frames[self.current_frame]
-            self.state = "aftercast" """
     
     def alive(self):
         """ Checks if this player object's target health is below 0.
@@ -155,6 +154,24 @@ class Boss(pg.sprite.Sprite):
 
     
     def update(self, sprite_handler, dt):
+        self.hunker(sprite_handler, dt)
+        if self.hunkering:
+            return  # Skip the rest of the functionality if hunkering is true
+        if not self.current_move == "mouth": #don't move during mouth
+            top = self.rect.y
+            bottom = self.rect.y + self.rect.height
+            if self.destination is None or top <= 20 or bottom >= Config.HEIGHT - 20 or (top <= self.destination <= bottom):
+                self.destination = self.select_destination()
+
+            if bottom < self.destination:
+                self.rect.move_ip(0, self.speed*dt)
+                self.beard_rect.move_ip(0, self.speed*dt)
+                self.mouth_rect.move_ip(0, self.speed*dt)
+            elif top >self.destination:
+                self.rect.move_ip(0, -self.speed*dt)
+                self.beard_rect.move_ip(0, -self.speed*dt)
+                self.mouth_rect.move_ip(0, -self.speed*dt)
+    
         
         if self.state == "attacking":
             self.update_animation(dt)
@@ -170,7 +187,8 @@ class Boss(pg.sprite.Sprite):
             self.grid_attack(sprite_handler, dt)
         elif self.current_move == "spider" and self.state == "attacking":
             self.swarm_attack(sprite_handler, dt)
-    
+        
+
     
     
     def add_damage(self,amount):
@@ -251,6 +269,28 @@ class Boss(pg.sprite.Sprite):
             return (1, 0)
         return (-y, -x)
 
+    def select_destination(self):
+        destination = random.randint(20, 700)
+        print(destination)
+        return destination
+
+    def hunker(self, sprite_handler, dt):
+        if random.random() < 0.10 and self.state == "idle":  # 1% chance to set hunkering to true
+            self.hunkering = True
+        if self.hunkering:
+            self._attack_delay = 1 # time in seconds
+            self._last_shot_time +=dt
+            self.hunker_time -= dt
+            if self._last_shot_time >= self._attack_delay:
+                for x in range(1,3):
+                    enemy = Enemy()
+                    sprite_handler.add_enemy(enemy)
+                self._last_shot_time = 0   
+            if self.hunker_time <= 0:
+                self.hunker_time = 6
+                self.hunkering = False
+
+
     def advanced_health(self, screen):
         transition_width = 0
         transition_color = (0,255,0)
@@ -273,6 +313,8 @@ class Boss(pg.sprite.Sprite):
         transition_bar.normalize()
         
         screen.blit(self.portrait, self.port_rect)
+        if self.hunkering:
+            screen.blit(self.warning_text, self.warning_rect)
         pg.draw.rect(screen,(0,255,0),health_bar, 0, 5)
         pg.draw.rect(screen,transition_color,transition_bar, 0, 5)	
         pg.draw.rect(screen,(119,119,119),(Config.WIDTH/2+10+47, 10, self.health_bar_length, bar_height), 2, 5)
@@ -280,6 +322,7 @@ class Boss(pg.sprite.Sprite):
         # assuming you have created the beard_rect as described
         pg.draw.rect(screen, (255, 255, 255), self.beard_rect, 3)
         pg.draw.rect(screen, (255, 0, 0), self.mouth_rect, 3)
+        pg.draw.rect(screen, (0, 255, 0), self.rect, 3)
         
             
     def draw(self, screen):
