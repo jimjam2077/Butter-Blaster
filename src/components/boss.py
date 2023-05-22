@@ -47,8 +47,8 @@ class Boss(pg.sprite.Sprite):
         
         # boss stats
         self.current_health = 0
-        self.target_health = 15
-        self.max_health = 15
+        self.target_health = 1500
+        self.max_health = 1500
         self.health_bar_length = 150
         self.health_ratio = self.max_health / self.health_bar_length
         self.health_change_speed = 0.75 * self.max_health / 100

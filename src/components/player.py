@@ -90,6 +90,9 @@ class Player(pg.sprite.Sprite):
             int: the current score of the player object
         """
         return self.score
+    
+    def get_health(self):
+        return self.current_health
 
 
     def alive(self):

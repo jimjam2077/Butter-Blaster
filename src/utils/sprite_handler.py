@@ -143,12 +143,13 @@ class SpriteHandler:
         """
         # Check for collisions between bullets and enemies
         # Check for collisions between bullets and enemies
+        drop_chance = 0.1 if self.player.get_health() >= 5 else 0.2
         bullet_enemy_collisions = pg.sprite.groupcollide(self.bullets, self.enemies, True, True)
         for bullet, enemy_list in bullet_enemy_collisions.items():
             for enemy in enemy_list:
                 print("enemy killed")
                 # Add power with a 8% chance at the center of the enemy rect
-                if random.random() < 0.90:
+                if random.random() < drop_chance:
                     power = Power(enemy.rect.center, 0) if self.boss is not None else Power(enemy.rect.center)
                     self.all_sprites.add(power)
                     self.powers.add(power)

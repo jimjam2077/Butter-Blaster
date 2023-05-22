@@ -29,7 +29,7 @@ class Turret(pg.sprite.Sprite):
     def shoot(self, sprite_handler):
         turret_x = self.rect.centerx
         turret_y = self.rect.centery
-        target_x_values = [-720, -310, 0, 310, 720]
+        target_x_values = [-720, 0, 310]
         target_y = 0 if (turret_y > Config.HEIGHT/2) else Config.HEIGHT
         print(target_y)
         for target_x in target_x_values:
