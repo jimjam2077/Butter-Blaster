@@ -20,7 +20,8 @@ class SpriteHandler:
         self.enemy_bullets = pg.sprite.Group() # enemy bullet group
         self.powers = pg.sprite.Group()
         self.hazards = pg.sprite.Group()
-        self.boss = None
+        self.boss = None # boss enemy
+        self.assist = None # support character
         self.clock = None
         self.all_sprites = pg.sprite.Group()
         self.all_sprites.add(self.bullets)
@@ -36,6 +37,11 @@ class SpriteHandler:
         self.player = player
         self.player.reset()
         self.all_sprites.add(player)
+        
+    def add_assist(self):
+        jena = Jena()
+        self.assist = jena
+        self.all_sprites.add(jena)
 
     def add_bullet(self, bullet):
         self.bullets.add(bullet)
@@ -60,7 +66,11 @@ class SpriteHandler:
     def add_hazard(self, hazard):
         self.hazards.add(hazard)
         self.all_sprites.add(hazard)
-
+    
+    def remove_assist(self):
+        self.assist.kill()
+        self.assist = None    
+    
     def update_all_sprites(self, delta_time):
         if self.boss is not None:
             self.background.fade_boss_bg(delta_time)

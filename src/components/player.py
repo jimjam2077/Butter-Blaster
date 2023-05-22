@@ -53,7 +53,7 @@ class Player(pg.sprite.Sprite):
         self.score_text = self.font.render(f"{self.score:03d}/200", True, (255, 255, 255))
         self.score_rect = self.score_text.get_rect(center = (Config.WIDTH/2, 15))
         # Print the width of the rect
-        print("Width:", self.score_rect.width)
+        #print("Width:", self.score_rect.width)
         self.health_bar_length = 150
         self.portrait = AssetLoader.load_avatar(name)
         self.portrait = pg.transform.scale(self.portrait, (30, 30))
@@ -183,9 +183,8 @@ class Player(pg.sprite.Sprite):
         if pressed_keys[pg.K_SPACE]:
             self.shoot(sprite_handler)
         if pressed_keys[pg.K_f]:
-            if self.assists > 0:
-                jena = Jena()
-                sprite_handler.all_sprites.add(jena)
+            if self.assists > 0 and sprite_handler.assist is None:
+                sprite_handler.add_assist()
                 self.assists-=1
         #calc acceleration
         self.acc.x += self.velocity.x * Config.FRIC

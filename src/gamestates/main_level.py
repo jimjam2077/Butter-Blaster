@@ -1,21 +1,16 @@
 import random
 import sys
 from gamestates.state import State
-from config import Config
-from components.background import Background
 from components.player import Player
 from components.enemy import Enemy
 from components.explosion import Explosion
-from components.power import Power
 from components.hazard import Hazard
-from components.jena import Jena
 from gamestates.pause import Pause
 from components.boss import Boss
 from gamestates.game_complete import GameComplete
 from components.turret import Turret
 from utils.sprite_handler import SpriteHandler
 from utils.audio_loader import AudioLoader
-from utils.asset_loader import AssetLoader
 from gamestates.game_over import GameOver
 import pygame as pg
 
@@ -33,13 +28,16 @@ class MainLevel(State):
         self.start_time = pg.time.get_ticks()
         self.enemy_strength = 1 # update continuously to spawn more mobs
         self.max_strength = 12 # max number of enemies in a wave
-    
+        self.transition_surf = pg.Surface((1280, 720)).convert_alpha()
+        self.transition_surf.fill((0, 0, 0))
+        self.transition_surf.set_alpha(0)
+        self.transition_time = 2
     
     #TODO: Two main phases: enemy phase -> boss phase
     def update(self, delta_time):
         # player dead? -> game over
         if self.sprite_handler.player.get_score() == 5 and self.sprite_handler.boss is None:
-            pg.mixer.music.fadeout(500)
+            pg.mixer.music.fadeout(1000)
             self.sprite_handler.add_boss(Boss());
             self.sprite_handler.player.increase_score();
             # change the background speed
@@ -65,10 +63,8 @@ class MainLevel(State):
         self.sprite_handler.check_collisions(delta_time)
         if not self.sprite_handler.player.alive():
             self.game_over()
-        if self.sprite_handler.boss is not None and not self.sprite_handler.boss.alive():
-            self.sprite_handler.player.reset()
-            game_complete = GameComplete(self.game)
-            game_complete.enter_state()
+        if self.sprite_handler.boss is not None and not self.sprite_handler.boss.is_alive():
+            self.victory_sequence(delta_time)
             
             
     def render(self, display):
@@ -129,3 +125,12 @@ class MainLevel(State):
         game_over.enter_state()
         self.sprite_handler.player.reset()
         
+    def victory_sequence(self, delta_time):
+        self.transition_time -= delta_time
+        if self.transition_time > 0
+            pass
+        else: 
+            self.sprite_handler.player.reset()
+            game_complete = GameComplete(self.game)
+            game_complete.enter_state()
+    

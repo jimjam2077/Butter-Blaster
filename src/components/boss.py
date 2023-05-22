@@ -14,7 +14,7 @@ class Boss(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = AssetLoader.load_boss_img()
-        self.rect = self.image.get_rect(right= Config.WIDTH-30, centery =Config.HEIGHT/2)
+        self.rect = self.image.get_rect(right= Config.WIDTH+600, centery =Config.HEIGHT/2)
         self.mask = pg.mask.from_surface(self.image)
         self.beard_rect = self.rect.copy()  # make a copy of self.rect
         self.beard_rect.height //= 4  # reduce the height to one third of the original
@@ -47,8 +47,8 @@ class Boss(pg.sprite.Sprite):
         
         # boss stats
         self.current_health = 0
-        self.target_health = 1500
-        self.max_health = 1500
+        self.target_health = 15
+        self.max_health = 15
         self.health_bar_length = 150
         self.health_ratio = self.max_health / self.health_bar_length
         self.health_change_speed = 0.75 * self.max_health / 100
@@ -98,7 +98,7 @@ class Boss(pg.sprite.Sprite):
         self.bullet_count = 0
 
     
-    def alive(self):
+    def is_alive(self):
         """ Checks if this player object's target health is below 0.
             This happens when the player takes damage and the healthbar is updating.
 
@@ -144,6 +144,7 @@ class Boss(pg.sprite.Sprite):
 
 
 
+
     def choose_action(self):
             self.current_move = random.choice(["mouth", "eye", "spider"])
             self.num_frames = len(self.moves[self.current_move]["frames"])
@@ -152,45 +153,48 @@ class Boss(pg.sprite.Sprite):
             self.state = "attacking"
             AudioLoader.attack_sound(self.current_move)
 
+    def move_rects(self, x_spd, y_spd):
+        self.rect.move_ip(x_spd, y_spd)
+        self.beard_rect.move_ip(x_spd, y_spd)
+        self.mouth_rect.move_ip(x_spd, y_spd)
     
     def update(self, sprite_handler, dt):
-        self.hunker(sprite_handler, dt)
-        if self.hunkering:
-            return  # Skip the rest of the functionality if hunkering is true
-        if not self.current_move == "mouth": #don't move during mouth
-            top = self.rect.y
-            bottom = self.rect.y + self.rect.height
-            if self.destination is None or top <= 20 or bottom >= Config.HEIGHT - 20 or (top <= self.destination <= bottom):
-                self.destination = self.select_destination()
-
-            if bottom < self.destination:
-                self.rect.move_ip(0, self.speed*dt)
-                self.beard_rect.move_ip(0, self.speed*dt)
-                self.mouth_rect.move_ip(0, self.speed*dt)
-            elif top >self.destination:
-                self.rect.move_ip(0, -self.speed*dt)
-                self.beard_rect.move_ip(0, -self.speed*dt)
-                self.mouth_rect.move_ip(0, -self.speed*dt)
-    
-        
-        if self.state == "attacking":
-            self.update_animation(dt)
-        elif self.state == "aftercast":
-            self.become_idle(dt)
+        if self.rect.centerx > 1040 and self.current_health > 0: # move into the screen slowly
+            self.move_rects(-1.5*self.speed*dt, 0)
+        elif self.target_health == 0:
+            self.die(sprite_handler)
         else:
-            self.choose_action()    
+            self.print_dimensions()
+            self.hunker(sprite_handler, dt)
+            if self.hunkering:
+                return  # Skip the rest of the functionality if hunkering is true
+            if not self.current_move == "mouth": #don't move during mouth
+                top = self.rect.y
+                bottom = self.rect.y + self.rect.height
+                if self.destination is None or top <= 20 or bottom >= Config.HEIGHT - 20 or (top <= self.destination <= bottom):
+                    self.destination = self.select_destination()
+                if bottom < self.destination:
+                    self.move_rects(0, self.speed*dt)
+                elif top >self.destination:
+                    self.move_rects(0, -self.speed*dt)
+        
             
-        # Call the appropriate behavior method based on the sprite's current attack
-        if self.current_move == "mouth" and self.start_time < self.moves["mouth"]["duration"]/1.5:
-            self.suck_attack(sprite_handler, dt)
-        elif self.current_move == "eye" and self.state == "attacking":
-            self.grid_attack(sprite_handler, dt)
-        elif self.current_move == "spider" and self.state == "attacking":
-            self.swarm_attack(sprite_handler, dt)
+            if self.state == "attacking":
+                self.update_animation(dt)
+            elif self.state == "aftercast":
+                self.become_idle(dt)
+            else:
+                self.choose_action()    
+                
+            # Call the appropriate behavior method based on the sprite's current attack
+            if self.current_move == "mouth" and self.start_time < self.moves["mouth"]["duration"]/1.5:
+                self.suck_attack(sprite_handler, dt)
+            elif self.current_move == "eye" and self.state == "attacking":
+                self.grid_attack(sprite_handler, dt)
+            elif self.current_move == "spider" and self.state == "attacking":
+                self.swarm_attack(sprite_handler, dt)
         
 
-    
-    
     def add_damage(self,amount):
         if self.target_health > 0:
             self.target_health -= amount
@@ -236,7 +240,6 @@ class Boss(pg.sprite.Sprite):
             self.grid_delay = 0
             random.shuffle(self.grid_starts)
 
-        
     
     def suck_attack(self, sprite_handler, dt):
         self._attack_delay = 0.225 # time in seconds
@@ -260,8 +263,6 @@ class Boss(pg.sprite.Sprite):
             sprite_handler.add_enemy_bullet(bullet)
             self._last_shot_time = 0
     
-    def spawn_adds(self):
-        pass    
    
     def inward_direction(self, direction):
         x, y = direction
@@ -290,6 +291,21 @@ class Boss(pg.sprite.Sprite):
                 self.hunker_time = 6
                 self.hunkering = False
 
+    def die(self, sprite_handler):
+        self.image.fill((255, 0, 0, 255), special_flags=pg.BLEND_RGBA_MULT)
+        alpha = self.image.get_alpha()
+        print(alpha)
+        random_point = (
+            random.randint(self.rect.left, self.rect.right),
+            random.randint(self.rect.top, self.rect.bottom)
+        )
+        if alpha > 0:
+            alpha-=2
+            self.image.set_alpha(alpha)
+            explosion = Explosion(random_point, 0)
+            sprite_handler.add_explosion(explosion)
+            self.move_rects(0, 2)
+            
 
     def advanced_health(self, screen):
         transition_width = 0
@@ -327,3 +343,11 @@ class Boss(pg.sprite.Sprite):
             
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+        
+
+    def print_dimensions(self):
+        """ Used for debug purposed to check how large and where the center of rect is
+        """
+        print("Width:", self.rect.width)
+        print("Height:", self.rect.height)
+        print("Center:", self.rect.center)

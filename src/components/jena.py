@@ -47,8 +47,8 @@ class Jena(pg.sprite.Sprite):
         self.pos = [x, y]
         self.rect.center = tuple(self.pos)
         self.angle += 1  # Rotate at 1 degree per frame
-        if self.angle > 360 or self.rect.centerx >= Config.WIDTH+20:
-            self.kill()
+        if self.angle > 360 or self.rect.centerx >= Config.WIDTH+20 or self.rect.centery < -100:
+            sprite_handler.remove_assist()
             
         # add a portrait + "meow!" at bottom center, small
         self.shoot(sprite_handler)
