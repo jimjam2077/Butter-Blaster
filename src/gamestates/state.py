@@ -1,3 +1,6 @@
+from src.utils.audio_loader import AudioLoader
+
+
 class State():
     def __init__(self, game):
         self.game = game

@@ -1,10 +1,10 @@
 import random
 import sys
-from gamestates.state import State
-from config import Config
-from components.background import Background
-from utils.audio_loader import AudioLoader
-from utils.asset_loader import AssetLoader
+from src.gamestates.state import State
+from src.config import Config
+from src.components.background import Background
+from src.utils.audio_loader import AudioLoader
+from src.utils.asset_loader import AssetLoader
 import pygame
 
 class GameComplete(State):
@@ -14,10 +14,10 @@ class GameComplete(State):
         self.overlay = pygame.Surface((Config.WIDTH, Config.HEIGHT))
         #self.overlay.set_alpha(150)  # Set alpha to 128 (half-transparent)
         self.overlay.fill((0, 0, 0))  # Fill with black color
-        self.portrait = AssetLoader.load_avatar("wes")
+        self.portrait = AssetLoader.ui_parts["portraits"]["wes"]
         self.port_rect = self.portrait.get_rect(midtop=(Config.WIDTH/2, 80))
         # text elements
-        self.font = AssetLoader.load_story_font(34)
+        self.font = AssetLoader.fonts["flavour"]
         self.lines = {
             "Let's haul this hog off to the Dixie Auction.",
             "LET'S GOOOOOOOO!"
@@ -30,13 +30,11 @@ class GameComplete(State):
         self._retry_scaled = False
         self._chars_scaled = False
         self._surfaces = [self.quit_rect]
-        pygame.mixer.stop()
-        pygame.mixer.music.stop()
+        #pygame.mixer.stop()
+        #pygame.mixer.music.stop()
         AudioLoader.play_end_music()
 
     def update(self, delta_time):
-        print(len(self.game.state_stack))
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
@@ -53,10 +51,6 @@ class GameComplete(State):
                             new_state = Title(self.game)
                             new_state.restart()
                             pass
-        #print(self._toad_rect.width)
-        #self.retry_text, self.retry_rect = self.check_mouseover(self.retry_text, self.retry_rect, "Retry")
-        #self.quit_text, self.quit_rect = self.check_mouseover(self.quit_text, self.quit_rect, "Quit")
-
 
     def render(self, display):
         self.prev_state.render(display)

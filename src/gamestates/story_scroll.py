@@ -1,10 +1,10 @@
 import sys
-from gamestates.state import State
-from config import Config
-from components.background import Background
-from gamestates.main_level import MainLevel
-from utils.audio_loader import AudioLoader
-from utils.asset_loader import AssetLoader
+from src.gamestates.state import State
+from src.config import Config
+from src.components.background import Background
+from src.gamestates.main_level import MainLevel
+from src.utils.audio_loader import AudioLoader
+from src.utils.asset_loader import AssetLoader
 import pygame as pg
 
 class StoryScroll(State):
@@ -12,11 +12,11 @@ class StoryScroll(State):
         super().__init__(game)
         self._font_size = 46
         self._spacing = 1.3 # used to detemine how squished the font is
-        self._wes_img = AssetLoader.load_avatar("wes")
+        self._wes_img = AssetLoader.ui_parts["portraits"]["wes"]
         self._wes_img = pg.transform.scale(self._wes_img, (int(self._wes_img.get_width() * 0.75), int(self._wes_img.get_height() * 0.75)))
         self._wes_rect = self._wes_img.get_rect(topleft = (10, 10))
         self._text = Config.STORY
-        self._font = AssetLoader.load_story_font(46)
+        self._font = AssetLoader.fonts["story"]
         self._skip = 0 # check for number of space presses to skip
         self._lines = []
         # split the text up according to screen width
@@ -33,10 +33,10 @@ class StoryScroll(State):
         self._y = Config.HEIGHT
         self._text_surfaces = [self._font.render(line, True, (255, 255, 255)) for line in self._lines] #used to store individual line renders
         self._text_rects = [text_surface.get_rect(centerx=Config.WIDTH/2, centery=self._y+(self._font_size*self._spacing)*i) for i, text_surface in enumerate(self._text_surfaces)]
-        AudioLoader.play_story_audio()
+        AssetLoader.music["story"].play()
+        AssetLoader.music["military"].play()
         
     def update(self, delta_time):
-        #print(delta_time)
         self._y -= 36*delta_time #sets the scroll speed
         self._text_surfaces = [self._font.render(line, True, (255, 255, 255)) for line in self._lines] # render each line as a surface
         # create rects using the text surface positions

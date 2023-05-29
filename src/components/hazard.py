@@ -1,13 +1,13 @@
 import math
 import random
 import pygame as pg
-from config import Config
-from utils.asset_loader import AssetLoader
+from src.config import Config
+from src.utils.asset_loader import AssetLoader
 
 class Hazard(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = AssetLoader.load_hazard()
+        self.image = random.choice(list(AssetLoader.entities["hazards"].values()))
         self.image = pg.transform.rotate(self.image, random.randint(0, 360))
         self.mask = pg.mask.from_surface(self.image)  # create a mask from the sprite's image
         self.rect = self.mask.get_rect()  # set the rect to match the mask

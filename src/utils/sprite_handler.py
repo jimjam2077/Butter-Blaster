@@ -1,14 +1,15 @@
 import math
 import random
 import pygame as pg
-from components.background import Background
-from components.boss import Boss
-from components.enemy import Enemy
-from components.jena import Jena
-from config import Config
-from components.explosion import Explosion
-from components.power import Power
-from utils.audio_loader import AudioLoader
+from src.components.background import Background
+from src.components.boss import Boss
+from src.components.enemy import Enemy
+from src.components.jena import Jena
+from src.config import Config
+from src.components.explosion import Explosion
+from src.components.power import Power
+from src.utils.audio_loader import AudioLoader
+from src.utils.asset_loader import AssetLoader
 
 
 class SpriteHandler:
@@ -120,7 +121,7 @@ class SpriteHandler:
                 self.player.add_damage(collision_data[collision_type]['damage'])
                 explosion = Explosion(self.player.rect.center, 0)
                 self.all_sprites.add(explosion)
-                AudioLoader.explosion_sound()
+                AssetLoader.sfx["explosion"].play()
                 if 'bounce' in collision_data[collision_type]:
                     for hazard in collision_result:
                         dx, dy = self.player.rect.centerx - hazard.rect.centerx, self.player.rect.centery - hazard.rect.centery
@@ -143,11 +144,10 @@ class SpriteHandler:
         """
         # Check for collisions between bullets and enemies
         # Check for collisions between bullets and enemies
-        drop_chance = 0.1 if self.player.get_health() >= 5 else 0.2
+        drop_chance = 0.16 if self.player.get_health() >= 5 else 0.3
         bullet_enemy_collisions = pg.sprite.groupcollide(self.bullets, self.enemies, True, True)
         for bullet, enemy_list in bullet_enemy_collisions.items():
             for enemy in enemy_list:
-                print("enemy killed")
                 # Add power with a 8% chance at the center of the enemy rect
                 if random.random() < drop_chance:
                     power = Power(enemy.rect.center, 0) if self.boss is not None else Power(enemy.rect.center)
@@ -177,7 +177,7 @@ class SpriteHandler:
         #handle powerups!
         touched_powers = pg.sprite.spritecollide(self.player, self.powers, True)
         for power in touched_powers:
-            AudioLoader.pickup_sound()
+            AssetLoader.sfx["pickup"].play()
             if power.get_name() == "assist":
                 self.player.add_assist()
             if power.get_name() == "pill":

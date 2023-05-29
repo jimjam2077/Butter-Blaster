@@ -1,13 +1,14 @@
+from collections import OrderedDict
 import math
 import random
 import pygame as pg
-from components.bullets.straight_bullet import StraightBullet
-from config import Config
-from components.power import Power
-from components.explosion import Explosion
-from components.jena import Jena
-from utils.audio_loader import AudioLoader
-from utils.asset_loader import AssetLoader
+from src.components.bullets.straight_bullet import StraightBullet
+from src.config import Config
+from src.components.power import Power
+from src.components.explosion import Explosion
+from src.components.jena import Jena
+from src.utils.audio_loader import AudioLoader
+from src.utils.asset_loader import AssetLoader
 
 vector = pg.math.Vector2
 #screen margins - remember window grows down and right 0,0 is top left corner
@@ -15,6 +16,10 @@ MARGIN_TOP = 20
 MARGIN_LEFT = 20
 MARGIN_BOTTOM = Config.HEIGHT - 20
 MARGIN_RIGHT = Config.WIDTH - 20
+# Constants
+TRANSITION_COLOR_INCREASE = (255, 255, 0)
+TRANSITION_COLOR_DECREASE = (255, 0, 0)
+BAR_HEIGHT = 15
 
 # passing Sprite makes Player Class a child of Sprite
 # can then use super().__init__() to call the Sprite's init() function
@@ -33,8 +38,8 @@ class Player(pg.sprite.Sprite):
         super().__init__()
         self._initialized = True
         #set up the ship image, adjust the scaling and animation speed here
-        self.ammo_name = name+"bullet.png"
-        self.images = AssetLoader.load_player_ship(name)
+        self.ammo_name = name
+        self.images = list(AssetLoader.animations[name].values())
         self.image = self.images[0]
         self.mask = pg.mask.from_surface(self.image)
         self.original_image = self.image.copy()
@@ -49,17 +54,17 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.pos)  # defines the borders according to image size
         # HUD elements
         self.score = 0
-        self.font = AssetLoader.load_story_font(14)
+        self.font = AssetLoader.fonts["ui"]
         self.score_text = self.font.render(f"{self.score:03d}/200", True, (255, 255, 255))
         self.score_rect = self.score_text.get_rect(center = (Config.WIDTH/2, 15))
-        # Print the width of the rect
-        #print("Width:", self.score_rect.width)
+
         self.health_bar_length = 150
-        self.portrait = AssetLoader.load_avatar(name)
+        self.portrait = AssetLoader.ui_parts["portraits"][name]
+        self.portrait.set_alpha(255)
         self.portrait = pg.transform.scale(self.portrait, (30, 30))
         self.port_rect = self.portrait.get_rect(midright=(self.score_rect.left - (self.health_bar_length + 20), 25))
         self.assists = 0 # number of times the player can summon fire support
-        self.assist_img = pg.image.load("assets/powers/power3.png").convert_alpha()
+        self.assist_img = AssetLoader.entities["powers"]["power3"]
         self.assist_img = pg.transform.scale_by(self.assist_img, 0.75)
         self.assist_rect = self.assist_img.get_rect(midright = (self.port_rect.right + (10+self.health_bar_length/2), 50))
         self.assist_text = self.font.render(f"X {self.assists}", True, (255,255,255))
@@ -129,14 +134,14 @@ class Player(pg.sprite.Sprite):
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self.shot_delay:
             if self.level >=2: # create 2 bullets instead of 1 as the player levels up
-                bullet1 = StraightBullet((self.rect.right, self.rect.centery + 8), Config.BULLET_SPEED, self.ammo_name, 1, 0)
-                bullet2 = StraightBullet((self.rect.right, self.rect.centery - 8), Config.BULLET_SPEED, self.ammo_name, 1, 0)
+                bullet1 = StraightBullet((self.rect.right, self.rect.centery + 8), Config.BULLET_SPEED, "bullets", self.ammo_name, 1, 0)
+                bullet2 = StraightBullet((self.rect.right, self.rect.centery - 8), Config.BULLET_SPEED, "bullets", self.ammo_name, 1, 0)
                 sprite_handler.add_bullet(bullet1)
                 sprite_handler.add_bullet(bullet2)
             else: # player starts with 1 bullet    
-                bullet = StraightBullet((self.rect.right, self.rect.centery), Config.BULLET_SPEED, self.ammo_name, 1, 0)
+                bullet = StraightBullet((self.rect.right, self.rect.centery), Config.BULLET_SPEED, "bullets", self.ammo_name, 1, 0)
                 sprite_handler.add_bullet(bullet)
-            AudioLoader.attack_sound("shoot")
+            AssetLoader.sfx["shoot"].play()
             self._last_shot_time = now
 
 
@@ -221,7 +226,6 @@ class Player(pg.sprite.Sprite):
         #move the ship 
         self.velocity += self.acc * dt
         self.pos += self.velocity * dt
-        #print("vel: " + str(self.velocity) + "acc: " + str(self.acc))
         
         # Screen boundary detection
         # offsets +/- onto the already-defined margin so the center point is correct later
@@ -274,37 +278,33 @@ class Player(pg.sprite.Sprite):
     # should move this and the boss HUD code to a separate file/function
     def update_hud(self, screen):
         transition_width = 0
-        transition_color = (0, 255, 0)
-        bar_height = 15
-
         if self.current_health < self.target_health:
             self.current_health += self.health_change_speed
             transition_width = int((self.target_health - self.current_health) / self.health_ratio)
-            transition_color = (255, 255, 0)
+            transition_color = TRANSITION_COLOR_INCREASE 
 
         if self.current_health > self.target_health:
             self.current_health -= self.health_change_speed
             transition_width = int((self.target_health - self.current_health) / self.health_ratio)
-            transition_color = (255, 0, 0)
+            transition_color = TRANSITION_COLOR_DECREASE
 
         health_bar_width = int(self.current_health / self.health_ratio)
-        health_bar = pg.Rect(self.port_rect.right + 5, 10, health_bar_width, bar_height)
-        transition_bar = pg.Rect(health_bar.right, health_bar.top, transition_width, bar_height)
+        health_bar = pg.Rect(self.port_rect.right + 5, 10, health_bar_width, BAR_HEIGHT)
+        transition_bar = pg.Rect(health_bar.right, health_bar.top, transition_width, BAR_HEIGHT)
         transition_bar.normalize()
 
-        screen.blit(self.portrait, self.port_rect)
         screen.blit (self.score_text, self.score_rect)
         screen.blit(self.assist_img, self.assist_rect)
         screen.blit(self.assist_text, self.assist_text_rect)
+        screen.blit(self.portrait, self.port_rect)
         pg.draw.rect(screen, (0, 255, 0), health_bar, 0, 5)
         pg.draw.rect(screen, transition_color, transition_bar, 0, 5)
-        pg.draw.rect(screen, (119, 119, 119), (self.port_rect.right + 5, 10, self.health_bar_length, bar_height), 2, 5)
+        pg.draw.rect(screen, (119, 119, 119), (self.port_rect.right + 5, 10, self.health_bar_length, BAR_HEIGHT), 2, 5)
 
         
     def draw(self, screen):
          # can add other things to draw here
         screen.blit(self.images[self.animation_frame], self.rect)
-
         
     def reset(self):
         """ resets all of the player statistics which may have changed during gameplay

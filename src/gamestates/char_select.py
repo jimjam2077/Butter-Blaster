@@ -1,9 +1,9 @@
 import sys
-from gamestates.state import State
-from config import Config
-from gamestates.story_scroll import StoryScroll
-from utils.audio_loader import AudioLoader
-from utils.asset_loader import AssetLoader
+from src.gamestates.state import State
+from src.config import Config
+from src.gamestates.story_scroll import StoryScroll
+from src.utils.audio_loader import AudioLoader
+from src.utils.asset_loader import AssetLoader
 import pygame as pg
 
 class CharSelect(State):
@@ -14,9 +14,9 @@ class CharSelect(State):
         self._alpha = 0
 
         # Load images
-        self._toad_img = AssetLoader.load_avatar("toad")
-        self._dune_img = AssetLoader.load_avatar("dune")
-        self._jena_img = AssetLoader.load_avatar("jena")
+        self._toad_img = AssetLoader.ui_parts["portraits"]["toad"]
+        self._dune_img = AssetLoader.ui_parts["portraits"]["dune"]
+        self._jena_img = AssetLoader.ui_parts["portraits"]["jena"]
 
         # Create image rects
         center = (Config.WIDTH / 2, Config.HEIGHT / 2)
@@ -28,20 +28,20 @@ class CharSelect(State):
         self._jena_orig_size = self._jena_rect.size
 
         # Create title text
-        self._title_font = AssetLoader.load_story_font(64)
+        self._title_font = AssetLoader.fonts["instruction"]
         self._title_text = self._title_font.render("SELECT PILOT", True, pg.Color("firebrick2"))
         self._title_rect = self._title_text.get_rect(center=center).move(0, -250)
 
         # Create nameplates
-        self._dune_name = AssetLoader.load_nameplate("dune")
-        self._toad_name = AssetLoader.load_nameplate("toad")
-        self._jena_name = AssetLoader.load_nameplate("jena")
+        self._dune_name = AssetLoader.ui_parts["nameplates"]["dune"]
+        self._toad_name = AssetLoader.ui_parts["nameplates"]["toad"]
+        self._jena_name = AssetLoader.ui_parts["nameplates"]["jena"]
         self._d_n_rect = self._dune_name.get_rect(center=self._dune_rect.center).move(0, 150)
         self._t_n_rect = self._toad_name.get_rect(center=self._toad_rect.center).move(0, 150)
         self._j_n_rect = self._jena_name.get_rect(center=self._jena_rect.center).move(0, 150)
 
         # Create background 
-        self._bg = AssetLoader.load_char_bg()
+        self._bg = AssetLoader.backgrounds["screens"]["charsel"]
         self._bg_rect = self._bg.get_rect(center=center)
 
         # Create characters dictionary
@@ -61,6 +61,7 @@ class CharSelect(State):
         ]
         for surface in self._surfaces:
             surface.set_alpha(0)
+        AssetLoader.music["charsel"].play(-1)
 
         
     def update(self, delta_time):
@@ -70,7 +71,6 @@ class CharSelect(State):
         if not self._faded_in: 
             for s in self._surfaces:
                 self.fade_in(delta_time, s, "_faded_in")
-        AudioLoader.play_menu_music()
            
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -86,7 +86,7 @@ class CharSelect(State):
                         new_state = StoryScroll(self.game)
                         new_state.enter_state()
                         break #exit the loop
-        #print(self._toad_rect.width)
+
         self._toad_img, self._toad_rect = self.check_mouseover(self._toad_img, self._toad_rect, "toad")
         self._dune_img, self._dune_rect = self.check_mouseover(self._dune_img, self._dune_rect, "dune")
 
@@ -106,7 +106,7 @@ class CharSelect(State):
             if rect.width == 200: # check for original size
                 img, rect = self.scale_on_mouseover(img, rect)
         else: # reload the image to original size
-            img, rect = AssetLoader.load_avatar(name), img.get_rect(center=rect.center)
+            img, rect = AssetLoader.ui_parts["portraits"][name], img.get_rect(center=rect.center)
         return img, rect
  
 
@@ -164,27 +164,3 @@ class CharSelect(State):
             self._alpha = 255
             setattr(self, faded_variable_name, not faded_variable)
         surface.set_alpha(int(self._alpha))
-       
-        
-"""   
-        if self._toad_rect.collidepoint(pg.mouse.get_pos()):
-            if self._toad_rect.width == 200: # toad not scaled yet
-                # Scale image by 10%
-                self._toad_img, self._toad_rect = self.scale_on_mouseover(self._toad_img, self._toad_rect)
-        else:
-            # Reset image to original size
-            self._toad_img, self._toad_rect = AssetLoader.load_avatar("toad"), self._toad_img.get_rect(center=self._toad_orig.center)
-"""
-        
-        
-"""    def check_mouse_hover(self):
-        if self._toad_rect.collidepoint(pg.mouse.get_pos()):
-            if not self._toad_scaled: # toad not scaled yet
-                # Scale image by 10%
-                self._toad_img, self._toad_rect = self.scale_on_mouseover(self._toad_img, self._toad_rect)
-                self._toad_scaled = True
-        else:
-            # Reset image to original size
-            self._toad_img, self._toad_rect = AssetLoader.load_avatar("toad"), self._toad_img.get_rect(center=self._toad_rect.center)
-            self._toad_scaled = False
-"""

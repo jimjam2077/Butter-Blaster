@@ -1,15 +1,15 @@
 import math
 import random
 import pygame as pg
-from config import Config
-from components.bullets.aiming_bullet import AimingBullet
-from utils.audio_loader import AudioLoader
-from utils.asset_loader import AssetLoader
+from src.config import Config
+from src.components.bullets.aiming_bullet import AimingBullet
+from src.utils.audio_loader import AudioLoader
+from src.utils.asset_loader import AssetLoader
 
 class Turret(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = AssetLoader.load_turret()
+        self.image = random.choice(list(AssetLoader.entities["turrets"].values()))
         positions = [
             {"rotation": 0, "y_loc": Config.HEIGHT},
             {"rotation": 180, "y_loc": 0}
@@ -23,7 +23,7 @@ class Turret(pg.sprite.Sprite):
         self.mask = pg.mask.from_surface(self.image)
         self.speed = -200
         self._last_shot_time = 0
-        self._shot_delay = 3
+        self._shot_delay = random.uniform(2,5)
         
 
     def shoot(self, sprite_handler):
@@ -31,10 +31,9 @@ class Turret(pg.sprite.Sprite):
         turret_y = self.rect.centery
         target_x_values = [-720, 0, 310]
         target_y = 0 if (turret_y > Config.HEIGHT/2) else Config.HEIGHT
-        print(target_y)
         for target_x in target_x_values:
             target_pos = (turret_x + target_x, target_y)
-            bullet = AimingBullet(self.rect.center, 300, f"bit{random.randint(1, 4)}.png", target_pos, rotate=True)
+            bullet = AimingBullet(self.rect.center, 300, "turret_bullets", random.choice(list(AssetLoader.bullets["turret_bullets"].keys())), target_pos, rotate=True)
             sprite_handler.add_enemy_bullet(bullet)
         self._last_shot_time = 0  # Reset the shot time
 
@@ -44,7 +43,7 @@ class Turret(pg.sprite.Sprite):
         self._last_shot_time += dt
         if self._last_shot_time >= self._shot_delay:
             self.shoot(sprite_handler)
-        if self.rect.right < 0:
+        if self.rect.right < 0: # killed if offscreen
             self.kill()
             
     def draw(self, screen):

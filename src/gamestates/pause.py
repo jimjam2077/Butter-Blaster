@@ -1,10 +1,10 @@
 import random
 import sys
-from gamestates.state import State
-from config import Config
-from components.background import Background
-from utils.audio_loader import AudioLoader
-from utils.asset_loader import AssetLoader
+from src.gamestates.state import State
+from src.config import Config
+from src.components.background import Background
+from src.utils.audio_loader import AudioLoader
+from src.utils.asset_loader import AssetLoader
 import pygame
 
 class Pause(State):
@@ -14,7 +14,7 @@ class Pause(State):
         self.overlay = pygame.Surface((Config.WIDTH, Config.HEIGHT))
         self.overlay.set_alpha(150)  # Set alpha to 128 (half-transparent)
         self.overlay.fill((0, 0, 0))  # Fill with black color
-        self.font = AssetLoader.load_story_font(34)
+        self.font = AssetLoader.fonts["instruction"]
         self.text = self.font.render("Paused", True, (255, 255, 255))
         self.text_rect = self.text.get_rect(center = (Config.WIDTH/2, Config.HEIGHT/2))
         pygame.mixer.pause()

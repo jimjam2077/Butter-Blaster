@@ -1,14 +1,14 @@
+import random
 import pygame as pg
-from utils.asset_loader import AssetLoader
+from src.utils.asset_loader import AssetLoader
 
 class Background():
     def __init__(self):
-        self.img_one = AssetLoader.load_random_bg("level")
-        self.img_two = AssetLoader.load_random_bg("level")
+        self.img_one = random.choice(list(AssetLoader.backgrounds["level"].values()))
+        self.img_two = random.choice(list(AssetLoader.backgrounds["level"].values()))
         self.rect = self.img_one.get_rect()
-        self.alt_img_one = AssetLoader.load_random_bg("boss")
-        self.alt_img_two = AssetLoader.load_random_bg("boss")
-
+        self.alt_img_one = random.choice(list(AssetLoader.backgrounds["boss"].values()))
+    
         self.bgY1 = 0
         self.bgX1 = 0
 
@@ -22,12 +22,10 @@ class Background():
         self.bgX2 -= self.moving_speed * dt
         if self.bgX1 <= -self.rect.width:
             self.bgX1 = self.rect.width
-            self.img_one = AssetLoader.load_random_bg("level")
-            self.alt_img_one = AssetLoader.load_random_bg("boss")
+            self.img_one = random.choice(list(AssetLoader.backgrounds["level"].values()))
         if self.bgX2 <= -self.rect.width:
             self.bgX2 = self.rect.width
-            self.img_two = AssetLoader.load_random_bg("level")
-            self.alt_img_two = AssetLoader.load_random_bg("boss")
+            self.img_two = random.choice(list(AssetLoader.backgrounds["level"].values()))
             
     def change_speed(self, new_speed):
         self.speed = new_speed
@@ -36,19 +34,16 @@ class Background():
         # Calculate the change in alpha and speed per second
         alpha_change = 255 / 2  # Reduce alpha by 255 in 1 second
         speed_change = 100 / 2  # Reduce speed by 100 units in 1 second
-
         # Reduce alpha of img_one and img_two if they are greater than 0
         if self.img_one.get_alpha() > 0:
             self.img_one.set_alpha(max(0, self.img_one.get_alpha() - int(alpha_change * dt)))
         if self.img_two.get_alpha() > 0:
             self.img_two.set_alpha(max(0, self.img_two.get_alpha() - int(alpha_change * dt)))
-
         # Reduce speed gradually
         self.moving_speed = max(0, self.moving_speed - speed_change * dt)
 
              
     def draw(self, screen):
-        screen.blit(self.alt_img_one, (self.bgX1, self.bgY1))
-        screen.blit(self.alt_img_two, (self.bgX2, self.bgY2))
+        screen.blit(self.alt_img_one, (0, 0))
         screen.blit(self.img_one, (self.bgX1, self.bgY1))
         screen.blit(self.img_two, (self.bgX2, self.bgY2))

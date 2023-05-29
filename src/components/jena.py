@@ -1,23 +1,23 @@
 import math
 import random
 import pygame as pg
-from config import Config
-from components.bullets.straight_bullet import StraightBullet
-from utils.audio_loader import AudioLoader
-from utils.asset_loader import AssetLoader
+from src.config import Config
+from src.components.bullets.straight_bullet import StraightBullet
+from src.utils.audio_loader import AudioLoader
+from src.utils.asset_loader import AssetLoader
 
 class Jena(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
         # loading the ship
-        self.image = AssetLoader.load_jena()
+        self.image = AssetLoader.entities["npcs"]["jena"]
         self.mask = pg.mask.from_surface(self.image)  # create a mask from the sprite's image
         self.rect = self.mask.get_rect()  # set the rect to match the mask
         
-        self.portrait = AssetLoader.load_avatar("jena")
+        self.portrait = AssetLoader.ui_parts["portraits"]["jena"]
         self.portrait = pg.transform.scale(self.portrait, (40, 40))
         self.port_rect = self.portrait.get_rect(center = (Config.WIDTH/2, Config.HEIGHT/2))
-        self.font = AssetLoader.load_story_font(26)
+        self.font = AssetLoader.fonts["ui"]
         self.text = self.font.render("Meow!", True, (255, 255, 255))
         self.text_rect = self.text.get_rect(midleft = (self.port_rect.right + 10, self.port_rect.centery))
         # set up movement statistics
@@ -26,8 +26,7 @@ class Jena(pg.sprite.Sprite):
         self.angle = 0
         self._last_shot_time = 0 
         self._shot_delay = 100 # decrease to fire quicker
-        #print(str(self.text_rect) + " " + str(self.port_rect))
-        AudioLoader.play_meow()
+        AssetLoader.sfx["meow"].play()
         
         
     def shoot(self, sprite_handler):
@@ -35,9 +34,9 @@ class Jena(pg.sprite.Sprite):
         if now - self._last_shot_time > self._shot_delay:
             if self.rect.centerx > Config.WIDTH or self.rect.centery < 0:
                 return
-            bullet = StraightBullet((self.rect.right, self.rect.centery), Config.BULLET_SPEED, "allybullet.png", 1, 0)
+            bullet = StraightBullet((self.rect.right, self.rect.centery), Config.BULLET_SPEED, "bullets", "ally", 1, 0)
             sprite_handler.add_bullet(bullet)
-            AudioLoader.attack_sound("shoot")
+            AssetLoader.sfx["shoot"].play()
             self._last_shot_time = now 
 
     def update(self, sprite_handler, dt):

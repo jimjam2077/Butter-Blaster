@@ -1,4 +1,7 @@
+import os
 import pygame as pg
+
+from src.utils.asset_loader import AssetLoader
 # could make this a bit more secure
 # but it will do for now!
 class Config:
@@ -29,10 +32,11 @@ class Config:
     @staticmethod
     def setup_window():
         try:
-            Config.SCREEN = pg.display.set_mode((Config.WIDTH, Config.HEIGHT), pg.ASYNCBLIT | pg.HWACCEL | pg.HWSURFACE | pg.DOUBLEBUF | pg.SCALED, vsync=1)
+            flags = pg.DOUBLEBUF | pg.SCALED #| pg.ASYNCBLIT | pg.HWACCEL | pg.HWSURFACE | pg.DOUBLEBUF | pg.SCALED
+            Config.SCREEN = pg.display.set_mode((Config.WIDTH, Config.HEIGHT), flags, vsync=1)
         except Exception as e:
             print(f"Error setting up window: {e}")
         pg.display.set_caption("KRATOM CRISIS")  # load and set the logo
-        icon = pg.image.load("assets/icon.png")
+        icon = AssetLoader.get_icon()
         pg.display.set_icon(icon)
         return Config.SCREEN

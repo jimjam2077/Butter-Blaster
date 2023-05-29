@@ -1,19 +1,19 @@
 import math
 import random
 import pygame as pg
-from config import Config
-from components.explosion import Explosion
-from components.bullets.aiming_bullet import AimingBullet
-from components.bullets.straight_bullet import StraightBullet
-from components.enemy import Enemy
-from utils.audio_loader import AudioLoader
-from utils.asset_loader import AssetLoader
+from src.config import Config
+from src.components.explosion import Explosion
+from src.components.bullets.aiming_bullet import AimingBullet
+from src.components.bullets.straight_bullet import StraightBullet
+from src.components.enemy import Enemy
+from src.utils.audio_loader import AudioLoader
+from src.utils.asset_loader import AssetLoader
 
 
 class Boss(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = AssetLoader.load_boss_img()
+        self.image = AssetLoader.entities["npcs"]["boss"]
         self.rect = self.image.get_rect(right= Config.WIDTH+600, centery =Config.HEIGHT/2)
         self.mask = pg.mask.from_surface(self.image)
         self.beard_rect = self.rect.copy()  # make a copy of self.rect
@@ -27,7 +27,7 @@ class Boss(pg.sprite.Sprite):
         self.mouth_rect.left = self.beard_rect.left+50
         self.mouth_rect.top = self.beard_rect.top+10
         #UI stuff
-        self.font = AssetLoader.load_story_font(24)
+        self.font = AssetLoader.fonts["ui"]
         self.warning_text = self.font.render("Andy is hunkerin' down...", True, (255, 255, 255))
         self.warning_rect = self.warning_text.get_rect(midbottom = (Config.WIDTH/2, Config.HEIGHT-10))
         """         # Create a new surface with a border and background
@@ -53,17 +53,17 @@ class Boss(pg.sprite.Sprite):
         self.health_ratio = self.max_health / self.health_bar_length
         self.health_change_speed = 0.75 * self.max_health / 100
         self.shot_delay = Config.SHOT_DELAY
-        self.portrait = AssetLoader.load_avatar("andy")
+        self.portrait = AssetLoader.ui_parts["portraits"]["andy"]
         self.portrait = pg.transform.scale(self.portrait, (30, 30))
         self.port_rect = self.portrait.get_rect(topleft = (Config.WIDTH/2 + self.health_bar_length+20+46,10))
         
         #used for animations
         self.speed = 200
         self.moves = {
-            "idle": {"frames": [AssetLoader.load_boss_img()], "duration": 0, "cooldown": 0},
-            "mouth": {"frames": AssetLoader.load_sprite_list("boss/mouth"), "duration": 6, "cooldown": 2},
-            "eye": {"frames": AssetLoader.load_sprite_list("boss/eye"), "duration": 7,"cooldown": 5},
-            "spider": {"frames": AssetLoader.load_sprite_list("boss/spider"), "duration": 0,"cooldown": 1}
+            "idle": {"frames": [AssetLoader.entities["npcs"]["boss"]], "duration": 0, "cooldown": 0},
+            "mouth": {"frames": list(AssetLoader.animations["mouth"].values()), "duration": 6, "cooldown": 2},
+            "eye": {"frames": list(AssetLoader.animations["eye"].values()), "duration": 7,"cooldown": 5},
+            "spider": {"frames": list(AssetLoader.animations["spider"].values()), "duration": 0,"cooldown": 1}
         }
         self.current_move = "idle"
         self.state = "idle"
@@ -96,7 +96,7 @@ class Boss(pg.sprite.Sprite):
         self.grid_delay = 0
         self.current_bullet = 0
         self.bullet_count = 0
-
+        AudioLoader.stop_sound()
     
     def is_alive(self):
         """ Checks if this player object's target health is below 0.
@@ -120,7 +120,6 @@ class Boss(pg.sprite.Sprite):
                     self.start_time = 0
         if self.current_frame == self.num_frames-1 and self.state != "aftercast":
             if "duration" in self.moves[self.current_move]:
-                #print(self.start_time)
                 self.start_time += dt
                 if self.start_time >= self.moves[self.current_move]["duration"]:
                     self.state = "aftercast"
@@ -151,7 +150,7 @@ class Boss(pg.sprite.Sprite):
             self.current_frame = 0
             self.start_time = 0
             self.state = "attacking"
-            AudioLoader.attack_sound(self.current_move)
+            AssetLoader.sfx[self.current_move].play()
 
     def move_rects(self, x_spd, y_spd):
         self.rect.move_ip(x_spd, y_spd)
@@ -164,7 +163,6 @@ class Boss(pg.sprite.Sprite):
         elif self.target_health == 0:
             self.die(sprite_handler)
         else:
-            self.print_dimensions()
             self.hunker(sprite_handler, dt)
             if self.hunkering:
                 return  # Skip the rest of the functionality if hunkering is true
@@ -209,7 +207,7 @@ class Boss(pg.sprite.Sprite):
             for x in range (0,self.swarm_size):
                 rand_x = random.randint(self.beard_rect.left, self.beard_rect.right)
                 rand_y = random.randint(self.beard_rect.top, self.beard_rect.bottom)
-                bullet = AimingBullet((rand_x, rand_y), 700, "spider.png", sprite_handler.player.rect.center)
+                bullet = AimingBullet((rand_x, rand_y), 700, "bullets", "spider", sprite_handler.player.rect.center)
                 sprite_handler.add_enemy_bullet(bullet)
                 self._last_shot_time = 0
     
@@ -228,7 +226,7 @@ class Boss(pg.sprite.Sprite):
             elif self.current_bullet < self.bullet_count:
                 x = start_point[0] + self.current_bullet * (self.grid_blt_width + self.grid_spacing) * spawn_direction[0]
                 y = start_point[1] + self.current_bullet * (self.grid_blt_width + self.grid_spacing) * spawn_direction[1]
-                bullet = StraightBullet((x,y), 650, f"baby{random.randint(1,10)}.png", bullet_dir[0], bullet_dir[1], True, self.grid_delay)
+                bullet = StraightBullet((x,y), 650, "boss_bullets", random.choice(list(AssetLoader.bullets["boss_bullets"].keys())), bullet_dir[0], bullet_dir[1], True, self.grid_delay)
                 sprite_handler.add_enemy_bullet(bullet)
                 self.grid_delay += 0.25
                 self.current_bullet += 1
@@ -259,7 +257,7 @@ class Boss(pg.sprite.Sprite):
                 # generate a point outside the bottom side
                 rand_x = random.randint(-20, Config.WIDTH)
                 rand_y = Config.HEIGHT + 20
-            bullet = AimingBullet((rand_x, rand_y), 500, "dorito.png", self.mouth_rect.center)
+            bullet = AimingBullet((rand_x, rand_y), 500, "bullets", "chip", self.mouth_rect.center)
             sprite_handler.add_enemy_bullet(bullet)
             self._last_shot_time = 0
     
@@ -272,7 +270,6 @@ class Boss(pg.sprite.Sprite):
 
     def select_destination(self):
         destination = random.randint(20, 700)
-        print(destination)
         return destination
 
     def hunker(self, sprite_handler, dt):
@@ -294,7 +291,6 @@ class Boss(pg.sprite.Sprite):
     def die(self, sprite_handler):
         self.image.fill((255, 0, 0, 255), special_flags=pg.BLEND_RGBA_MULT)
         alpha = self.image.get_alpha()
-        print(alpha)
         random_point = (
             random.randint(self.rect.left, self.rect.right),
             random.randint(self.rect.top, self.rect.bottom)
@@ -336,18 +332,11 @@ class Boss(pg.sprite.Sprite):
         pg.draw.rect(screen,(119,119,119),(Config.WIDTH/2+10+47, 10, self.health_bar_length, bar_height), 2, 5)
         #debug rects
         # assuming you have created the beard_rect as described
-        pg.draw.rect(screen, (255, 255, 255), self.beard_rect, 3)
-        pg.draw.rect(screen, (255, 0, 0), self.mouth_rect, 3)
-        pg.draw.rect(screen, (0, 255, 0), self.rect, 3)
+        #pg.draw.rect(screen, (255, 255, 255), self.beard_rect, 3)
+        #pg.draw.rect(screen, (255, 0, 0), self.mouth_rect, 3)
+        #pg.draw.rect(screen, (0, 255, 0), self.rect, 3)
         
             
     def draw(self, screen):
         screen.blit(self.image, self.rect)
         
-
-    def print_dimensions(self):
-        """ Used for debug purposed to check how large and where the center of rect is
-        """
-        print("Width:", self.rect.width)
-        print("Height:", self.rect.height)
-        print("Center:", self.rect.center)

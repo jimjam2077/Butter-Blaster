@@ -1,14 +1,14 @@
 import math
 import random
 import pygame as pg
-from config import Config
-from utils.asset_loader import AssetLoader
+from src.config import Config
+from src.utils.asset_loader import AssetLoader
 
 
 class Power(pg.sprite.Sprite):
     def __init__(self, center, speed=200):
         super().__init__()
-        self.image, self.name = AssetLoader.load_powerup()
+        self.image, self.name = AssetLoader.get_random_power()
         self.rect = self.image.get_rect(center=center)
         self.speed = speed
 
@@ -17,7 +17,7 @@ class Power(pg.sprite.Sprite):
     
     def update(self, sprite_handler, dt):
         self.rect.move_ip(-self.speed*dt, 0)
-        if self.rect.right < 0:
+        if self.rect.right < 0: # kills a power as it moves off the screen
             self.kill()
             
     def draw(self, screen):

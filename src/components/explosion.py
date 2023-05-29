@@ -1,11 +1,11 @@
 import pygame as pg
-from utils.asset_loader import AssetLoader
+from src.utils.asset_loader import AssetLoader
 
 
 class Explosion(pg.sprite.Sprite):
     def __init__(self, center, speed=200):
         super().__init__()
-        self.images = AssetLoader.load_explosion()
+        self.images = list(AssetLoader.animations["explosion"].values())
         self.image_index = 0
         self.frame_duration = 1 / len(self.images)  # animation should take 1 second
         self.time_since_last_frame = 0

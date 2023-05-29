@@ -1,18 +1,20 @@
 import random
 import sys
-from gamestates.state import State
-from components.player import Player
-from components.enemy import Enemy
-from components.explosion import Explosion
-from components.hazard import Hazard
-from gamestates.pause import Pause
-from components.boss import Boss
-from gamestates.game_complete import GameComplete
-from components.turret import Turret
-from utils.sprite_handler import SpriteHandler
-from utils.audio_loader import AudioLoader
-from gamestates.game_over import GameOver
+from src.gamestates.state import State
+from src.components.player import Player
+from src.components.enemy import Enemy
+from src.components.explosion import Explosion
+from src.components.hazard import Hazard
+from src.gamestates.pause import Pause
+from src.components.boss import Boss
+from src.gamestates.game_complete import GameComplete
+from src.components.turret import Turret
+from src.utils.sprite_handler import SpriteHandler
+from src.utils.audio_loader import AudioLoader
+from src.gamestates.game_over import GameOver
 import pygame as pg
+
+from src.utils.asset_loader import AssetLoader
 
 
 class MainLevel(State):
@@ -32,11 +34,12 @@ class MainLevel(State):
         self.transition_surf.fill((0, 0, 0))
         self.transition_surf.set_alpha(0)
         self.transition_time = 2
+        AssetLoader.play_bgm("bgm")
     
     #TODO: Two main phases: enemy phase -> boss phase
     def update(self, delta_time):
         # player dead? -> game over
-        if self.sprite_handler.player.get_score() == 160 and self.sprite_handler.boss is None:
+        if self.sprite_handler.player.get_score() == 3 and self.sprite_handler.boss is None:
             pg.mixer.music.fadeout(1000)
             self.sprite_handler.add_boss(Boss());
             self.sprite_handler.player.increase_score();
@@ -56,9 +59,9 @@ class MainLevel(State):
             pass # do boss stuff
         #update sprites
         if self.sprite_handler.boss is not None:
-            AudioLoader.play_boss_bgm()
+            AssetLoader.play_bgm("boss")   
         else:
-            AudioLoader.play_bgm()   
+            AssetLoader.play_bgm("bgm")   
         self.sprite_handler.update_all_sprites(delta_time)
         self.sprite_handler.check_collisions(delta_time)
         if not self.sprite_handler.player.alive():
@@ -74,23 +77,7 @@ class MainLevel(State):
         self.sprite_handler.player.update_hud(display)
         if(self.sprite_handler.boss is not None):
             self.sprite_handler.boss.advanced_health(display)
-        # render boss hp
-        # render score
-        pg.display.update()
         
-
-    """def update_all_sprites(self, delta_time):
-        self.background.update(delta_time)  
-        self.P1.update(delta_time, self.game.clock, self.hazards, self.all_sprites, self.bullets, self.powers, self.enemies, self.enemy_bullets)
-        for sprite in self.all_sprites:
-            if sprite != self.P1:
-                if isinstance(sprite, Enemy):
-                    sprite.update(delta_time, self.all_sprites, self.enemies, self.enemy_bullets)
-                elif isinstance(sprite, Jena) or isinstance(sprite, Boss):
-                    sprite.update(delta_time, self.all_sprites, self.bullets)
-                else:
-                    sprite.update(delta_time)"""
-
 
     def spawn_enemies(self):
         if random.random() <= 0.0005*self.enemy_strength:
@@ -108,10 +95,8 @@ class MainLevel(State):
                 self.enemy_strength += 1
                 self.start_time = current_time # update start time
                 self.enemy_strength = max(0, min(self.enemy_strength, 10))
-            #print(f"Time: {time_since_start / 1000} seconds, Strength: {self.enemy_strength}")
             
         if not self.sprite_handler.enemies or len(self.sprite_handler.enemies)<=2: # check for empty
-            print("generating enemies!")
             for x in range(random.randint(1,self.enemy_strength)):
                 enemy = Enemy()
                 self.sprite_handler.add_enemy(enemy)

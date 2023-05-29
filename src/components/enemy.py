@@ -1,23 +1,23 @@
 import math
 import random
 import pygame as pg
-from config import Config
-from components.explosion import Explosion
-from components.power import Power
-from components.bullets.straight_bullet import StraightBullet
-from utils.audio_loader import AudioLoader
-from utils.asset_loader import AssetLoader
+from src.config import Config
+from src.components.explosion import Explosion
+from src.components.power import Power
+from src.components.bullets.straight_bullet import StraightBullet
+from src.utils.audio_loader import AudioLoader
+from src.utils.asset_loader import AssetLoader
 
 
 class Enemy(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = AssetLoader.load_enemy_ship()
+        self.image = random.choice(list(AssetLoader.entities["enemy_ships"].values()))
         # add code here to randomise scaling?
         self.rect = self.image.get_rect()
         self.rect.center=(random.randint(Config.WIDTH, Config.WIDTH+700), random.randint(40, Config.HEIGHT-40))
         self._last_shot_time = 0 #used to limit fire rate later
-        self._shot_delay = random.randint(Config.SHOT_DELAY*3, Config.SHOT_DELAY*5)
+        self._shot_delay = random.randint(Config.SHOT_DELAY*3, Config.SHOT_DELAY*6)
         self.amplitude = random.randint(1,4) / abs(math.sin(0.5 * math.pi))  #wave height
         self.frequency = random.uniform(1.5, 3) #larger = tighter wave
         self.phase = random.uniform(0, math.pi*2) 
@@ -27,9 +27,9 @@ class Enemy(pg.sprite.Sprite):
     def shoot(self, sprite_handler):
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self._shot_delay:
-            bullet = StraightBullet((self.rect.left, self.rect.centery), Config.BULLET_SPEED*0.75, "enemybullet.png", -1, 0)
+            bullet = StraightBullet((self.rect.left, self.rect.centery), Config.BULLET_SPEED*0.75, "bullets", "enemy", -1, 0)
             sprite_handler.add_enemy_bullet(bullet)
-            AudioLoader.attack_sound("enemyshoot")
+            AssetLoader.sfx["enemyshoot"].play()
             self._last_shot_time = now 
  
     def update(self, sprite_handler, dt):
