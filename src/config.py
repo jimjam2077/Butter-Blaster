@@ -10,8 +10,8 @@ class Config:
     
     #screen
     FPS = 30;
-    WIDTH = 1280
-    HEIGHT = 720
+    WIDTH = 960
+    HEIGHT = 540
     WHT = (255, 255, 255)
     BLK = (0,0,0)
     SCREEN = None
@@ -24,16 +24,16 @@ class Config:
     
     #combat
     PLAYER_LIVES = 3
-    INVULN_WINDOW = 3000
+    INVULN_WINDOW = 2000
     SHOT_DELAY = 500
-    BULLET_SPEED = 900
+    BULLET_SPEED = 680
     
     
     @staticmethod
     def setup_window():
         try:
-            flags = pg.DOUBLEBUF | pg.SCALED #| pg.ASYNCBLIT | pg.HWACCEL | pg.HWSURFACE | pg.DOUBLEBUF | pg.SCALED
-            Config.SCREEN = pg.display.set_mode((Config.WIDTH, Config.HEIGHT), flags, vsync=1)
+            flags = pg.DOUBLEBUF | pg.SCALED | pg.FULLSCREEN #| pg.ASYNCBLIT | pg.HWACCEL | pg.HWSURFACE | pg.DOUBLEBUF | pg.SCALED
+            Config.SCREEN = pg.display.set_mode((Config.WIDTH, Config.HEIGHT), flags, 16, vsync=1)
         except Exception as e:
             print(f"Error setting up window: {e}")
         pg.display.set_caption("KRATOM CRISIS")  # load and set the logo

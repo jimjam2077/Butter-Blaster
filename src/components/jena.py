@@ -21,7 +21,7 @@ class Jena(pg.sprite.Sprite):
         self.text = self.font.render("Meow!", True, (255, 255, 255))
         self.text_rect = self.text.get_rect(midleft = (self.port_rect.right + 10, self.port_rect.centery))
         # set up movement statistics
-        self.speed = 300
+        self.speed = 230
         self.pos = [random.randint(-Config.WIDTH/2, Config.WIDTH/2), -self.rect.height] #initial spawn point
         self.angle = 0
         self._last_shot_time = 0 

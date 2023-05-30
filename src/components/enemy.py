@@ -22,14 +22,14 @@ class Enemy(pg.sprite.Sprite):
         self.frequency = random.uniform(1.5, 3) #larger = tighter wave
         self.phase = random.uniform(0, math.pi*2) 
         self.time = 0  # current time
-        self.x_spd = 300
+        self.x_spd = 250
         
     def shoot(self, sprite_handler):
         now = pg.time.get_ticks()
         if now - self._last_shot_time > self._shot_delay:
             bullet = StraightBullet((self.rect.left, self.rect.centery), Config.BULLET_SPEED*0.75, "bullets", "enemy", -1, 0)
             sprite_handler.add_enemy_bullet(bullet)
-            AssetLoader.sfx["enemyshoot"].play()
+            #AssetLoader.sfx["enemyshoot"].play()
             self._last_shot_time = now 
  
     def update(self, sprite_handler, dt):
@@ -46,7 +46,8 @@ class Enemy(pg.sprite.Sprite):
         self.shoot(sprite_handler)
         if (self.rect.right < 0): # check if object goes beyond the left edge
             # reset the position off-screen to the right
-            self.kill()
+            self.rect.centerx = random.randint(Config.WIDTH, Config.WIDTH+200)
+            self.rect.centery = random.randint(40, Config.HEIGHT - 40)
         
         # check for collisions with other enemies
         for enemy in sprite_handler.enemies:

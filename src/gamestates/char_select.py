@@ -22,23 +22,23 @@ class CharSelect(State):
         center = (Config.WIDTH / 2, Config.HEIGHT / 2)
         self._toad_rect = self._toad_img.get_rect(center=center)
         self._toad_orig = self._toad_rect
-        self._dune_rect = self._dune_img.get_rect(center=center).move(-300, 0)
+        self._dune_rect = self._dune_img.get_rect(center=center).move(-200, 0)
         self._dune_orig = self._dune_rect
-        self._jena_rect = self._jena_img.get_rect(center=center).move(300, 0)
+        self._jena_rect = self._jena_img.get_rect(center=center).move(200, 0)
         self._jena_orig_size = self._jena_rect.size
 
         # Create title text
         self._title_font = AssetLoader.fonts["instruction"]
         self._title_text = self._title_font.render("SELECT PILOT", True, pg.Color("firebrick2"))
-        self._title_rect = self._title_text.get_rect(center=center).move(0, -250)
+        self._title_rect = self._title_text.get_rect(center=center).move(0, -200)
 
         # Create nameplates
         self._dune_name = AssetLoader.ui_parts["nameplates"]["dune"]
         self._toad_name = AssetLoader.ui_parts["nameplates"]["toad"]
         self._jena_name = AssetLoader.ui_parts["nameplates"]["jena"]
-        self._d_n_rect = self._dune_name.get_rect(center=self._dune_rect.center).move(0, 150)
-        self._t_n_rect = self._toad_name.get_rect(center=self._toad_rect.center).move(0, 150)
-        self._j_n_rect = self._jena_name.get_rect(center=self._jena_rect.center).move(0, 150)
+        self._d_n_rect = self._dune_name.get_rect(center=self._dune_rect.center).move(0, 100)
+        self._t_n_rect = self._toad_name.get_rect(center=self._toad_rect.center).move(0, 100)
+        self._j_n_rect = self._jena_name.get_rect(center=self._jena_rect.center).move(0, 100)
 
         # Create background 
         self._bg = AssetLoader.backgrounds["screens"]["charsel"]
@@ -103,7 +103,7 @@ class CharSelect(State):
             _type_: _description_
         """
         if rect.collidepoint(pg.mouse.get_pos()):
-            if rect.width == 200: # check for original size
+            if rect.width == 150: # check for original size
                 img, rect = self.scale_on_mouseover(img, rect)
         else: # reload the image to original size
             img, rect = AssetLoader.ui_parts["portraits"][name], img.get_rect(center=rect.center)

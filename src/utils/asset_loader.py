@@ -174,10 +174,10 @@ class AssetLoader:
     def load_fonts():
         """ loads up all of the game's used fonts at the specified sized.
         """
-        AssetLoader.fonts["instruction"] = pg.font.Font(FONT_DIR / "space-wham.ttf", 45)
-        AssetLoader.fonts["story"] = pg.font.Font(FONT_DIR / "space-wham.ttf", 46)
-        AssetLoader.fonts["flavour"] = pg.font.Font(FONT_DIR / "space-wham.ttf", 34)
-        AssetLoader.fonts["ui"] = pg.font.Font(FONT_DIR / "space-wham.ttf", 14)
+        AssetLoader.fonts["instruction"] = pg.font.Font(FONT_DIR / "space-wham.ttf", 34)
+        AssetLoader.fonts["story"] = pg.font.Font(FONT_DIR / "space-wham.ttf", 35)
+        AssetLoader.fonts["flavour"] = pg.font.Font(FONT_DIR / "space-wham.ttf", 26)
+        AssetLoader.fonts["ui"] = pg.font.Font(FONT_DIR / "space-wham.ttf", 11)
                 
 
     @staticmethod # new method

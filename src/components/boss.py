@@ -27,7 +27,7 @@ class Boss(pg.sprite.Sprite):
         self.mouth_rect.left = self.beard_rect.left+50
         self.mouth_rect.top = self.beard_rect.top+10
         #UI stuff
-        self.font = AssetLoader.fonts["ui"]
+        self.font = AssetLoader.fonts["flavour"]
         self.warning_text = self.font.render("Andy is hunkerin' down...", True, (255, 255, 255))
         self.warning_rect = self.warning_text.get_rect(midbottom = (Config.WIDTH/2, Config.HEIGHT-10))
         """         # Create a new surface with a border and background
@@ -158,7 +158,7 @@ class Boss(pg.sprite.Sprite):
         self.mouth_rect.move_ip(x_spd, y_spd)
     
     def update(self, sprite_handler, dt):
-        if self.rect.centerx > 1040 and self.current_health > 0: # move into the screen slowly
+        if self.rect.centerx > Config.WIDTH*0.8 and self.current_health > 0: # move into the screen slowly
             self.move_rects(-1.5*self.speed*dt, 0)
         elif self.target_health == 0:
             self.die(sprite_handler)
@@ -207,7 +207,7 @@ class Boss(pg.sprite.Sprite):
             for x in range (0,self.swarm_size):
                 rand_x = random.randint(self.beard_rect.left, self.beard_rect.right)
                 rand_y = random.randint(self.beard_rect.top, self.beard_rect.bottom)
-                bullet = AimingBullet((rand_x, rand_y), 700, "bullets", "spider", sprite_handler.player.rect.center)
+                bullet = AimingBullet((rand_x, rand_y), 525, "bullets", "spider", sprite_handler.player.rect.center)
                 sprite_handler.add_enemy_bullet(bullet)
                 self._last_shot_time = 0
     
@@ -226,7 +226,7 @@ class Boss(pg.sprite.Sprite):
             elif self.current_bullet < self.bullet_count:
                 x = start_point[0] + self.current_bullet * (self.grid_blt_width + self.grid_spacing) * spawn_direction[0]
                 y = start_point[1] + self.current_bullet * (self.grid_blt_width + self.grid_spacing) * spawn_direction[1]
-                bullet = StraightBullet((x,y), 650, "boss_bullets", random.choice(list(AssetLoader.bullets["boss_bullets"].keys())), bullet_dir[0], bullet_dir[1], True, self.grid_delay)
+                bullet = StraightBullet((x,y), 500, "boss_bullets", random.choice(list(AssetLoader.bullets["boss_bullets"].keys())), bullet_dir[0], bullet_dir[1], True, self.grid_delay)
                 sprite_handler.add_enemy_bullet(bullet)
                 self.grid_delay += 0.25
                 self.current_bullet += 1
@@ -257,7 +257,7 @@ class Boss(pg.sprite.Sprite):
                 # generate a point outside the bottom side
                 rand_x = random.randint(-20, Config.WIDTH)
                 rand_y = Config.HEIGHT + 20
-            bullet = AimingBullet((rand_x, rand_y), 500, "bullets", "chip", self.mouth_rect.center)
+            bullet = AimingBullet((rand_x, rand_y), 400, "bullets", "chip", self.mouth_rect.center)
             sprite_handler.add_enemy_bullet(bullet)
             self._last_shot_time = 0
     
@@ -269,7 +269,7 @@ class Boss(pg.sprite.Sprite):
         return (-y, -x)
 
     def select_destination(self):
-        destination = random.randint(20, 700)
+        destination = random.randint(20, 520)
         return destination
 
     def hunker(self, sprite_handler, dt):

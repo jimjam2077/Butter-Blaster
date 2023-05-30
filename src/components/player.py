@@ -55,7 +55,7 @@ class Player(pg.sprite.Sprite):
         # HUD elements
         self.score = 0
         self.font = AssetLoader.fonts["ui"]
-        self.score_text = self.font.render(f"{self.score:03d}/200", True, (255, 255, 255))
+        self.score_text = self.font.render(f"{self.score:03d}/100", True, (255, 255, 255))
         self.score_rect = self.score_text.get_rect(center = (Config.WIDTH/2, 15))
 
         self.health_bar_length = 150
@@ -66,7 +66,7 @@ class Player(pg.sprite.Sprite):
         self.assists = 0 # number of times the player can summon fire support
         self.assist_img = AssetLoader.entities["powers"]["power3"]
         self.assist_img = pg.transform.scale_by(self.assist_img, 0.75)
-        self.assist_rect = self.assist_img.get_rect(midright = (self.port_rect.right + (10+self.health_bar_length/2), 50))
+        self.assist_rect = self.assist_img.get_rect(midright = (self.port_rect.right + (10+self.health_bar_length/2), 38))
         self.assist_text = self.font.render(f"X {self.assists}", True, (255,255,255))
         self.assist_text_rect = self.assist_text.get_rect(midleft = (self.assist_rect.right + 5, self.assist_rect.centery))
         # Damage statistics
@@ -85,7 +85,7 @@ class Player(pg.sprite.Sprite):
     def increase_score(self):
         """ Increases the player's score by 1, up to 200
         """
-        self.score = min(self.score+1, 160);
+        self.score = min(self.score+1, 100);
 
 
     def get_score(self):
@@ -201,7 +201,7 @@ class Player(pg.sprite.Sprite):
    
     def update(self, sprite_handler, dt):
         self.handle_input(sprite_handler)
-        self.score_text = self.font.render(f"{self.score:03d}/160", True, (255, 255, 255))
+        self.score_text = self.font.render(f"{self.score:03d}/100", True, (255, 255, 255))
         self.score_rect = self.score_text.get_rect(center = (Config.WIDTH/2, 15))
         self.assist_text = self.font.render(f"X {self.assists}", True, (255,255,255))
         self.assist_text_rect = self.assist_text.get_rect(midleft = (self.assist_rect.right + 5, self.assist_rect.centery))
@@ -277,6 +277,7 @@ class Player(pg.sprite.Sprite):
     
     # should move this and the boss HUD code to a separate file/function
     def update_hud(self, screen):
+        transition_color = (0,255,0)
         transition_width = 0
         if self.current_health < self.target_health:
             self.current_health += self.health_change_speed

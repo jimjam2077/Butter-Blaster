@@ -39,8 +39,7 @@ class MainLevel(State):
     #TODO: Two main phases: enemy phase -> boss phase
     def update(self, delta_time):
         # player dead? -> game over
-        if self.sprite_handler.player.get_score() == 3 and self.sprite_handler.boss is None:
-            pg.mixer.music.fadeout(1000)
+        if self.sprite_handler.player.get_score() == 100 and self.sprite_handler.boss is None:
             self.sprite_handler.add_boss(Boss());
             self.sprite_handler.player.increase_score();
             # change the background speed
@@ -91,7 +90,7 @@ class MainLevel(State):
         else:
             current_time = pg.time.get_ticks() 
             time_since_start = current_time - self.start_time
-            if time_since_start >= 10000:  # 10 seconds have passed
+            if time_since_start >= 7000:  # 10 seconds have passed
                 self.enemy_strength += 1
                 self.start_time = current_time # update start time
                 self.enemy_strength = max(0, min(self.enemy_strength, 10))
@@ -115,6 +114,7 @@ class MainLevel(State):
         if self.transition_time > 0:
             pass
         else: 
+            AudioLoader.stop_sound()
             self.sprite_handler.player.reset()
             game_complete = GameComplete(self.game)
             game_complete.enter_state()

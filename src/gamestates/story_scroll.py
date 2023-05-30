@@ -24,7 +24,7 @@ class StoryScroll(State):
             words = para.split()
             line = words.pop(0)
             for word in words:
-                if self._font.size(line + ' ' + word)[0] <= 1180: # adjust for line width
+                if self._font.size(line + ' ' + word)[0] <= 880: # adjust for line width
                     line += ' ' + word
                 else:
                     self._lines.append(line)

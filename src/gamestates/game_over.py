@@ -36,7 +36,7 @@ class GameOver(State):
         self._surfaces = [self.retry_rect, self.quit_rect]
         #pygame.mixer.stop()
         #pygame.mixer.music.stop()
-        AudioLoader.play_end_music()
+        AssetLoader.music["end"].play(-1)
 
     def update(self, delta_time):
         for event in pygame.event.get():
@@ -48,8 +48,7 @@ class GameOver(State):
                 # iterate over characters dictionary to check if a rectangle has been clicked
                 for rect in self._surfaces:
                     if rect.collidepoint(pygame.mouse.get_pos()):
-                        pygame.mixer.stop()
-                        pygame.mixer.music.stop()
+                        AudioLoader.stop_sound()
                         if rect == self.retry_rect:
                             from src.gamestates.main_level import MainLevel
                             new_state = MainLevel(self.game)

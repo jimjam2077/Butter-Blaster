@@ -19,7 +19,7 @@ class Title(State):
         self.font = AssetLoader.fonts["instruction"]
         self.start_text = self.font.render("Press space", True, (255, 255, 255))
         self.start_text.set_alpha(0)
-        self.start_rect = self.start_text.get_rect(center=(160+self.start_text.get_width()/2, Config.HEIGHT -40 -self.start_text.get_height()/2))
+        self.start_rect = self.start_text.get_rect(center=(100+self.start_text.get_width()/2, Config.HEIGHT -40 -self.start_text.get_height()/2))
         # splash screen image
         self.start_img = AssetLoader.backgrounds["screens"]["title"]
         self.start_img.set_alpha(0)

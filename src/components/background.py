@@ -8,6 +8,7 @@ class Background():
         self.img_two = random.choice(list(AssetLoader.backgrounds["level"].values()))
         self.rect = self.img_one.get_rect()
         self.alt_img_one = random.choice(list(AssetLoader.backgrounds["boss"].values()))
+        self.alt_img_one.set_alpha(0)
     
         self.bgY1 = 0
         self.bgX1 = 0
@@ -35,15 +36,13 @@ class Background():
         alpha_change = 255 / 2  # Reduce alpha by 255 in 1 second
         speed_change = 100 / 2  # Reduce speed by 100 units in 1 second
         # Reduce alpha of img_one and img_two if they are greater than 0
-        if self.img_one.get_alpha() > 0:
-            self.img_one.set_alpha(max(0, self.img_one.get_alpha() - int(alpha_change * dt)))
-        if self.img_two.get_alpha() > 0:
-            self.img_two.set_alpha(max(0, self.img_two.get_alpha() - int(alpha_change * dt)))
+        if self.alt_img_one.get_alpha() < 255:
+            self.alt_img_one.set_alpha(min(255, self.alt_img_one.get_alpha() + int(alpha_change * dt)))
         # Reduce speed gradually
         self.moving_speed = max(0, self.moving_speed - speed_change * dt)
 
              
     def draw(self, screen):
-        screen.blit(self.alt_img_one, (0, 0))
         screen.blit(self.img_one, (self.bgX1, self.bgY1))
         screen.blit(self.img_two, (self.bgX2, self.bgY2))
+        screen.blit(self.alt_img_one, (0, 0))
