@@ -17,9 +17,8 @@ Initially I was going to make a game engine with Java, but it's such a lot of un
 * * Should not be able to fly off the screen &#x2714;
 * Enemies continually spawn and fire at the ship &#x2714;
 * * enemies move off the left  of the screen if you pass them &#x2714;
-* The background should scroll continually
-* Scorekeeping
-* * every 50 points, a boss enemy spawns
-* * * bosses can move left and right, and have health
-* * * other enemies should not spawn while a boss is alive
+* The background should scroll continually &#x2714;
+* Scorekeeping &#x2714;
+* * bosses can move left and right, and have health &#x2714;
+* * other enemies should not spawn while a boss is alive &#x2714;
 
